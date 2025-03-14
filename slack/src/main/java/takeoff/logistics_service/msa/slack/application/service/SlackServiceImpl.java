@@ -2,6 +2,8 @@ package takeoff.logistics_service.msa.slack.application.service;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.slack.model.entity.Slack;
@@ -28,10 +30,31 @@ public class SlackServiceImpl implements SlackService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public SlackResponseDto findBySlackId(UUID slackId) {
         Slack slack = slackRepository.findById(slackId).orElseThrow(() ->
             new IllegalArgumentException("없는 슬랙 메세지 입니다."));
         return SlackResponseDto.from(slack);
     }
+
+    @Override
+    public SlackResponseDto updateBySlack(UUID slackId, SlackRequestDto requestDto) {
+        Slack slack = slackRepository.findById(slackId).orElseThrow(() ->
+            new IllegalArgumentException("없는 슬랙 메세지 입니다."));
+
+        slack.getContents().modifyMessage(requestDto.contentsRequestDto().message());
+
+        return SlackResponseDto.from(slack);
+    }
+
+    @Override
+    public Page<SlackResponseDto> searchSlack(SlackRequestDto slackRequestDto, Pageable pageable) {
+        return slackRepository.searchSlack(slackRequestDto, pageable);
+    }
+//      Auditing 설정시 추가 개발 예정
+//    @Override
+//    public void deleteBySlack(UUID slackId) {
+//        Slack slack = slackRepository.findById(slackId).orElseThrow(() ->
+//            new IllegalArgumentException("없는 슬랙 메세지 입니다."));
+//    }
 }
