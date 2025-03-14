@@ -1,11 +1,7 @@
-package takeoff.logistics_service.msa.hub.hub.model.repository;
+package takeoff.logistics_service.msa.hub.hub.infrastructure.persistence;
 
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import takeoff.logistics_service.msa.hub.hub.model.entity.Hub;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.PostHubRequestDto;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.SearchHubRequestDto;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.SearchHubResponseDto;
 
@@ -13,11 +9,7 @@ import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.SearchHub
  * @author : hanjihoon
  * @Date : 2025. 03. 15.
  */
-public interface HubRepository {
-
-    Hub save(Hub hub);
-
-    Optional<Hub> findById(UUID hubId);
-
+public interface JpaHubRepositoryCustom {
     Page<SearchHubResponseDto> searchHub(SearchHubRequestDto requestDto, Pageable pageable);
+
 }

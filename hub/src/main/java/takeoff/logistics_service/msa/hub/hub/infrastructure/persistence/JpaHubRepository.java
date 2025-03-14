@@ -9,6 +9,6 @@ import takeoff.logistics_service.msa.hub.hub.model.repository.HubRepository;
  * @author : hanjihoon
  * @Date : 2025. 03. 15.
  */
-public interface JpaHubRepository extends JpaRepository<Hub, UUID>, HubRepository {
+public interface JpaHubRepository extends JpaRepository<Hub, UUID>, HubRepository,JpaHubRepositoryCustom {
 
 }

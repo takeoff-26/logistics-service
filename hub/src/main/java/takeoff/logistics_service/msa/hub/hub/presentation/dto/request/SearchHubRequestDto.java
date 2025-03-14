@@ -8,13 +8,11 @@ import takeoff.logistics_service.msa.hub.hub.presentation.dto.LocationDto;
  * @Date : 2025. 03. 15.
  */
 
-public record SearchHubRequestDto(String hubName,
-                                  LocationDto locationDto) {
+public record SearchHubRequestDto(String hubName) {
 
     public Hub toEntity() {
         return Hub.builder()
             .hubName(hubName)
-            .location(locationDto.toVo())
             .build();
     }
 

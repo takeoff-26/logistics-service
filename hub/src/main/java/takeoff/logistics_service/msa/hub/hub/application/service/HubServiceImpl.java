@@ -2,15 +2,19 @@ package takeoff.logistics_service.msa.hub.hub.application.service;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.hub.hub.model.entity.Hub;
 import takeoff.logistics_service.msa.hub.hub.model.repository.HubRepository;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.PostHubRequestDto;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.PatchHubRequestDto;
+import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.SearchHubRequestDto;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.GetHubResponseDto;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.PostHubResponseDto;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.PatchHubResponseDto;
+import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.SearchHubResponseDto;
 
 /**
  * @author : hanjihoon
@@ -42,6 +46,11 @@ public class HubServiceImpl implements HubService{
         Hub hub = hubRepository.findById(hubId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 허브입니다."));
         return GetHubResponseDto.from(hub);
+    }
+
+    @Override
+    public Page<SearchHubResponseDto> searchHub(SearchHubRequestDto requestDto, Pageable pageable) {
+        return hubRepository.searchHub(requestDto, pageable);
     }
 
     //      Auditing 설정시 추가 개발 예정
