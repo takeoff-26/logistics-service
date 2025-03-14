@@ -34,5 +34,10 @@ public class Contents {
         this.sent_At = sent_At;
     }
 
+    //메세지 수정 메서드
+    public void modifyMessage(String message) {
+        this.message = message;
+    }
+
 
 }

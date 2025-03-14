@@ -1,23 +1,15 @@
-package takeoff.logistics_service.msa.slack.model.repository;
+package takeoff.logistics_service.msa.slack.infrastructure.persistence;
 
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import takeoff.logistics_service.msa.slack.model.entity.Slack;
 import takeoff.logistics_service.msa.slack.presentation.dto.request.SlackRequestDto;
 import takeoff.logistics_service.msa.slack.presentation.dto.response.SlackResponseDto;
 
 /**
  * @author : hanjihoon
- * @Date : 2025. 03. 13.
+ * @Date : 2025. 03. 14.
  */
-public interface SlackRepository {
-
-    Slack save(Slack slack);
-
-    Optional<Slack> findById(UUID slackId);
-
-
+public interface JpaSlackRepositoryCustom {
     Page<SlackResponseDto> searchSlack(SlackRequestDto slackRequestDto, Pageable pageable);
+
 }
