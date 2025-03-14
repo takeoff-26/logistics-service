@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import takeoff.logistics_service.msa.slack.application.service.SlackService;
-import takeoff.logistics_service.msa.slack.presentation.dto.request.SlackRequestDto;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.SlackResponseDto;
+import takeoff.logistics_service.msa.slack.presentation.dto.request.PostSlackRequestDto;
+import takeoff.logistics_service.msa.slack.presentation.dto.response.PostSlackResponseDto;
 
 /**
  * @author : hanjihoon
@@ -22,8 +22,8 @@ public class SlackInternalController {
     //생성만 내부에서 호출
 
     @PostMapping("/message")
-    public SlackResponseDto createSlackMessage(@RequestBody SlackRequestDto requestDto) {
-        return slackService.createSlackMessage(requestDto);
+    public PostSlackResponseDto saveSlackMessage(@RequestBody PostSlackRequestDto requestDto) {
+        return slackService.saveSlackMessage(requestDto);
     }
 
 
