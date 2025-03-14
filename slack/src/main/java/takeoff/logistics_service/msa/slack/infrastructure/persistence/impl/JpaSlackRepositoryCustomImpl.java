@@ -2,23 +2,19 @@ package takeoff.logistics_service.msa.slack.infrastructure.persistence.impl;
 
 import static takeoff.logistics_service.msa.slack.model.entity.QSlack.slack;
 
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import takeoff.logistics_service.msa.slack.infrastructure.persistence.JpaSlackRepositoryCustom;
-import takeoff.logistics_service.msa.slack.model.entity.QSlack;
 import takeoff.logistics_service.msa.slack.model.entity.Slack;
-import takeoff.logistics_service.msa.slack.presentation.dto.request.SlackRequestDto;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.SlackResponseDto;
+import takeoff.logistics_service.msa.slack.presentation.dto.request.PostSlackRequestDto;
+import takeoff.logistics_service.msa.slack.presentation.dto.request.SearchSlackRequestDto;
+import takeoff.logistics_service.msa.slack.presentation.dto.response.PostSlackResponseDto;
+import takeoff.logistics_service.msa.slack.presentation.dto.response.SearchSlackResponseDto;
 
 
 /**
@@ -32,12 +28,12 @@ public class JpaSlackRepositoryCustomImpl implements JpaSlackRepositoryCustom {
 
 
     @Override
-    public Page<SlackResponseDto> searchSlack(SlackRequestDto slackRequestDto, Pageable pageable) {
+    public Page<SearchSlackResponseDto> searchSlack(SearchSlackRequestDto searchSlackRequestDto, Pageable pageable) {
 
         List<Slack> fetch = queryFactory.select(slack)
             .from(slack)
             .where(
-                containsMessage(slackRequestDto.contentsRequestDto().message())
+                containsMessage(searchSlackRequestDto.searchContentsRequestDto().message())
             )
             //Auditor 생성시 변경해야함.
             .orderBy(slack.contents.sent_At.asc())
@@ -48,14 +44,14 @@ public class JpaSlackRepositoryCustomImpl implements JpaSlackRepositoryCustom {
         Long totalCount = queryFactory.select(slack.count())
             .from(slack)
             .where(
-                containsMessage(slackRequestDto.contentsRequestDto().message())
+                containsMessage(searchSlackRequestDto.searchContentsRequestDto().message())
             )
             .fetchOne();
 
         if (totalCount == null) totalCount = 0L;
 
-        List<SlackResponseDto> responseDtoList = fetch.stream()
-            .map(SlackResponseDto::from)
+        List<SearchSlackResponseDto> responseDtoList = fetch.stream()
+            .map(SearchSlackResponseDto::from)
             .toList();
 
 
