@@ -13,5 +13,5 @@ public interface HubRepository {
 
     Hub save(Hub hub);
 
-    Optional<Hub> findByHubId(UUID hubId);
+    Optional<Hub> findById(UUID hubId);
 }

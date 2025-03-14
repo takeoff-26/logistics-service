@@ -30,7 +30,7 @@ public class HubServiceImpl implements HubService{
 
     @Override
     public PatchHubResponseDto updateHub(UUID hubId, PatchHubRequestDto requestDto) {
-        Hub hub = hubRepository.findByHubId(hubId)
+        Hub hub = hubRepository.findById(hubId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 허브입니다."));
         hub.modifyHubName(requestDto.hubName());
         return PatchHubResponseDto.from(hub);
@@ -38,7 +38,7 @@ public class HubServiceImpl implements HubService{
 
     @Override
     public GetHubResponseDto findByHubId(UUID hubId) {
-        Hub hub = hubRepository.findByHubId(hubId)
+        Hub hub = hubRepository.findById(hubId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 허브입니다."));
         return GetHubResponseDto.from(hub);
     }
