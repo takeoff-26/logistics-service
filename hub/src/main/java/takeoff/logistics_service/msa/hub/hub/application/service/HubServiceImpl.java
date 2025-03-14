@@ -37,6 +37,7 @@ public class HubServiceImpl implements HubService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GetHubResponseDto findByHubId(UUID hubId) {
         Hub hub = hubRepository.findById(hubId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 허브입니다."));
