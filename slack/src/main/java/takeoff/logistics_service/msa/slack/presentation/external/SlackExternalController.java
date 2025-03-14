@@ -2,6 +2,7 @@ package takeoff.logistics_service.msa.slack.presentation.external;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +24,8 @@ public class SlackExternalController {
 
     //생성 이외 엔드포인트는 외부에서 호출
     @GetMapping("/{slackId}")
-    public SlackResponseDto findBySlackId(@PathVariable("slackId")UUID slackId) {
-        return slackService.findBySlackId(slackId);
+    public ResponseEntity<SlackResponseDto> findBySlackId(@PathVariable("slackId")UUID slackId) {
+        return ResponseEntity.ok(slackService.findBySlackId(slackId));
     }
 
 }
