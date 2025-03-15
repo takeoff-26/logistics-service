@@ -24,7 +24,7 @@ public interface SlackService {
     PatchSlackResponseDto updateBySlack(UUID slackId, PatchSlackRequestDto requestDto);
 
 //      Auditing 설정시 추가 개발 예정
-//    void deleteBySlack(UUID slackId);
+    void deleteBySlack(UUID slackId);
 
     Page<SearchSlackResponseDto> searchSlack(SearchSlackRequestDto searchSlackRequestDto, Pageable pageable);
 

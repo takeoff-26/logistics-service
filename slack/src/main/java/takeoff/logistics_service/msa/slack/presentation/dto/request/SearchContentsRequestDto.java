@@ -1,5 +1,6 @@
 package takeoff.logistics_service.msa.slack.presentation.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import takeoff.logistics_service.msa.slack.model.entity.Contents;
 
 /**
@@ -7,7 +8,7 @@ import takeoff.logistics_service.msa.slack.model.entity.Contents;
  * @Date : 2025. 03. 13.
  */
 
-public record SearchContentsRequestDto(String message) {
+public record SearchContentsRequestDto(@NotNull String message) {
 
     public Contents toVo() {
         return Contents.create(message);

@@ -1,6 +1,7 @@
 package takeoff.logistics_service.msa.slack.presentation.dto.request;
 
 
+import jakarta.validation.constraints.NotNull;
 import takeoff.logistics_service.msa.slack.model.entity.Slack;
 
 /**
@@ -8,8 +9,8 @@ import takeoff.logistics_service.msa.slack.model.entity.Slack;
  * @Date : 2025. 03. 13.
  */
 
-public record PostSlackRequestDto(Long userId,
-                                  PostContentsRequestDto postContentsRequestDto) {
+public record PostSlackRequestDto(@NotNull Long userId,
+                                  @NotNull PostContentsRequestDto postContentsRequestDto) {
 
     public Slack toEntity() {
         return Slack.builder()

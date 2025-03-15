@@ -1,5 +1,6 @@
 package takeoff.logistics_service.msa.slack.presentation.internal;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,7 @@ public class SlackInternalController {
     //생성만 내부에서 호출
 
     @PostMapping("/message")
-    public PostSlackResponseDto saveSlackMessage(@RequestBody PostSlackRequestDto requestDto) {
+    public PostSlackResponseDto saveSlackMessage(@Valid @RequestBody PostSlackRequestDto requestDto) {
         return slackService.saveSlackMessage(requestDto);
     }
 

@@ -37,15 +37,13 @@ public class SlackServiceImpl implements SlackService {
     @Override
     @Transactional(readOnly = true)
     public GetSlackResponseDto findBySlackId(UUID slackId) {
-        Slack slack = slackRepository.findById(slackId).orElseThrow(() ->
-            new IllegalArgumentException("없는 슬랙 메세지 입니다."));
+        Slack slack = findSlack(slackId);
         return GetSlackResponseDto.from(slack);
     }
 
     @Override
     public PatchSlackResponseDto updateBySlack(UUID slackId, PatchSlackRequestDto requestDto) {
-        Slack slack = slackRepository.findById(slackId).orElseThrow(() ->
-            new IllegalArgumentException("없는 슬랙 메세지 입니다."));
+        Slack slack = findSlack(slackId);
 
         slack.getContents().modifyMessage(requestDto.patchContentsRequestDto().message());
 
@@ -57,9 +55,13 @@ public class SlackServiceImpl implements SlackService {
         return slackRepository.searchSlack(searchSlackRequestDto, pageable);
     }
 //      Auditing 설정시 추가 개발 예정
-//    @Override
-//    public void deleteBySlack(UUID slackId) {
-//        Slack slack = slackRepository.findById(slackId).orElseThrow(() ->
-//            new IllegalArgumentException("없는 슬랙 메세지 입니다."));
-//    }
+    @Override
+    public void deleteBySlack(UUID slackId) {
+        findSlack(slackId);
+    }
+
+    private Slack findSlack(UUID slackId) {
+        return slackRepository.findById(slackId).orElseThrow(() ->
+            new IllegalArgumentException("없는 슬랙 메세지 입니다."));
+    }
 }
