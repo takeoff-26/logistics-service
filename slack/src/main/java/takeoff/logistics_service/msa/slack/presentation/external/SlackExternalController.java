@@ -3,7 +3,6 @@ package takeoff.logistics_service.msa.slack.presentation.external;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import takeoff.logistics_service.msa.slack.application.service.SlackService;
 import takeoff.logistics_service.msa.slack.presentation.dto.request.PatchSlackRequestDto;
-import takeoff.logistics_service.msa.slack.presentation.dto.request.PostSlackRequestDto;
 import takeoff.logistics_service.msa.slack.presentation.dto.request.SearchSlackRequestDto;
 import takeoff.logistics_service.msa.slack.presentation.dto.response.GetSlackResponseDto;
 import takeoff.logistics_service.msa.slack.presentation.dto.response.PatchSlackResponseDto;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.PostSlackResponseDto;
 import takeoff.logistics_service.msa.slack.presentation.dto.response.SearchSlackResponseDto;
 
 /**
