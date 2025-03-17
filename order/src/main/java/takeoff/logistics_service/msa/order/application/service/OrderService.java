@@ -7,8 +7,8 @@ import takeoff.logistics_service.msa.order.application.client.DeliveryClient;
 import takeoff.logistics_service.msa.order.model.entity.Order;
 import takeoff.logistics_service.msa.order.model.entity.OrderItem;
 import takeoff.logistics_service.msa.order.model.repository.OrderRepository;
-import takeoff.logistics_service.msa.order.presentation.dto.request.OrderSaveRequestDto;
-import takeoff.logistics_service.msa.order.presentation.dto.response.OrderSaveResponseDto;
+import takeoff.logistics_service.msa.order.presentation.dto.request.PostOrderRequestDto;
+import takeoff.logistics_service.msa.order.presentation.dto.response.PostOrderResponseDto;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class OrderService {
 
 
   @Transactional
-  public OrderSaveResponseDto saveOrder(OrderSaveRequestDto dto) {
+  public PostOrderResponseDto saveOrder(PostOrderRequestDto dto) {
     Order order = Order.builder()
         .supplierId(dto.supplierId())
         .orderItems(
@@ -37,5 +37,6 @@ public class OrderService {
         .build();
 
     orderRepository.save(order);
+    return PostOrderResponseDto.from(order);
   }
 }

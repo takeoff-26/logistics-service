@@ -10,14 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import takeoff.logistics_service.msa.common.domain.BaseEntity;
 
 @Entity
 @Table(name = "p_order")
 @Getter
 @Builder
-public class Order {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Order extends BaseEntity {
 
   @EmbeddedId
   private OrderId id;
