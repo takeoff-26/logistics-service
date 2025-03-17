@@ -1,4 +1,4 @@
-package takeoff.logistics_service.msa.slack.model.entity;
+package takeoff.logistics_service.msa.slack.application.service;
 
 /**
  * @author : hanjihoon

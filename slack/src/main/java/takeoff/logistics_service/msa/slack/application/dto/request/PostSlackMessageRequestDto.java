@@ -1,6 +1,5 @@
 package takeoff.logistics_service.msa.slack.application.dto.request;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import takeoff.logistics_service.msa.slack.presentation.dto.DeliveryUsers;
 import takeoff.logistics_service.msa.slack.presentation.dto.StopoverHubNames;

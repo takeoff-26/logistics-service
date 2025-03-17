@@ -2,23 +2,24 @@ package takeoff.logistics_service.msa.slack.application.service;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
+import takeoff.logistics_service.msa.slack.application.dto.PaginatedResultDto;
+import takeoff.logistics_service.msa.slack.application.dto.request.PatchSlackRequestDto;
 import takeoff.logistics_service.msa.slack.application.dto.request.PostSlackMessageRequestDto;
+import takeoff.logistics_service.msa.slack.application.dto.request.SearchSlackRequestDto;
+import takeoff.logistics_service.msa.slack.application.dto.response.GetSlackResponseDto;
+import takeoff.logistics_service.msa.slack.application.dto.response.PatchSlackResponseDto;
 import takeoff.logistics_service.msa.slack.application.dto.response.PostSlackResponseDto;
-import takeoff.logistics_service.msa.slack.infrastructure.client.ai.GeminiWebClient;
+import takeoff.logistics_service.msa.slack.application.dto.response.SearchSlackResponseDto;
+import takeoff.logistics_service.msa.slack.application.exception.SlackBusinessException;
+import takeoff.logistics_service.msa.slack.application.exception.SlackErrorCode;
+import takeoff.logistics_service.msa.slack.application.exception.SlackGeminiException;
+import takeoff.logistics_service.msa.slack.application.service.client.WebRequestClient;
 import takeoff.logistics_service.msa.slack.model.entity.Slack;
-import takeoff.logistics_service.msa.slack.model.entity.SlackConstant;
 import takeoff.logistics_service.msa.slack.model.repository.SlackRepository;
-import takeoff.logistics_service.msa.slack.presentation.dto.request.PatchSlackRequest;
-import takeoff.logistics_service.msa.slack.presentation.dto.request.SearchSlackRequest;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.GetSlackResponse;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.PatchSlackResponse;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.SearchSlackResponse;
-
 /**
  * @author : hanjihoon
  * @Date : 2025. 03. 13.
@@ -26,15 +27,20 @@ import takeoff.logistics_service.msa.slack.presentation.dto.response.SearchSlack
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class SlackServiceImpl implements SlackService {
 
     private final SlackRepository slackRepository;
-    private final GeminiWebClient geminiWebClient;
+    private final WebRequestClient webRequestClient;
     private final SlackAlarmService slackAlarmService;
 
     @Override
     public Mono<PostSlackResponseDto> saveSlackMessage(PostSlackMessageRequestDto requestDto, Long userId) {
-         return geminiWebClient.sendRequestToGemini(requestDto)
+         return webRequestClient.sendRequestToGemini(requestDto)
+             .onErrorMap(error -> {
+                 log.error("AI 응답을 받을 수 없습니다.", error);
+                 return new SlackGeminiException(SlackErrorCode.GEMINI_ERROR);
+             })
             .map(resultMessage -> {
                 Slack slack = Slack.createSlack(userId, resultMessage);
                 Slack savedSlack = slackRepository.save(slack);
@@ -45,32 +51,34 @@ public class SlackServiceImpl implements SlackService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetSlackResponse findBySlackId(UUID slackId) {
+    public GetSlackResponseDto findBySlackId(UUID slackId) {
         Slack slack = findSlack(slackId);
-        return GetSlackResponse.from(slack);
+        return GetSlackResponseDto.from(slack);
     }
 
     @Override
-    public PatchSlackResponse updateBySlack(UUID slackId, PatchSlackRequest requestDto) {
+    public PatchSlackResponseDto updateBySlack(UUID slackId, PatchSlackRequestDto requestDto) {
         Slack slack = findSlack(slackId);
 
         slack.getContents().modifyMessage(requestDto.patchContentsRequest().message());
 
-        return PatchSlackResponse.from(slack);
+        return PatchSlackResponseDto.from(slack);
     }
 
     @Override
-    public Page<SearchSlackResponse> searchSlack(SearchSlackRequest searchSlackRequest, Pageable pageable) {
-        return slackRepository.searchSlack(searchSlackRequest, pageable);
+    public PaginatedResultDto<SearchSlackResponseDto> searchSlack(SearchSlackRequestDto searchSlackRequest) {
+        return PaginatedResultDto.from(
+            slackRepository.searchSlack(SearchSlackRequestDto.toSearchCriteria(searchSlackRequest))
+        );
     }
-//      Auditing 설정시 추가 개발 예정
     @Override
-    public void deleteSlack(UUID slackId) {
-        findSlack(slackId);
+    public void deleteSlack(UUID slackId, Long userId) {
+        Slack slack = findSlack(slackId);
+        slack.delete(userId);
     }
 
     private Slack findSlack(UUID slackId) {
-        return slackRepository.findById(slackId).orElseThrow(() ->
-            new IllegalArgumentException("없는 슬랙 메세지 입니다."));
+        return slackRepository.findByIdAndDeletedAtIsNull(slackId).orElseThrow(() ->
+            SlackBusinessException.from(SlackErrorCode.SLACK_NOT_FOUND));
     }
 }

@@ -1,7 +1,6 @@
-package takeoff.logistics_service.msa.slack.presentation.dto.request;
+package takeoff.logistics_service.msa.slack.application.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 import takeoff.logistics_service.msa.slack.model.entity.Contents;
 
 /**
@@ -9,6 +8,7 @@ import takeoff.logistics_service.msa.slack.model.entity.Contents;
  * @Date : 2025. 03. 13.
  */
 
-public record PatchContentsRequest(@NotNull String message) {
+public record PatchContentsRequestDto(@NotNull String message) {
+
 
 }

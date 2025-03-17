@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import takeoff.logistics_service.msa.common.domain.BaseEntity;
 
 /**
  * @author : hanjihoon
@@ -21,14 +22,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "p_slack")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Slack {
+public class Slack extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "slack_message_id")
+    @Column(name = "slack_id")
     private UUID id;
 
-    @Column(name = "recipient_user_id", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     @Embedded
@@ -45,4 +46,5 @@ public class Slack {
         this.userId = userId;
         this.contents = contents;
     }
+
 }

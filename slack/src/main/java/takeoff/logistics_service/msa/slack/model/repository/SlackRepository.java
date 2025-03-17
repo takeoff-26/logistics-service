@@ -2,11 +2,10 @@ package takeoff.logistics_service.msa.slack.model.repository;
 
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import takeoff.logistics_service.msa.slack.model.entity.Slack;
-import takeoff.logistics_service.msa.slack.presentation.dto.request.SearchSlackRequest;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.SearchSlackResponse;
+import takeoff.logistics_service.msa.slack.model.repository.search.PaginatedResult;
+import takeoff.logistics_service.msa.slack.model.repository.search.SlackSearchCriteria;
+import takeoff.logistics_service.msa.slack.model.repository.search.SlackSearchCriteriaResponse;
 
 /**
  * @author : hanjihoon
@@ -16,8 +15,7 @@ public interface SlackRepository {
 
     Slack save(Slack slack);
 
-    Optional<Slack> findById(UUID slackId);
+    Optional<Slack> findByIdAndDeletedAtIsNull(UUID slackId);
 
-
-    Page<SearchSlackResponse> searchSlack(SearchSlackRequest searchSlackRequest, Pageable pageable);
+    PaginatedResult<SlackSearchCriteriaResponse> searchSlack(SlackSearchCriteria slackSearchCriteria);
 }

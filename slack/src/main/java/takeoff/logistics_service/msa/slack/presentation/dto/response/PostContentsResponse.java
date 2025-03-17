@@ -3,7 +3,6 @@ package takeoff.logistics_service.msa.slack.presentation.dto.response;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import takeoff.logistics_service.msa.slack.application.dto.response.PostContentsResponseDto;
-import takeoff.logistics_service.msa.slack.model.entity.Contents;
 
 /**
  * @author : hanjihoon
@@ -16,7 +15,7 @@ public record PostContentsResponse(String message,
     public static PostContentsResponse from(PostContentsResponseDto postContentsResponseDto) {
         return PostContentsResponse.builder()
             .message(postContentsResponseDto.message())
-            .sent_At(postContentsResponseDto.sent_At())
+            .sent_At(postContentsResponseDto.sentAt())
             .build();
     }
 

@@ -23,7 +23,7 @@ import takeoff.logistics_service.msa.slack.infrastructure.client.ai.GeminiWebCli
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class GeminiWebClient {
+public class GeminiWebClient implements WebClientAdapter{
 
     private final WebClient webClient;
     @Value("${ai.api.key}")

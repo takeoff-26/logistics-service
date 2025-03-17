@@ -9,17 +9,17 @@ import takeoff.logistics_service.msa.slack.presentation.dto.StopoverHubNames;
  * @author : hanjihoon
  * @Date : 2025. 03. 16.
  */
-public record PostSlackMessageRequest(@NotNull Integer orderNumber,
-                                      @NotNull String companyName,
-                                      @NotNull String productInfo,
-                                      @NotNull String orderRequest,
-                                      @NotNull String fromHubName,
-                                      @NotNull StopoverHubNames stopoverHubNames,
-                                      @NotNull String toHubName,
-                                      @NotNull DeliveryUsers deliveryUsers,
-                                      @NotNull String companyDeliveryUserName) {
+public record PostSlackRequest(@NotNull Integer orderNumber,
+                               @NotNull String companyName,
+                               @NotNull String productInfo,
+                               @NotNull String orderRequest,
+                               @NotNull String fromHubName,
+                               @NotNull StopoverHubNames stopoverHubNames,
+                               @NotNull String toHubName,
+                               @NotNull DeliveryUsers deliveryUsers,
+                               @NotNull String companyDeliveryUserName) {
 
-    public static PostSlackMessageRequestDto toApplicationDto(PostSlackMessageRequest request) {
+    public static PostSlackMessageRequestDto toApplicationDto(PostSlackRequest request) {
         return PostSlackMessageRequestDto.builder()
             .orderNumber(request.orderNumber())
             .companyName(request.companyName())

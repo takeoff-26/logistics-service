@@ -19,8 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Contents {
 
-    @Lob
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT",nullable = false)
     private String message;
 
     @Column(name = "sent_at")

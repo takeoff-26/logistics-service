@@ -2,6 +2,7 @@ package takeoff.logistics_service.msa.slack.presentation.dto.response;
 
 import java.util.UUID;
 import lombok.Builder;
+import takeoff.logistics_service.msa.slack.application.dto.response.GetSlackResponseDto;
 import takeoff.logistics_service.msa.slack.model.entity.Slack;
 
 /**
@@ -10,15 +11,15 @@ import takeoff.logistics_service.msa.slack.model.entity.Slack;
  */
 @Builder
 public record GetSlackResponse(UUID slackId,
-                               UUID userId,
+                               Long userId,
                                GetContentsResponse getContentsResponse) {
 
 
-    public static GetSlackResponse from(Slack slack) {
+    public static GetSlackResponse from(GetSlackResponseDto slackResponseDto) {
         return GetSlackResponse.builder()
-            .slackId(slack.getId())
-            .userId(slack.getId())
-            .getContentsResponseDto(GetContentsResponse.from(slack.getContents()))
+            .slackId(slackResponseDto.slackId())
+            .userId(slackResponseDto.userId())
+            .getContentsResponse(slackResponseDto.getContentsResponse())
             .build();
     }
 

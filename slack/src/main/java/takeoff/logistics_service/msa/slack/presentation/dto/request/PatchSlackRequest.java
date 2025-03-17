@@ -2,6 +2,7 @@ package takeoff.logistics_service.msa.slack.presentation.dto.request;
 
 
 import jakarta.validation.constraints.NotNull;
+import takeoff.logistics_service.msa.slack.application.dto.request.PatchSlackRequestDto;
 import takeoff.logistics_service.msa.slack.model.entity.Slack;
 
 /**
@@ -12,10 +13,10 @@ import takeoff.logistics_service.msa.slack.model.entity.Slack;
 public record PatchSlackRequest(@NotNull Long userId,
                                 @NotNull PatchContentsRequest patchContentsRequest) {
 
-    public Slack toEntity() {
-        return Slack.builder()
+    public static PatchSlackRequestDto toApplicationDto(PatchSlackRequest request, Long userId) {
+        return PatchSlackRequestDto.builder()
             .userId(userId)
-            .contents(patchContentsRequest.toVo())
+            .patchContentsRequest(request.patchContentsRequest)
             .build();
     }
 

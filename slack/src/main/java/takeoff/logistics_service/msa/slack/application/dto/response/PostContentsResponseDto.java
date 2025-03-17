@@ -11,19 +11,19 @@ import takeoff.logistics_service.msa.slack.presentation.dto.response.PostContent
  */
 @Builder
 public record PostContentsResponseDto(String message,
-                                      LocalDateTime sent_At) {
+                                      LocalDateTime sentAt) {
 
     public static PostContentsResponseDto from(PostContentsResponse postContentsResponse) {
         return PostContentsResponseDto.builder()
             .message(postContentsResponse.message())
-            .sent_At(postContentsResponse.sent_At())
+            .sentAt(postContentsResponse.sent_At())
             .build();
     }
 
     public static PostContentsResponseDto from(Contents contents) {
         return PostContentsResponseDto.builder()
             .message(contents.getMessage())
-            .sent_At(contents.getSentAt())
+            .sentAt(contents.getSentAt())
             .build();
     }
 
