@@ -14,11 +14,11 @@ public class DeliveryService {
 
   private final DeliveryRepository deliveryRepository;
 
-  // TODO : 분산 트랜잭션 
+  // TODO : 분산 트랜잭션
   @Transactional
   public UUID saveDelivery(PostDeliveryRequestDto dto) {
     Delivery delivery = Delivery.builder()
-        .orderId(dto.getOrderId())
+        .orderId(dto.orderID())
         .build();
 
     deliveryRepository.save(delivery);

@@ -14,6 +14,7 @@ import lombok.Getter;
 @Entity
 @Table(name = "p_delivery")
 @Getter
+@Builder
 public class Delivery {
 
   @EmbeddedId
@@ -32,7 +33,6 @@ public class Delivery {
   @Column(name = "to_hub_id", nullable = false)
   private UUID toHubId;
 
-  @Builder
   public Delivery() {
     this.status = DeliveryStatus.ORDERED;
     // TODO : 배송 경로 관련 로직 추가 + 허브 서비스와 연결
