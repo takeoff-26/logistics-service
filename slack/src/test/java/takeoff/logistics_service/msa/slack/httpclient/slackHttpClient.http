@@ -1,0 +1,32 @@
+###
+POST http://localhost:19041/api/v1/app/slacks/message/1
+Content-Type: application/json
+
+{
+  "orderNumber": 1,
+  "companyName": "해산물월드",
+  "productInfo": "마른 오징어 50박스",
+  "orderRequest": "12월 12일 3시까지는 보내주세요!",
+  "fromHubName": "경기도 고양시 덕양구 권율대로 570",
+  "stopoverHubNames": {
+    "hubNames": ["대전 서구 둔산로 100", "부산 동구 중앙대로 206"]
+  },
+  "toHubName": "부산시 사하구 낙동대로 1번길 1 해산물월드",
+  "deliveryUsers": {
+    "deliveryUserNames": ["김말숙 / msk@seafood.world"]
+  },
+  "companyDeliveryUserName": "고길동 / kdk@sparta.world"
+}
+
+
+###
+POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyC1j0Qm-sEsCj4KykvhNEGgDWo3pg7dS64
+content-Type: application/json
+
+{
+  "contents": [{
+    "parts": [{
+      "text": "주문 번호: 1\n주문자 정보: 해산물월드\n상품 정보: 마른 오징어 50박스\n요청 사항: 12월 12일 3시까지는 보내주세요!\n발송지: 경기도 고양시 덕양구 권율대로 570\n경유지: 대전 서구 둔산로 100, 부산 동구 중앙대로 206\n도착지: 부산시 사하구 낙동대로 1번길 1 해산물월드\n배송 담당자: 김말숙 / msk@seafood.world 으로 요청사항 시간에 도착하려면 언제 출발해야 하는지 알려줘"
+    }]
+  }]
+}

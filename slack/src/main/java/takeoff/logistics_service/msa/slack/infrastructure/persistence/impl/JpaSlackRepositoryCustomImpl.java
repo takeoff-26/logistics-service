@@ -11,9 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import takeoff.logistics_service.msa.slack.infrastructure.persistence.JpaSlackRepositoryCustom;
 import takeoff.logistics_service.msa.slack.model.entity.Slack;
-import takeoff.logistics_service.msa.slack.presentation.dto.request.PostSlackRequestDto;
 import takeoff.logistics_service.msa.slack.presentation.dto.request.SearchSlackRequestDto;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.PostSlackResponseDto;
 import takeoff.logistics_service.msa.slack.presentation.dto.response.SearchSlackResponseDto;
 
 
@@ -36,7 +34,7 @@ public class JpaSlackRepositoryCustomImpl implements JpaSlackRepositoryCustom {
                 containsMessage(searchSlackRequestDto.searchContentsRequestDto().message())
             )
             //Auditor 생성시 변경해야함.
-            .orderBy(slack.contents.sent_At.asc())
+            .orderBy(slack.contents.sentAt.asc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();

@@ -14,11 +14,11 @@ public record PostSlackResponseDto(UUID slackId,
                                    PostContentsResponseDto postContentsResponseDto) {
 
 
-    public static PostSlackResponseDto from(Slack slack, PostContentsResponseDto postContentsResponseDto) {
+    public static PostSlackResponseDto from(Slack slack) {
         return PostSlackResponseDto.builder()
             .slackId(slack.getId())
             .userId(slack.getId())
-            .postContentsResponseDto(postContentsResponseDto)
+            .postContentsResponseDto(PostContentsResponseDto.from(slack.getContents()))
             .build();
     }
 
