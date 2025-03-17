@@ -25,7 +25,7 @@ public class Order {
   @Column(name = "supplier_id", nullable = false)
   private UUID supplierId;
 
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<OrderItem> orderItems = new ArrayList<>();
 
   @Column(name = "customer_id", nullable = false)
