@@ -1,0 +1,31 @@
+### 상품 생성 요청 (재고 수량 지정)
+POST http://localhost:19001/api/v1/products
+Content-Type: application/json
+
+{
+  "name": "유기농 바나나",
+  "companyId": "550e8400-e29b-41d4-a716-446655440000",
+  "hubId": "550e8400-e29b-41d4-a716-446655440001",
+  "quantity": 100
+}
+
+### 상품 생성 요청 (재고 수량 미지정 - 기본값 0 적용)
+POST http://localhost:19001/api/v1/products
+Content-Type: application/json
+
+{
+  "name": "프리미엄 사과",
+  "companyId": "550e8400-e29b-41d4-a716-446655440002",
+  "hubId": "550e8400-e29b-41d4-a716-446655440001",
+  "quantity": null
+}
+
+### 상품 생성 요청 (필수 필드만)
+POST http://localhost:19001/api/v1/products
+Content-Type: application/json
+
+{
+  "name": "신선한 오렌지",
+  "companyId": "550e8400-e29b-41d4-a716-446655440003",
+  "hubId": "550e8400-e29b-41d4-a716-446655440001"
+}
