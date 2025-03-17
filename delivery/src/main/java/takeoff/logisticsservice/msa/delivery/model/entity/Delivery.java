@@ -18,7 +18,7 @@ import lombok.Getter;
 public class Delivery {
 
   @EmbeddedId
-  private DeliveryId deliveryId;
+  private DeliveryId id;
 
   @Column(name = "order_id", nullable = false)
   private UUID orderId;
@@ -48,11 +48,11 @@ public class Delivery {
     if (!(o instanceof Delivery delivery)) {
       return false;
     }
-    return Objects.equals(deliveryId, delivery.deliveryId);
+    return Objects.equals(id, delivery.id);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(deliveryId);
+    return Objects.hashCode(id);
   }
 }

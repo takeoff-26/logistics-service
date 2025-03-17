@@ -23,6 +23,6 @@ public class DeliveryService {
 
     deliveryRepository.save(delivery);
 
-    return delivery.getDeliveryId().getId();
+    return delivery.getId().getId();
   }
 }
