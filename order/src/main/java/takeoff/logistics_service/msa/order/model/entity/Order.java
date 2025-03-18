@@ -19,7 +19,6 @@ import takeoff.logistics_service.msa.common.domain.BaseEntity;
 @Entity
 @Table(name = "p_order")
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseEntity {
 
@@ -43,6 +42,17 @@ public class Order extends BaseEntity {
 
   @Column(name = "request_notes")
   private String requestNotes;
+
+  @Builder
+  Order(UUID supplierId, List<OrderItem> orderItems,
+      Long customerId, UUID deliveryId, String address, String requestNotes) {
+    this.supplierId = supplierId;
+    this.orderItems = orderItems;
+    this.customerId = customerId;
+    this.deliveryId = deliveryId;
+    this.address = address;
+    this.requestNotes = requestNotes;
+  }
 
   public void addOrderItems(List<OrderItem> orderItems) {
     for (OrderItem orderItem : orderItems) {
