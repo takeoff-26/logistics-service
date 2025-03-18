@@ -1,6 +1,6 @@
 package takeoff.logistics_service.msa.product.stock.infrastructure.persistence.impl;
 
-import static takeoff.logistics_service.msa.product.stock.model.entity.QStock.stock;
+import static takeoff.logistics_service.msa.product.stock.domain.entity.QStock.stock;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;

@@ -3,8 +3,8 @@ package takeoff.logistics_service.msa.product.product.application.dto.response;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
-import takeoff.logistics_service.msa.product.product.model.entity.Product;
-import takeoff.logistics_service.msa.product.product.model.repository.search.ProductSearchCriteriaResponse;
+import takeoff.logistics_service.msa.product.product.domain.entity.Product;
+import takeoff.logistics_service.msa.product.product.domain.repository.search.ProductSearchCriteriaResponse;
 
 @Builder
 public record GetProductResponseDto(UUID productId, String name, UUID companyId,

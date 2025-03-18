@@ -1,4 +1,4 @@
-package takeoff.logistics_service.msa.product.product.model.command;
+package takeoff.logistics_service.msa.product.product.domain.command;
 
 import java.util.UUID;
 

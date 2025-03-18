@@ -1,4 +1,4 @@
-package takeoff.logistics_service.msa.product.stock.model.entity;
+package takeoff.logistics_service.msa.product.stock.domain.entity;
 
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;

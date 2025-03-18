@@ -15,8 +15,8 @@ import takeoff.logistics_service.msa.product.product.application.dto.response.Po
 import takeoff.logistics_service.msa.product.product.application.dto.response.PostStockResponseDto;
 import takeoff.logistics_service.msa.product.product.application.exception.ProductBusinessException;
 import takeoff.logistics_service.msa.product.product.application.exception.ProductErrorCode;
-import takeoff.logistics_service.msa.product.product.model.entity.Product;
-import takeoff.logistics_service.msa.product.product.model.repository.ProductRepository;
+import takeoff.logistics_service.msa.product.product.domain.entity.Product;
+import takeoff.logistics_service.msa.product.product.domain.repository.ProductRepository;
 
 @Service
 @RequiredArgsConstructor

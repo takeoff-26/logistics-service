@@ -1,6 +1,6 @@
 package takeoff.logistics_service.msa.product.product.infrastructure.persistence.impl;
 
-import static takeoff.logistics_service.msa.product.product.model.entity.QProduct.product;
+import static takeoff.logistics_service.msa.product.product.domain.entity.QProduct.product;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import takeoff.logistics_service.msa.product.product.infrastructure.persistence.JpaProductRepositoryCustom;
-import takeoff.logistics_service.msa.product.product.model.repository.search.PaginatedResult;
-import takeoff.logistics_service.msa.product.product.model.repository.search.ProductSearchCriteria;
-import takeoff.logistics_service.msa.product.product.model.repository.search.ProductSearchCriteriaResponse;
+import takeoff.logistics_service.msa.product.product.domain.repository.search.PaginatedResult;
+import takeoff.logistics_service.msa.product.product.domain.repository.search.ProductSearchCriteria;
+import takeoff.logistics_service.msa.product.product.domain.repository.search.ProductSearchCriteriaResponse;
 
 @RequiredArgsConstructor
 public class JpaProductRepositoryCustomImpl implements JpaProductRepositoryCustom {

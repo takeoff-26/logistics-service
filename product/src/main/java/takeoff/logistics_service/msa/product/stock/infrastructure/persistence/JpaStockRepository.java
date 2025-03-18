@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import takeoff.logistics_service.msa.product.stock.model.entity.Stock;
-import takeoff.logistics_service.msa.product.stock.model.entity.StockId;
-import takeoff.logistics_service.msa.product.stock.model.repository.StockRepository;
+import takeoff.logistics_service.msa.product.stock.domain.entity.Stock;
+import takeoff.logistics_service.msa.product.stock.domain.entity.StockId;
+import takeoff.logistics_service.msa.product.stock.domain.repository.StockRepository;
 
 public interface JpaStockRepository
 	extends JpaRepository<Stock, StockId>, StockRepository, JpaStockRepositoryCustom {
