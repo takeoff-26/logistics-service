@@ -6,7 +6,7 @@ import java.util.UUID;
  * @author : hanjihoon
  * @Date : 2025. 03. 15.
  */
-public record PostHubRouteRequestDto(UUID fromHubId,
-                                     UUID toHubId) {
+public record PostHubRouteRequest(UUID fromHubId,
+                                  UUID toHubId) {
 
 }

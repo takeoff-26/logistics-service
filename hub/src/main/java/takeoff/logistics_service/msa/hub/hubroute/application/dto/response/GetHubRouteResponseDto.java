@@ -1,4 +1,4 @@
-package takeoff.logistics_service.msa.hub.hubroute.presentation.dto.response;
+package takeoff.logistics_service.msa.hub.hubroute.application.dto.response;
 
 import java.util.UUID;
 import lombok.Builder;
