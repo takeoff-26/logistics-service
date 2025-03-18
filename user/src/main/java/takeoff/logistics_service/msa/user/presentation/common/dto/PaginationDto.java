@@ -4,9 +4,9 @@ import lombok.Builder;
 import org.springframework.data.domain.Page;
 
 @Builder
-public record UserPaginationDto(int currentPage, int pageSize, int totalPages, long totalElements) {
-    public static UserPaginationDto from(Page<?> page) {
-        return UserPaginationDto.builder()
+public record PaginationDto(int currentPage, int pageSize, int totalPages, long totalElements) {
+    public static PaginationDto from(Page<?> page) {
+        return PaginationDto.builder()
                 .currentPage(page.getNumber())
                 .pageSize(page.getSize())
                 .totalPages(page.getTotalPages())

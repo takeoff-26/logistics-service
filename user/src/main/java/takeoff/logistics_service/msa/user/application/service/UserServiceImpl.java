@@ -2,18 +2,15 @@ package takeoff.logistics_service.msa.user.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.user.domain.entity.User;
 import takeoff.logistics_service.msa.user.domain.entity.UserRole;
 import takeoff.logistics_service.msa.user.domain.repository.UserRepository;
-import takeoff.logistics_service.msa.user.domain.repository.UserSpecifications;
-import takeoff.logistics_service.msa.user.domain.service.UserQueryService;
+import takeoff.logistics_service.msa.user.domain.service.SearchQueryService;
 import takeoff.logistics_service.msa.user.domain.service.UserSearchCondition;
-import takeoff.logistics_service.msa.user.presentation.common.dto.UserPaginationDto;
+import takeoff.logistics_service.msa.user.presentation.common.dto.PaginationDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.GetUserListRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PatchUserRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PostLoginRequestDto;
@@ -28,7 +25,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserQueryService userQueryService;
+    private final SearchQueryService searchQueryService;
 
     @Override
     @Transactional
@@ -95,13 +92,13 @@ public class UserServiceImpl implements UserService {
     public GetUserListResponseDto getAllUsers(GetUserListRequestDto requestDto) {
         UserSearchCondition condition = requestDto.toCondition();
         Pageable pageable = requestDto.toPageable();
-        Page<User> users = userQueryService.searchUsers(condition, pageable);
+        Page<User> users = searchQueryService.searchUsers(condition, pageable);
 
         List<GetUserListInfoDto> userList = users.getContent().stream()
                 .map(GetUserListInfoDto::from)
                 .toList();
 
-        return new GetUserListResponseDto(userList, UserPaginationDto.from(users));
+        return new GetUserListResponseDto(userList, PaginationDto.from(users));
     }
 
 
