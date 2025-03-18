@@ -1,10 +1,9 @@
 package takeoff.logistics_service.msa.user.application.service;
 
-import org.springframework.data.domain.Pageable;
 import takeoff.logistics_service.msa.user.presentation.dto.request.GetUserListRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PatchUserRequestDto;
-import takeoff.logistics_service.msa.user.presentation.dto.request.PostSignupRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PostLoginRequestDto;
+import takeoff.logistics_service.msa.user.presentation.dto.request.PostSignupRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.response.*;
 
 public interface UserService {

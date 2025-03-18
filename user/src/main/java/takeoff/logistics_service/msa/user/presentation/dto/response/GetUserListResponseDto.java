@@ -1,9 +1,9 @@
 package takeoff.logistics_service.msa.user.presentation.dto.response;
 
 import lombok.Builder;
+import org.springframework.data.domain.Page;
 import takeoff.logistics_service.msa.user.domain.entity.User;
 import takeoff.logistics_service.msa.user.presentation.common.dto.PaginationDto;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 

@@ -3,7 +3,6 @@ package takeoff.logistics_service.msa.user.domain.entity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import takeoff.logistics_service.msa.user.domain.vo.CompanyId;
 import takeoff.logistics_service.msa.user.domain.vo.DeliveryManagerType;
 import takeoff.logistics_service.msa.user.domain.vo.DeliverySequence;
 import takeoff.logistics_service.msa.user.domain.vo.HubId;

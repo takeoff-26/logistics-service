@@ -3,7 +3,6 @@ package takeoff.logistics_service.msa.user.domain.repository;
 import org.springframework.data.jpa.domain.Specification;
 import takeoff.logistics_service.msa.user.domain.entity.DeliveryManager;
 import takeoff.logistics_service.msa.user.domain.entity.User;
-import takeoff.logistics_service.msa.user.domain.entity.UserRole;
 import takeoff.logistics_service.msa.user.domain.service.DeliveryManagerSearchCondition;
 import takeoff.logistics_service.msa.user.domain.service.UserSearchCondition;
 
