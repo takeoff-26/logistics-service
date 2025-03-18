@@ -19,7 +19,7 @@ public class JpaProductRepositoryCustomImpl implements JpaProductRepositoryCusto
 
 	private final JPAQueryFactory queryFactory;
 
-	public PaginatedResult<ProductSearchCriteriaResponse> search(ProductSearchCriteria searchCriteria) {
+	public PaginatedResult<ProductSearchCriteriaResponse> search(ProductSearchCriteria criteria) {
 		List<ProductSearchCriteriaResponse> content = queryFactory
 			.select(Projections.constructor(ProductSearchCriteriaResponse.class,
 				product.id,
@@ -29,27 +29,27 @@ public class JpaProductRepositoryCustomImpl implements JpaProductRepositoryCusto
 				product.updatedAt))
 			.from(product)
 			.where(
-				companyIdContains(searchCriteria.companyId())
+				companyIdContains(criteria.companyId())
 			)
-			.orderBy(getOrderSpecifier(searchCriteria))
-			.offset(searchCriteria.page())
-			.limit(searchCriteria.size())
+			.orderBy(getOrderSpecifier(criteria))
+			.offset(criteria.page())
+			.limit(criteria.size())
 			.fetch();
 
 		Long totalCount = queryFactory.select(product.count())
 			.from(product)
 			.where(
-				companyIdContains(searchCriteria.companyId())
+				companyIdContains(criteria.companyId())
 			)
 			.fetchOne();
 
 		totalCount = totalCount == null ? 0 : totalCount;
-		int totalPages = (int) Math.ceil((double) totalCount / searchCriteria.size());
+		int totalPages = (int) Math.ceil((double) totalCount / criteria.size());
 
 		return new PaginatedResult<>(
 			content,
-			searchCriteria.page(),
-			searchCriteria.size(),
+			criteria.page(),
+			criteria.size(),
 			totalCount,
 			totalPages);
 	}

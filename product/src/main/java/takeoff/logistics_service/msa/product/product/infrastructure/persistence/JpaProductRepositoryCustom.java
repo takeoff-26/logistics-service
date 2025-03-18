@@ -6,5 +6,5 @@ import takeoff.logistics_service.msa.product.product.domain.repository.search.Pr
 
 public interface JpaProductRepositoryCustom {
 
-	PaginatedResult<ProductSearchCriteriaResponse> search(ProductSearchCriteria searchCriteria);
+	PaginatedResult<ProductSearchCriteriaResponse> search(ProductSearchCriteria criteria);
 }
