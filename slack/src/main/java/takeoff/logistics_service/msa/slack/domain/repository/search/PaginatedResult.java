@@ -1,4 +1,4 @@
-package takeoff.logistics_service.msa.slack.model.repository.search;
+package takeoff.logistics_service.msa.slack.domain.repository.search;
 
 import java.util.List;
 

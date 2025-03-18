@@ -1,4 +1,4 @@
-package takeoff.logistics_service.msa.slack.model.entity;
+package takeoff.logistics_service.msa.slack.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;

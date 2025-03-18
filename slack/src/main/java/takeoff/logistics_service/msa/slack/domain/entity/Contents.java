@@ -1,8 +1,7 @@
-package takeoff.logistics_service.msa.slack.model.entity;
+package takeoff.logistics_service.msa.slack.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Lob;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

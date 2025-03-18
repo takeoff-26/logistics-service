@@ -1,10 +1,10 @@
-package takeoff.logistics_service.msa.slack.model.repository.search;
+package takeoff.logistics_service.msa.slack.domain.repository.search;
 
 
 import java.util.UUID;
 import lombok.Builder;
-import takeoff.logistics_service.msa.slack.model.entity.Contents;
-import takeoff.logistics_service.msa.slack.model.entity.Slack;
+import takeoff.logistics_service.msa.slack.domain.entity.Contents;
+import takeoff.logistics_service.msa.slack.domain.entity.Slack;
 
 /**
  * @author : hanjihoon
