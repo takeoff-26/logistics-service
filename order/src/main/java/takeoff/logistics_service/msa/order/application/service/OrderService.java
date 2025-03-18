@@ -61,4 +61,12 @@ public class OrderService {
 
     return PatchOrderResponseDto.from(order);
   }
+
+  @Transactional
+  public void deleteOrder(UUID orderId) {
+    Order order = orderRepository.findById(orderId)
+        .orElseThrow(() -> new IllegalArgumentException(("주문을 찾을 수 없습니다.")));
+
+    order.delete(1L); // TODO: 사용자 ID를 받아와야 함
+  }
 }
