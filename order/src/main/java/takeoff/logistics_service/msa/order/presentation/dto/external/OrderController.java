@@ -1,14 +1,19 @@
 package takeoff.logistics_service.msa.order.presentation.dto.external;
 
 
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import takeoff.logistics_service.msa.order.application.service.OrderService;
+import takeoff.logistics_service.msa.order.presentation.dto.request.PatchOrderRequestDto;
 import takeoff.logistics_service.msa.order.presentation.dto.request.PostOrderRequestDto;
+import takeoff.logistics_service.msa.order.presentation.dto.response.PatchOrderResponseDto;
 import takeoff.logistics_service.msa.order.presentation.dto.response.PostOrderResponseDto;
 
 @RestController
@@ -25,4 +30,11 @@ public class OrderController {
   }
 
 
+  @PatchMapping("/{orderId}")
+  public ResponseEntity<PatchOrderResponseDto> updateOrder(
+      @RequestBody PatchOrderRequestDto dto,
+      @PathVariable("orderId") UUID orderId) {
+    return ResponseEntity.ok()
+        .body(orderService.updateOrder(dto, orderId));
+  }
 }
