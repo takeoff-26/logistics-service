@@ -1,9 +1,9 @@
 package takeoff.logistics_service.msa.hub.hubroute.application.service;
 
 import java.util.UUID;
-import takeoff.logistics_service.msa.hub.hubroute.presentation.dto.request.PutHubRouteRequestDto;
-import takeoff.logistics_service.msa.hub.hubroute.presentation.dto.response.GetHubRouteResponseDto;
-import takeoff.logistics_service.msa.hub.hubroute.presentation.dto.response.PutHubRouteResponseDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PutHubRouteRequestDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.GetHubRouteResponseDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.PutHubRouteResponseDto;
 
 /**
  * @author : hanjihoon
