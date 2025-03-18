@@ -54,11 +54,16 @@ public class Order extends BaseEntity {
     this.requestNotes = requestNotes;
   }
 
-  public void addOrderItems(List<OrderItem> orderItems) {
-    for (OrderItem orderItem : orderItems) {
-      orderItem.enrollOrder(this);
-      this.orderItems.add(orderItem);
-    }
+
+  public void modifyAllQuantityByProduct(List<ModifyQuantityCommand> commands) {
+    orderItems.forEach(orderItem -> {
+      ModifyQuantityCommand command = commands.stream()
+          .filter(c -> c.productId().equals(orderItem.getProductId()))
+          .findFirst()
+          .orElseThrow(() -> new IllegalArgumentException("주문 상품을 찾을 수 없습니다."));
+
+      orderItem.modifyQuantity(command.quantity());
+    });
   }
 
   @Override
