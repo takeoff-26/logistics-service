@@ -29,7 +29,7 @@ Content-Type: {{contentType}}
 }
 
 ### 회사 정보 수정 요청 - 생성된 ID 사용
-PATCH {{host}}/api/v1/companies/{{companyId}}
+PUT {{host}}/api/v1/companies/{{companyId}}
 Content-Type: {{contentType}}
 
 {

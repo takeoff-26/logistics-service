@@ -6,12 +6,12 @@ import lombok.Builder;
 import takeoff.logistics_service.msa.company.domain.entity.Company;
 
 @Builder
-public record PatchCompanyResponseDto(
+public record PutCompanyResponseDto(
 	UUID companyId, String companyName, String companyType,
 	UUID hubId, String address, LocalDateTime createdAt, LocalDateTime updatedAt) {
 
-	public static PatchCompanyResponseDto from(Company company) {
-		return PatchCompanyResponseDto.builder()
+	public static PutCompanyResponseDto from(Company company) {
+		return PutCompanyResponseDto.builder()
 			.companyId(company.getId())
 			.companyName(company.getCompanyName())
 			.companyType(company.getCompanyType().toString())

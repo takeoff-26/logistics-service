@@ -4,7 +4,7 @@ import java.util.UUID;
 import takeoff.logistics_service.msa.company.domain.command.ModifyCompany;
 import takeoff.logistics_service.msa.company.domain.entity.CompanyType;
 
-public record PatchCompanyRequestDto(
+public record PutCompanyRequestDto(
 	String companyName, String companyType, UUID hubId, String address){
 
 	public ModifyCompany toCommand() {

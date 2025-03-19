@@ -11,16 +11,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import takeoff.logistics_service.msa.company.application.service.CompanyService;
-import takeoff.logistics_service.msa.company.presentation.dto.request.PatchCompanyRequest;
+import takeoff.logistics_service.msa.company.presentation.dto.request.PutCompanyRequest;
 import takeoff.logistics_service.msa.company.presentation.dto.request.PostCompanyRequest;
 import takeoff.logistics_service.msa.company.presentation.dto.request.SearchCompanyRequest;
 import takeoff.logistics_service.msa.company.presentation.dto.response.GetCompanyResponse;
 import takeoff.logistics_service.msa.company.presentation.dto.response.PaginatedResultApi;
-import takeoff.logistics_service.msa.company.presentation.dto.response.PatchCompanyResponse;
+import takeoff.logistics_service.msa.company.presentation.dto.response.PutCompanyResponse;
 import takeoff.logistics_service.msa.company.presentation.dto.response.PostCompanyResponse;
 
 @RestController
@@ -39,22 +40,22 @@ public class CompanyExternalController {
 				.from(companyService.saveCompany(requestDto.toApplicationDto())));
 	}
 
-	@PatchMapping("/{companyId}")
-	public ResponseEntity<PatchCompanyResponse> updateCompany(
-		@PathVariable UUID companyId, @Valid @RequestBody PatchCompanyRequest requestDto){
+	@PutMapping("/{companyId}")
+	public ResponseEntity<PutCompanyResponse> updateCompany(
+		@PathVariable UUID companyId, @Valid @RequestBody PutCompanyRequest requestDto) {
 
-		return ResponseEntity.ok(PatchCompanyResponse
+		return ResponseEntity.ok(PutCompanyResponse
 			.from(companyService.updateCompany(companyId, requestDto.toApplicationDto())));
 	}
 
 	@GetMapping("/{companyId}")
-	public ResponseEntity<GetCompanyResponse> findCompany(@PathVariable UUID companyId){
+	public ResponseEntity<GetCompanyResponse> findCompany(@PathVariable UUID companyId) {
 
 		return ResponseEntity.ok(GetCompanyResponse.from(companyService.findCompany(companyId)));
 	}
 
 	@DeleteMapping("/{companyId}")
-	public ResponseEntity<Void> deleteCompany(@PathVariable UUID companyId){
+	public ResponseEntity<Void> deleteCompany(@PathVariable UUID companyId) {
 
 		companyService.deleteCompany(companyId, 0L);
 		return ResponseEntity.noContent().build();
@@ -62,7 +63,7 @@ public class CompanyExternalController {
 
 	@GetMapping("/search")
 	public ResponseEntity<PaginatedResultApi<GetCompanyResponse>> searchCompany(
-		@ModelAttribute SearchCompanyRequest requestDto){
+		@ModelAttribute SearchCompanyRequest requestDto) {
 
 		return ResponseEntity.ok(PaginatedResultApi.from(
 			companyService.searchCompany(requestDto.toApplicationDto())));

@@ -4,12 +4,12 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import takeoff.logistics_service.msa.company.application.dto.request.PatchCompanyRequestDto;
+import takeoff.logistics_service.msa.company.application.dto.request.PutCompanyRequestDto;
 import takeoff.logistics_service.msa.company.application.dto.request.PostCompanyRequestDto;
 import takeoff.logistics_service.msa.company.application.dto.request.SearchCompanyRequestDto;
 import takeoff.logistics_service.msa.company.application.dto.response.GetCompanyResponseDto;
 import takeoff.logistics_service.msa.company.application.dto.response.PaginatedResultDto;
-import takeoff.logistics_service.msa.company.application.dto.response.PatchCompanyResponseDto;
+import takeoff.logistics_service.msa.company.application.dto.response.PutCompanyResponseDto;
 import takeoff.logistics_service.msa.company.application.dto.response.PostCompanyResponseDto;
 import takeoff.logistics_service.msa.company.application.exception.CompanyBusinessException;
 import takeoff.logistics_service.msa.company.application.exception.CompanyErrorCode;
@@ -37,10 +37,10 @@ public class CompanyServiceImpl implements CompanyService {
 
 	@Override
 	@Transactional
-	public PatchCompanyResponseDto updateCompany(UUID companyId, PatchCompanyRequestDto requestDto) {
+	public PutCompanyResponseDto updateCompany(UUID companyId, PutCompanyRequestDto requestDto) {
 
 		validateCompanyName(requestDto.companyName());
-		return PatchCompanyResponseDto
+		return PutCompanyResponseDto
 			.from(getCompany(companyId).modify(requestDto.toCommand()));
 	}
 
