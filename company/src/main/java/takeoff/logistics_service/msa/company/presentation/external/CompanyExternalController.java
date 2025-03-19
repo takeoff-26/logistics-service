@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -49,7 +48,7 @@ public class CompanyExternalController {
 	}
 
 	@GetMapping("/{companyId}")
-	public ResponseEntity<GetCompanyResponse> findCompany(@PathVariable UUID companyId) {
+	public ResponseEntity<GetCompanyResponse> findCompanyId(@PathVariable UUID companyId) {
 
 		return ResponseEntity.ok(GetCompanyResponse.from(companyService.findCompany(companyId)));
 	}
