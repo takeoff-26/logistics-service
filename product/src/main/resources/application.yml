@@ -46,10 +46,6 @@ spring:
         show_sql: true
         format_sql: true
         default_batch_fetch_size: 30
-      jakarta:
-        persistence:
-          lock:
-            timeout: 3000
 
 ---
 spring:

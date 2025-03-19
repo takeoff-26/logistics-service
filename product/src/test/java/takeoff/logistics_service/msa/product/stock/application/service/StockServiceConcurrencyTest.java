@@ -13,17 +13,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import takeoff.logistics_service.msa.common.exception.BusinessException;
 import takeoff.logistics_service.msa.product.stock.domain.command.CreateStock;
 import takeoff.logistics_service.msa.product.stock.domain.command.CreateStockId;
 import takeoff.logistics_service.msa.product.stock.domain.entity.Stock;
 import takeoff.logistics_service.msa.product.stock.domain.entity.StockId;
 import takeoff.logistics_service.msa.product.stock.domain.repository.StockRepository;
-import takeoff.logistics_service.msa.product.stock.presentation.dto.request.StockIdRequest;
 import takeoff.logistics_service.msa.product.stock.presentation.dto.request.PrepareStockRequest;
+import takeoff.logistics_service.msa.product.stock.presentation.dto.request.StockIdRequest;
 import takeoff.logistics_service.msa.product.stock.presentation.dto.request.StockItemRequest;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("Test")
 class StockServiceConcurrencyTest {
 
 	@Autowired
@@ -66,8 +67,8 @@ class StockServiceConcurrencyTest {
 			executorService.submit(() -> {
 				try {
 					stockService.prepareStock(requestDto.toApplicationDto());
-				} catch (Exception e) {
-					System.out.println("Exception occurred: " + e.getMessage());
+				} catch (BusinessException e) {
+					System.out.println("Exception c: " + e.getMessage());
 				} finally {
 					latch.countDown();
 				}

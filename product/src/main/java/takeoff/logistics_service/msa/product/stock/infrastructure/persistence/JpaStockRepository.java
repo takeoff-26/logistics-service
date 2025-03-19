@@ -11,10 +11,12 @@ import org.springframework.data.repository.query.Param;
 import takeoff.logistics_service.msa.product.stock.domain.entity.Stock;
 import takeoff.logistics_service.msa.product.stock.domain.entity.StockId;
 import takeoff.logistics_service.msa.product.stock.domain.repository.StockRepository;
+import takeoff.logistics_service.msa.product.stock.infrastructure.persistence.aspect.LockTimeout;
 
 public interface JpaStockRepository
 	extends JpaRepository<Stock, StockId>, StockRepository, JpaStockRepositoryCustom {
 
+	@LockTimeout(timeout = 1000)
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("SELECT s FROM Stock s WHERE s.id = :id AND s.deletedAt is null")
 	Optional<Stock> findByIdWithLock(@Param("id") StockId id);

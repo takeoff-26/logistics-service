@@ -1,10 +1,15 @@
 package takeoff.logistics_service.msa.product.stock.application.service;
 
+import static java.lang.Thread.sleep;
+
+import jakarta.persistence.PessimisticLockException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.product.stock.application.dto.PaginatedResultDto;
 import takeoff.logistics_service.msa.product.stock.application.dto.request.AbortStockRequestDto;
@@ -54,13 +59,16 @@ public class StockServiceImpl implements StockService {
 		getStock(StockId.create(requestDto.toCommand())).delete(0L);
 	}
 
-	//리스트 수 많을수록 락 시간 길어지는 문제
 	@Override
-	@Transactional
+	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void prepareStock(PrepareStockRequestDto requestDto) {
-		getSortedStocks(requestDto.stocks())
-			.forEach(stockItem ->
-				getStockWithLock(stockItem.stockId()).decreaseStock(stockItem.quantity()));
+		try {
+			getSortedStocks(requestDto.stocks())
+				.forEach(stockItem ->
+					getStockWithLock(stockItem.stockId()).decreaseStock(stockItem.quantity()));
+		} catch (PessimisticLockingFailureException e) {
+			throw StockBusinessException.from(StockErrorCode.STOCK_LOCK_TIMEOUT);
+		}
 	}
 
 	private List<StockItemRequestDto> getSortedStocks(List<StockItemRequestDto> stocks) {
