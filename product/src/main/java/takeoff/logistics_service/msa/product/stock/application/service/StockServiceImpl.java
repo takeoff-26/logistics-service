@@ -6,7 +6,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.product.stock.application.dto.PaginatedResultDto;
 import takeoff.logistics_service.msa.product.stock.application.dto.request.AbortStockRequestDto;
@@ -57,7 +56,7 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	@Transactional(isolation = Isolation.READ_COMMITTED)
+	@Transactional
 	public void prepareStock(PrepareStockRequestDto requestDto) {
 		try {
 			getSortedStocks(requestDto.stocks())
@@ -85,25 +84,37 @@ public class StockServiceImpl implements StockService {
 	@Override
 	@Transactional
 	public void abortStock(AbortStockRequestDto requestDto) {
-		getSortedStocks(requestDto.stocks())
-			.forEach(stockItem ->
-				getStockWithLock(stockItem.stockId()).increaseStock(stockItem.quantity()));
+		try {
+			getSortedStocks(requestDto.stocks())
+				.forEach(stockItem ->
+					getStockWithLock(stockItem.stockId()).increaseStock(stockItem.quantity()));
+		} catch (PessimisticLockingFailureException e) {
+			throw StockBusinessException.from(StockErrorCode.STOCK_LOCK_TIMEOUT);
+		}
 	}
 
 	@Override
 	@Transactional
 	public IncreaseStockResponseDto increaseStock(IncreaseStockRequestDto requestDto) {
-		Stock stock = getStockWithLock(requestDto.stockId());
-		stock.increaseStock(requestDto.quantity());
-		return IncreaseStockResponseDto.from(stock);
+		try {
+			Stock stock = getStockWithLock(requestDto.stockId());
+			stock.increaseStock(requestDto.quantity());
+			return IncreaseStockResponseDto.from(stock);
+		} catch (PessimisticLockingFailureException e) {
+			throw StockBusinessException.from(StockErrorCode.STOCK_LOCK_TIMEOUT);
+		}
 	}
 
 	@Override
 	@Transactional
 	public DecreaseStockResponseDto decreaseStock(DecreaseStockRequestDto requestDto) {
-		Stock stock = getStockWithLock(requestDto.stockId());
-		stock.decreaseStock(requestDto.quantity());
-		return DecreaseStockResponseDto.from(stock);
+		try {
+			Stock stock = getStockWithLock(requestDto.stockId());
+			stock.decreaseStock(requestDto.quantity());
+			return DecreaseStockResponseDto.from(stock);
+		} catch (PessimisticLockingFailureException e) {
+			throw StockBusinessException.from(StockErrorCode.STOCK_LOCK_TIMEOUT);
+		}
 	}
 
 	@Override
