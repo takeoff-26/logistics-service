@@ -48,7 +48,7 @@ public class HubRouteServiceImpl implements HubRouteService {
     private static final int EARTH_RADIUS_KM = 6371;
 
     @Override
-    @Cacheable(value = "hubRoutes", key = "#fromHubId + '-' + #toHubId")
+    @Cacheable(value = "hubRoutes", key = "#requestDto.fromHubId + '-' + #requestDto.toHubId")
     public PostHubRouteResponseDto createHubRoute(PostHubRouteRequestDto requestDto) {
 
         List<GetRouteResponseDto> responseToHub = hubClient.findByToHubIdAndFromHubId(
@@ -71,7 +71,7 @@ public class HubRouteServiceImpl implements HubRouteService {
     //P2P, Hub To Hub Relay 구현
     //데이터베이스에 경로가 없어도 경로를 구해서 저장하게끔 구현
     @Override
-    @Cacheable(value = "hubRoutes", key = "#multipleHubRouteId")
+    @Cacheable(value = "hubRoutes", key = "#request.fromHubId + '-' + #request.toHubId")
     public HubRoutesDto getDeliveryHubRouteList(PostDeliveryHubRouteRequestDto request) {
         List<HubAllListResponseDto> allHubs = hubClient.findAllHubs();
 
@@ -213,7 +213,7 @@ public class HubRouteServiceImpl implements HubRouteService {
     }
 
     @Override
-    @CacheEvict(value = "hubRoutes", key = "#hubRouteId")
+    @CacheEvict(value = "hubRoutes", key = "#hubRoute.fromHubId + '-' + #hubRoute.toHubId")
     public PutHubRouteResponseDto updateHubRoute(UUID hubRouteId,
         PutHubRouteRequestDto requestDto) {
         HubRoute hubRoute = getHubRoute(
@@ -228,7 +228,7 @@ public class HubRouteServiceImpl implements HubRouteService {
 
 
     @Override
-    @CacheEvict(value = "hubRoutes", key = "#hubRouteId")
+    @CacheEvict(value = "hubRoutes", key = "#hubRoute.fromHubId + '-' + #hubRoute.toHubId")
     public void deleteHubRoute(UUID hubRouteId, Long userId) {
         HubRoute hubRoute = getHubRoute(hubRouteId);
         hubRoute.delete(userId);
