@@ -1,6 +1,8 @@
 package takeoff.logistics_service.msa.hub.hubroute.presentation.dto;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
 
 /**
  * @author : hanjihoon
@@ -9,5 +11,12 @@ import java.util.List;
 
 public record HubRoutes(List<FindHubRoutes> hubAllListResponseList) {
 
+    public static HubRoutes from(HubRoutesDto hubRoutesDto) {
+        List<FindHubRoutes> findHubRoutesList = hubRoutesDto.hubRoutesDtoList().stream()
+            .map(FindHubRoutes::from)
+            .collect(Collectors.toList());
+
+        return new HubRoutes(findHubRoutesList);
+    }
 
 }

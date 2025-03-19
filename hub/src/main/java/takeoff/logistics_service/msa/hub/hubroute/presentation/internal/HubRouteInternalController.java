@@ -29,7 +29,7 @@ public class HubRouteInternalController {
 
     @PostMapping("/delivery")
     public HubRoutes getDeliveryHubRouteList(@RequestBody PostDeliveryHubRouteRequest request) {
-        return hubRouteService.getDeliveryHubRouteList(request.toApplication());
+        return HubRoutes.from(hubRouteService.getDeliveryHubRouteList(request.toApplication()));
     }
 
 

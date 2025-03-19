@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +65,8 @@ public class HubRouteServiceImpl implements HubRouteService {
 
     }
 
+    //P2P, Hub To Hub Relay 구현
+    //데이터베이스에 경로가 없어도 경로를 구해서 저장하게끔 구현
     @Override
     public HubRoutesDto getDeliveryHubRouteList(PostDeliveryHubRouteRequestDto request) {
         List<HubAllListResponseDto> allHubs = hubClient.findAllHubs();
@@ -76,12 +77,15 @@ public class HubRouteServiceImpl implements HubRouteService {
         HubAllListResponseDto fromHub = allHubs.stream()
             .filter(hub -> hub.hubId().equals(request.fromHubId()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("출발 허브를 찾을 수 없습니다."));
+            .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
 
         HubAllListResponseDto toHub = allHubs.stream()
             .filter(hub -> hub.hubId().equals(request.toHubId()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("도착 허브를 찾을 수 없습니다."));
+            .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
+
+        log.info("시작 허브: {}", fromHub.hubName());
+        log.info("끝 허브: {}", toHub.hubName());
 
         // 허브 간 거리 계산
         double distance = calculateDistance(
@@ -91,10 +95,12 @@ public class HubRouteServiceImpl implements HubRouteService {
 
         if (distance <= 200) {
             // P2P 200km 이하일 경우
+            log.info("200km 이하 입니다.");
             Optional<HubRoute> byFromHubIdAndToHubId = hubRouteRepository.findByFromHubIdAndToHubId(
                 fromHub.hubId(), toHub.hubId());
             if (byFromHubIdAndToHubId.isEmpty()) {
                 // 저장된 경로가 없는 경우
+                log.info("200km 이하이며 경로가 없습니다.");
                 List<GetRouteResponseDto> createHubRoute = Stream.of(fromHub, toHub)
                     .map(hub -> new GetRouteResponseDto(hub.hubId(), hub.hubName(), hub.address(),
                         hub.latitude(), hub.longitude()))
@@ -104,11 +110,13 @@ public class HubRouteServiceImpl implements HubRouteService {
                 hubRoutesList.add(FindHubRoutesDto.from(savedRoute));
             } else {
                 // 저장된 경로가 있는 경우
+                log.info("200km 이하이며 경로가 있습니다.");
                 hubRoutesList.add(FindHubRoutesDto.from(byFromHubIdAndToHubId
                     .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
             }
         } else {
             // 200km이 넘을 경우
+            log.info("200km 이상입니다.");
             HubAllListResponseDto stopoverHub = findClosestHub(toHub, allHubs);
 
             // 시작점 -> 중간 지점까지 저장된 경로가 있는지 확인
@@ -116,6 +124,7 @@ public class HubRouteServiceImpl implements HubRouteService {
                 fromHub.hubId(), stopoverHub.hubId());
             if (byFromHubIdAndStopoverHubId.isEmpty()) {
                 // 저장된 경로가 없을 때 네이버 API를 통해 계산 후 저장
+                log.info("200km 이상이며 초반 경로가 없습니다.");
                 List<GetRouteResponseDto> createHubRoute = Stream.of(fromHub, stopoverHub)
                     .map(hub -> new GetRouteResponseDto(hub.hubId(), hub.hubName(), hub.address(),
                         hub.latitude(), hub.longitude()))
@@ -125,6 +134,7 @@ public class HubRouteServiceImpl implements HubRouteService {
                 hubRoutesList.add(FindHubRoutesDto.from(savedRoute));
             } else {
                 // 저장된 경로가 있는 경우
+                log.info("200km 이상이며 초반 경로가 있습니다.");
                 hubRoutesList.add(FindHubRoutesDto.from(byFromHubIdAndStopoverHubId
                     .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
             }
@@ -134,6 +144,7 @@ public class HubRouteServiceImpl implements HubRouteService {
                 stopoverHub.hubId(), toHub.hubId());
             if (byStopoverHubIdAndToHubId.isEmpty()) {
                 // 저장된 경로가 없을 때 네이버 API를 통해 계산 후 저장
+                log.info("200km 이상이며 후반 경로가 없습니다.");
                 List<GetRouteResponseDto> createHubRoute = Stream.of(stopoverHub, toHub)
                     .map(hub -> new GetRouteResponseDto(hub.hubId(), hub.hubName(), hub.address(),
                         hub.latitude(), hub.longitude()))
@@ -143,6 +154,7 @@ public class HubRouteServiceImpl implements HubRouteService {
                 hubRoutesList.add(FindHubRoutesDto.from(savedRoute));
             } else {
                 // 저장된 경로가 있는 경우
+                log.info("200km 이상이며 후반 경로가 있습니다.");
                 hubRoutesList.add(FindHubRoutesDto.from(byStopoverHubIdAndToHubId
                     .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
             }
@@ -176,7 +188,7 @@ public class HubRouteServiceImpl implements HubRouteService {
             .min(Comparator.comparingDouble(hub ->
                 calculateDistance(targetHub.latitude(), targetHub.longitude(), hub.latitude(), hub.longitude())
             ))
-            .orElseThrow(() -> new IllegalArgumentException("목적지 주변에 다른 허브가 없습니다."));
+            .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
     }
 
 
