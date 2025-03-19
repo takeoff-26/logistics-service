@@ -12,7 +12,7 @@ public record DistanceApi(int distance) {
 
     public static DistanceApi from(
         DistanceDto distanceDto) {
-        return takeoff.logistics_service.msa.hub.hubroute.presentation.dto.DistanceApi.builder()
+        return DistanceApi.builder()
             .distance(distanceDto.distance())
             .build();
     }

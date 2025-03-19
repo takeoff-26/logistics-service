@@ -8,6 +8,8 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.FindHubRoutesDto;
@@ -46,6 +48,7 @@ public class HubRouteServiceImpl implements HubRouteService {
     private static final int EARTH_RADIUS_KM = 6371;
 
     @Override
+    @Cacheable(value = "hubRoutes", key = "#fromHubId + '-' + #toHubId")
     public PostHubRouteResponseDto createHubRoute(PostHubRouteRequestDto requestDto) {
 
         List<GetRouteResponseDto> responseToHub = hubClient.findByToHubIdAndFromHubId(
@@ -68,6 +71,7 @@ public class HubRouteServiceImpl implements HubRouteService {
     //P2P, Hub To Hub Relay 구현
     //데이터베이스에 경로가 없어도 경로를 구해서 저장하게끔 구현
     @Override
+    @Cacheable(value = "hubRoutes", key = "#multipleHubRouteId")
     public HubRoutesDto getDeliveryHubRouteList(PostDeliveryHubRouteRequestDto request) {
         List<HubAllListResponseDto> allHubs = hubClient.findAllHubs();
 
@@ -163,6 +167,7 @@ public class HubRouteServiceImpl implements HubRouteService {
         return new HubRoutesDto(hubRoutesList);
     }
 
+
     private HubRoute getHubRouteFromNaver(List<GetRouteResponseDto> createHubRoute,
         HubAllListResponseDto fromHub, HubAllListResponseDto toHub) {
         GetHubRouteNaverResponseDto result = naverRequestClient.sendRequestToNaver(
@@ -200,6 +205,7 @@ public class HubRouteServiceImpl implements HubRouteService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "hubRoutes", key = "#hubRouteId")
     public GetHubRouteResponseDto findByHubRoute(UUID hubRouteId) {
         HubRoute hubRoute = getHubRoute(
             hubRouteId);
@@ -207,6 +213,7 @@ public class HubRouteServiceImpl implements HubRouteService {
     }
 
     @Override
+    @CacheEvict(value = "hubRoutes", key = "#hubRouteId")
     public PutHubRouteResponseDto updateHubRoute(UUID hubRouteId,
         PutHubRouteRequestDto requestDto) {
         HubRoute hubRoute = getHubRoute(
@@ -219,7 +226,9 @@ public class HubRouteServiceImpl implements HubRouteService {
         return PutHubRouteResponseDto.from(hubRoute);
     }
 
+
     @Override
+    @CacheEvict(value = "hubRoutes", key = "#hubRouteId")
     public void deleteHubRoute(UUID hubRouteId, Long userId) {
         HubRoute hubRoute = getHubRoute(hubRouteId);
         hubRoute.delete(userId);
