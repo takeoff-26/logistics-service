@@ -1,0 +1,70 @@
+package takeoff.logistics_service.msa.company.application.service;
+
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import takeoff.logistics_service.msa.company.application.dto.request.PatchCompanyRequestDto;
+import takeoff.logistics_service.msa.company.application.dto.request.PostCompanyRequestDto;
+import takeoff.logistics_service.msa.company.application.dto.request.SearchCompanyRequestDto;
+import takeoff.logistics_service.msa.company.application.dto.response.GetCompanyResponseDto;
+import takeoff.logistics_service.msa.company.application.dto.response.PaginatedResultDto;
+import takeoff.logistics_service.msa.company.application.dto.response.PatchCompanyResponseDto;
+import takeoff.logistics_service.msa.company.application.dto.response.PostCompanyResponseDto;
+import takeoff.logistics_service.msa.company.application.exception.CompanyBusinessException;
+import takeoff.logistics_service.msa.company.application.exception.CompanyErrorCode;
+import takeoff.logistics_service.msa.company.domain.entity.Company;
+import takeoff.logistics_service.msa.company.domain.repository.CompanyRepository;
+
+@Service
+@RequiredArgsConstructor
+public class CompanyServiceImpl implements CompanyService {
+
+	private final CompanyRepository companyRepository;
+
+	@Override
+	public PostCompanyResponseDto saveCompany(PostCompanyRequestDto requestDto) {
+		validateCompanyName(requestDto.companyName());
+		return PostCompanyResponseDto
+			.from(companyRepository.save(Company.create(requestDto.toCommand())));
+	}
+
+	private void validateCompanyName(String companyName) {
+		if(companyRepository.existsByCompanyName(companyName)){
+			throw CompanyBusinessException.from(CompanyErrorCode.COMPANY_NAME_CONFLICT);
+		}
+	}
+
+	@Override
+	@Transactional
+	public PatchCompanyResponseDto updateCompany(UUID companyId, PatchCompanyRequestDto requestDto) {
+
+		validateCompanyName(requestDto.companyName());
+		return PatchCompanyResponseDto
+			.from(getCompany(companyId).modify(requestDto.toCommand()));
+	}
+
+	private Company getCompany(UUID companyId) {
+		return companyRepository.findByIdAndDeletedAtIsNull(companyId)
+			.orElseThrow(() -> CompanyBusinessException.from(CompanyErrorCode.COMPANY_NOT_FOUND));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetCompanyResponseDto findCompany(UUID productId) {
+		return GetCompanyResponseDto.from(getCompany(productId));
+	}
+
+	@Override
+	@Transactional
+	public void deleteCompany(UUID companyId, Long userId) {
+		getCompany(companyId).delete(userId);
+	}
+
+	@Override
+	public PaginatedResultDto<GetCompanyResponseDto> searchCompany(
+		SearchCompanyRequestDto requestDto) {
+		return PaginatedResultDto
+			.from(companyRepository.search(requestDto.toSearchCriteria()));
+	}
+}
