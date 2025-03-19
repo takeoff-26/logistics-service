@@ -1,9 +1,7 @@
 package takeoff.logistics_service.msa.user.presentation.dto.response;
 
 import lombok.Builder;
-import takeoff.logistics_service.msa.user.domain.entity.CompanyDeliveryManager;
 import takeoff.logistics_service.msa.user.domain.entity.DeliveryManager;
-import takeoff.logistics_service.msa.user.domain.entity.HubDeliveryManager;
 import takeoff.logistics_service.msa.user.domain.vo.DeliveryManagerType;
 
 @Builder

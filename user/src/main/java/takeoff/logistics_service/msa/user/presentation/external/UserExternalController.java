@@ -2,10 +2,10 @@ package takeoff.logistics_service.msa.user.presentation.external;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import takeoff.logistics_service.msa.user.application.service.UserService;
+import takeoff.logistics_service.msa.user.presentation.dto.request.GetUserListRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PatchUserRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PostSignupRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.response.*;
@@ -46,9 +46,8 @@ public class UserExternalController {
     }
 
     @GetMapping
-    public ResponseEntity<GetUserListResponseDto> getUsers(Pageable pageable) {
-        GetUserListResponseDto responseDto = userService.getAllUsers(pageable);
-        return ResponseEntity.ok(responseDto);
+    public ResponseEntity<GetUserListResponseDto> getUsers(
+            @ModelAttribute GetUserListRequestDto requestDto) {
+        return ResponseEntity.ok(userService.getAllUsers(requestDto));
     }
-
 }

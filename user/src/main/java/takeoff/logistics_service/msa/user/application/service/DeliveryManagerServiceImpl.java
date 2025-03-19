@@ -5,21 +5,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import takeoff.logistics_service.msa.user.domain.entity.CompanyDeliveryManager;
 import takeoff.logistics_service.msa.user.domain.entity.DeliveryManager;
-import takeoff.logistics_service.msa.user.domain.entity.HubDeliveryManager;
 import takeoff.logistics_service.msa.user.domain.repository.UserRepository;
-import takeoff.logistics_service.msa.user.domain.vo.CompanyId;
+import takeoff.logistics_service.msa.user.domain.service.DeliveryManagerSearchCondition;
+import takeoff.logistics_service.msa.user.domain.service.SearchQueryService;
 import takeoff.logistics_service.msa.user.domain.vo.DeliverySequence;
-import takeoff.logistics_service.msa.user.domain.vo.HubId;
+import takeoff.logistics_service.msa.user.presentation.common.dto.PaginationDto;
+import takeoff.logistics_service.msa.user.presentation.dto.request.GetDeliveryManagerListRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PatchDeliveryManagerRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PostDeliveryManagerRequestDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.DeleteDeliveryManagerResponseDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.GetDeliveryManagerResponseDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.PatchDeliveryManagerResponseDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.PostDeliveryManagerResponseDto;
+import takeoff.logistics_service.msa.user.presentation.dto.response.*;
 
-import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +24,7 @@ import java.util.UUID;
 public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     private final UserRepository userRepository;
+    private final SearchQueryService searchQueryService;
 
     @Override
     @Transactional
@@ -67,9 +65,16 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
     }
 
     @Override
-    public Page<PostDeliveryManagerResponseDto> getAllDeliveryManagers(Pageable pageable) {
-        return userRepository.findAllDeliveryManagers(pageable)
-                .map(PostDeliveryManagerResponseDto::from);
+    public GetDeliveryManagerListResponseDto getAllDeliveryManagers(GetDeliveryManagerListRequestDto requestDto) {
+        DeliveryManagerSearchCondition condition = requestDto.toCondition();
+        Pageable pageable = requestDto.toPageable();
+        Page<DeliveryManager> deliveryManagers = searchQueryService.searchDeliveryManagers(condition, pageable);
+
+        List<GetDeliveryManagerListInfoDto> deliveryManagerList = deliveryManagers.getContent().stream()
+                .map(GetDeliveryManagerListInfoDto::from)
+                .toList();
+
+        return new GetDeliveryManagerListResponseDto(deliveryManagerList, PaginationDto.from(deliveryManagers));
     }
 
     @Override

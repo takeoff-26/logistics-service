@@ -5,13 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import takeoff.logistics_service.msa.user.application.service.DeliveryManagerService;
-import takeoff.logistics_service.msa.user.presentation.dto.request.DeleteDeliveryManagerRequestDto;
+import takeoff.logistics_service.msa.user.presentation.dto.request.GetDeliveryManagerListRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PatchDeliveryManagerRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PostDeliveryManagerRequestDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.DeleteDeliveryManagerResponseDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.GetDeliveryManagerResponseDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.PatchDeliveryManagerResponseDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.PostDeliveryManagerResponseDto;
+import takeoff.logistics_service.msa.user.presentation.dto.response.*;
 
 @RestController
 @RequestMapping("/api/v1/delivery-managers")
@@ -44,5 +41,12 @@ public class DeliveryManagerExternalController {
             @PathVariable Long id) {
         return ResponseEntity.ok(deliveryManagerService.getDeliveryManagerById(id));
     }
+
+    @GetMapping
+    public ResponseEntity<GetDeliveryManagerListResponseDto> getDeliveryManagers(
+            @ModelAttribute GetDeliveryManagerListRequestDto requestDto) {
+        return ResponseEntity.ok(deliveryManagerService.getAllDeliveryManagers(requestDto));
+    }
+
 
 }

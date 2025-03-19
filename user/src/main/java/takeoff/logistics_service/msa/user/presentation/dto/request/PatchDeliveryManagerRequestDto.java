@@ -4,8 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import takeoff.logistics_service.msa.user.domain.entity.DeliveryManager;
-import takeoff.logistics_service.msa.user.domain.vo.DeliverySequence;
 
 @Builder
 public record PatchDeliveryManagerRequestDto(

@@ -1,19 +1,15 @@
 package takeoff.logistics_service.msa.user.application.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import takeoff.logistics_service.msa.user.presentation.dto.request.GetDeliveryManagerListRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PatchDeliveryManagerRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PostDeliveryManagerRequestDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.DeleteDeliveryManagerResponseDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.GetDeliveryManagerResponseDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.PatchDeliveryManagerResponseDto;
-import takeoff.logistics_service.msa.user.presentation.dto.response.PostDeliveryManagerResponseDto;
+import takeoff.logistics_service.msa.user.presentation.dto.response.*;
 
 public interface DeliveryManagerService {
     PostDeliveryManagerResponseDto createDeliveryManager(PostDeliveryManagerRequestDto requestDto);
     PatchDeliveryManagerResponseDto updateDeliveryManager(Long id, PatchDeliveryManagerRequestDto requestDto);
     GetDeliveryManagerResponseDto getDeliveryManagerById(Long id);
-    Page<PostDeliveryManagerResponseDto> getAllDeliveryManagers(Pageable pageable);
+    GetDeliveryManagerListResponseDto getAllDeliveryManagers(GetDeliveryManagerListRequestDto requestDto);
     DeleteDeliveryManagerResponseDto deleteDeliveryManager(Long id);
 
 }
