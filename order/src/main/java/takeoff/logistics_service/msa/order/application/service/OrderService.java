@@ -69,4 +69,8 @@ public class OrderService {
 
     order.delete(1L); // TODO: 사용자 ID를 받아와야 함
   }
+
+  public PaginatedResultDto<SearchOrderResponseDto> searchOrder(SearchOrderRequestDto dto) {
+    return PaginatedResultDto.from(orderRepository.findAllBySearchParams(dto.toSearchCriteria()));
+  }
 }
