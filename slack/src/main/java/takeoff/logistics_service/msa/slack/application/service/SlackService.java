@@ -1,7 +1,6 @@
 package takeoff.logistics_service.msa.slack.application.service;
 
 import java.util.UUID;
-import reactor.core.publisher.Mono;
 import takeoff.logistics_service.msa.slack.application.dto.PaginatedResultDto;
 import takeoff.logistics_service.msa.slack.application.dto.request.PatchSlackRequestDto;
 import takeoff.logistics_service.msa.slack.application.dto.request.PostSlackMessageRequestDto;

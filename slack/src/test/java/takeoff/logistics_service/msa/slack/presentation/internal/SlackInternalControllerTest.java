@@ -2,20 +2,14 @@ package takeoff.logistics_service.msa.slack.presentation.internal;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +26,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 import takeoff.logistics_service.msa.slack.application.dto.response.PostContentsResponseDto;
 import takeoff.logistics_service.msa.slack.application.dto.response.PostSlackResponseDto;
 import takeoff.logistics_service.msa.slack.application.service.SlackAlarmService;
@@ -43,8 +36,6 @@ import takeoff.logistics_service.msa.slack.presentation.dto.StopoverHubNames;
 import takeoff.logistics_service.msa.slack.presentation.dto.request.PostContentsRequest;
 import takeoff.logistics_service.msa.slack.presentation.dto.request.PostSlackRequest;
 import takeoff.logistics_service.msa.slack.presentation.dto.request.PostUserSlackRequest;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.PostContentsResponse;
-import takeoff.logistics_service.msa.slack.presentation.dto.response.PostSlackResponse;
 
 /**
  * @author : hanjihoon
