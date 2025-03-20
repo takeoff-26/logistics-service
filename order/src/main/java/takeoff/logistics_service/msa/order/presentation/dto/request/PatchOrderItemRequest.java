@@ -2,7 +2,7 @@ package takeoff.logistics_service.msa.order.presentation.dto.request;
 
 import java.util.UUID;
 
-private record PatchOrderItemRequestDto(
+public record PatchOrderItemRequestDto(
     UUID productId,
     int quantity
 ) {
