@@ -25,11 +25,10 @@ public class SlackInternalController {
     //생성만 내부에서 호출
 
     @PostMapping("/message/{userId}")
-    public Mono<PostSlackResponse> saveSlackMessage(@Valid @RequestBody PostSlackRequest requestDto,
+    public PostSlackResponse saveSlackMessage(@Valid @RequestBody PostSlackRequest requestDto,
         @PathVariable Long userId) {
-        return slackService.saveSlackMessage(requestDto
-            .toApplicationDto(), userId)
-            .map(PostSlackResponse::from);
+        return PostSlackResponse.from(slackService.saveSlackMessage(requestDto
+            .toApplicationDto(), userId));
     }
 
     @PostMapping("/message/users/{userId}")

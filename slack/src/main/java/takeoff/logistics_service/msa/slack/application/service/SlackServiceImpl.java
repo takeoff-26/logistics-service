@@ -36,7 +36,7 @@ public class SlackServiceImpl implements SlackService {
     private final SlackAlarmService slackAlarmService;
 
     @Override
-    public Mono<PostSlackResponseDto> saveSlackMessage(PostSlackMessageRequestDto requestDto, Long userId) {
+    public PostSlackResponseDto saveSlackMessage(PostSlackMessageRequestDto requestDto, Long userId) {
          return webRequestClient.sendRequestToGemini(requestDto)
              .onErrorMap(error -> {
                  log.error("AI 응답을 받을 수 없습니다.", error);
@@ -47,7 +47,7 @@ public class SlackServiceImpl implements SlackService {
                 Slack savedSlack = slackRepository.save(slack);
                 slackAlarmService.sendSlackMessageToDeliveryChannel(savedSlack.getContents().getMessage(), SlackConstant.PROJECT_CHANNEL);
                 return PostSlackResponseDto.from(savedSlack);
-            });
+            }).block();
     }
 
     @Override

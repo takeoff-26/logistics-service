@@ -18,7 +18,7 @@ import takeoff.logistics_service.msa.slack.application.dto.response.SearchSlackR
  */
 public interface SlackService {
 
-    Mono<PostSlackResponseDto> saveSlackMessage(PostSlackMessageRequestDto requestDto, Long userId);
+    PostSlackResponseDto saveSlackMessage(PostSlackMessageRequestDto requestDto, Long userId);
 
     GetSlackResponseDto findBySlackId(UUID slackId);
 

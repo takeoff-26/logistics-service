@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import takeoff.logistics_service.msa.slack.application.service.SlackService;
 import takeoff.logistics_service.msa.slack.presentation.dto.PaginatedResultApi;
@@ -49,10 +50,11 @@ public class SlackExternalController {
                     requestDto.userId()))));
     }
 
-    @DeleteMapping("/{slackId}")
-    public ResponseEntity<Void> deleteBySlack(@PathVariable("slackId")UUID slackId,
-        Long userId) {
-        slackService.deleteSlack(slackId,userId);
+    @DeleteMapping("/{slackId}/{userId}")
+    public ResponseEntity<Void> deleteBySlack(
+        @PathVariable("slackId") UUID slackId,
+        @PathVariable("userId") Long userId) {
+        slackService.deleteSlack(slackId, userId);
         return ResponseEntity.noContent().build();
     }
 
