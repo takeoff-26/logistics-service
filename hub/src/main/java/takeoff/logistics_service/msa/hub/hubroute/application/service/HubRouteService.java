@@ -1,9 +1,14 @@
 package takeoff.logistics_service.msa.hub.hubroute.application.service;
 
 import java.util.UUID;
-import takeoff.logistics_service.msa.hub.hubroute.presentation.dto.request.PutHubRouteRequestDto;
-import takeoff.logistics_service.msa.hub.hubroute.presentation.dto.response.GetHubRouteResponseDto;
-import takeoff.logistics_service.msa.hub.hubroute.presentation.dto.response.PutHubRouteResponseDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostDeliveryHubRouteRequestDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHubRouteRequestDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PutHubRouteRequestDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.GetHubRouteResponseDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.PostHubRouteResponseDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.PutHubRouteResponseDto;
+import takeoff.logistics_service.msa.hub.hubroute.domain.entity.HubRoute;
 
 /**
  * @author : hanjihoon
@@ -15,7 +20,10 @@ public interface HubRouteService {
 
     PutHubRouteResponseDto updateHubRoute(UUID hubRouteId, PutHubRouteRequestDto requestDto);
 
-    void deleteHubRoute(UUID hubRouteId);
+    void deleteHubRoute(UUID hubRouteId, Long userId);
 
-//    List<PostHubRouteResponseDto> createHubRoute(PostHubRouteRequestDto requestDto);
+    PostHubRouteResponseDto createHubRoute(PostHubRouteRequestDto requestDto);
+
+    HubRoutesDto getDeliveryHubRouteList(PostDeliveryHubRouteRequestDto request);
+
 }

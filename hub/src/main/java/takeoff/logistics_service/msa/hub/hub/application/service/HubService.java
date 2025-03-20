@@ -1,15 +1,18 @@
 package takeoff.logistics_service.msa.hub.hub.application.service;
 
+import java.util.List;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.PostHubRequestDto;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.PatchHubRequestDto;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.SearchHubRequestDto;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.GetHubResponseDto;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.PostHubResponseDto;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.PatchHubResponseDto;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.SearchHubResponseDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.HubIdsDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.PaginatedResultDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.feign.GetAllHubsDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.request.PatchHubRequestDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.request.PostHubRequestDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.request.SearchHubRequestDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.response.GetHubResponseDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.response.GetRouteResponseDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.response.PatchHubResponseDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.response.PostHubResponseDto;
+import takeoff.logistics_service.msa.hub.hub.application.dto.response.SearchHubResponseDto;
 
 /**
  * @author : hanjihoon
@@ -21,9 +24,13 @@ public interface HubService {
 
     PatchHubResponseDto updateHub(UUID hubId, PatchHubRequestDto requestDto);
 
-//    void deleteHub(UUID hubId);
+    void deleteHub(UUID hubId);
 
     GetHubResponseDto findByHubId(UUID hubId);
 
-    Page<SearchHubResponseDto> searchHub(SearchHubRequestDto requestDto, Pageable pageable);
+    PaginatedResultDto<SearchHubResponseDto> searchHub(SearchHubRequestDto requestDto);
+
+    List<GetRouteResponseDto> findByToHubIdAndFromHubId(HubIdsDto applicationDto);
+
+    List<GetAllHubsDto> findAllHub();
 }
