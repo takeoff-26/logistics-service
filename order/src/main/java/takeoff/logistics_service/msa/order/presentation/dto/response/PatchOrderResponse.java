@@ -5,10 +5,11 @@ import java.util.UUID;
 import takeoff.logistics_service.msa.order.domain.entity.Order;
 import takeoff.logistics_service.msa.order.domain.entity.OrderItem;
 
-public record PatchOrderResponseDto(List<PatchOrderItemResponseDto> orderItems) {
 
-  public static PatchOrderResponseDto from(Order order) {
-    return new PatchOrderResponseDto(
+public record PatchOrderResponse(List<PatchOrderItemResponseDto> orderItems) {
+
+  public static PatchOrderResponse from(Order order) {
+    return new PatchOrderResponse(
         order.getOrderItems().stream()
             .map(PatchOrderItemResponseDto::from)
             .toList()
