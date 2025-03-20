@@ -12,7 +12,7 @@ public record DurationApi(int duration) {
 
     public static DurationApi from(
         DurationDto durationDto) {
-        return takeoff.logistics_service.msa.hub.hubroute.presentation.dto.DurationApi.builder()
+        return DurationApi.builder()
             .duration(durationDto.duration())
             .build();
     }
