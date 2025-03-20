@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import takeoff.logistics_service.msa.order.domain.entity.Order;
 
-public record PostOrderResponseDto(
+public record PostOrderResponse(
     UUID orderId,
     UUID supplierId,
     List<OrderItemSaveResponseDto> orderItems,
@@ -14,8 +14,8 @@ public record PostOrderResponseDto(
     String requestNotes
 ) {
 
-  public static PostOrderResponseDto from(Order order) {
-    return new PostOrderResponseDto(
+  public static PostOrderResponse from(Order order) {
+    return new PostOrderResponse(
         order.getId().getOrderId(),
         order.getSupplierId(),
         order.getOrderItems().stream()
