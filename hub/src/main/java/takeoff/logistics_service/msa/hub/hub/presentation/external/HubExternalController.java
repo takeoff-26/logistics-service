@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import takeoff.logistics_service.msa.common.annotation.RoleCheck;
+import takeoff.logistics_service.msa.common.domain.UserRole;
 import takeoff.logistics_service.msa.hub.hub.application.service.HubService;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.PaginatedResultApi;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.PatchHubRequest;
@@ -32,6 +34,7 @@ public class HubExternalController {
     private final HubService hubService;
 
     @PostMapping
+    @RoleCheck(roles = {UserRole.MASTER_ADMIN})
     public ResponseEntity<PostHubResponse> saveHub(@RequestBody PostHubRequest request) {
         return ResponseEntity.ok(
             PostHubResponse.from(
@@ -39,6 +42,7 @@ public class HubExternalController {
     }
 
     @PatchMapping("/{hubId}")
+    @RoleCheck(roles = {UserRole.MASTER_ADMIN})
     public ResponseEntity<PatchHubResponse> updateHub(@PathVariable("hubId") UUID hubId,
         @RequestBody PatchHubRequest request) {
         return ResponseEntity.ok(
@@ -48,12 +52,16 @@ public class HubExternalController {
     }
 
     @DeleteMapping("/{hubId}")
+    @RoleCheck(roles = {UserRole.MASTER_ADMIN})
     public ResponseEntity<Void> deleteHub(@PathVariable("hubId") UUID hubId) {
         hubService.deleteHub(hubId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
+    @RoleCheck(roles = {
+        UserRole.MASTER_ADMIN,UserRole.COMPANY_MANAGER,UserRole.COMPANY_DELIVERY_MANAGER,
+        UserRole.HUB_MANAGER,UserRole.HUB_DELIVERY_MANAGER})
     public ResponseEntity<PaginatedResultApi<SearchHubResponse>> searchHub(SearchHubRequest request) {
         return ResponseEntity.ok(PaginatedResultApi.from(hubService.searchHub(request.toApplicationDto())));
     }
