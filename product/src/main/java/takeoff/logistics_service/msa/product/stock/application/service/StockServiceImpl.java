@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import takeoff.logistics_service.msa.common.domain.UserInfoDto;
+import takeoff.logistics_service.msa.common.domain.UserRole;
 import takeoff.logistics_service.msa.product.stock.application.dto.PaginatedResultDto;
 import takeoff.logistics_service.msa.product.stock.application.dto.request.AbortStockRequestDto;
 import takeoff.logistics_service.msa.product.stock.application.dto.request.DecreaseStockRequestDto;
@@ -18,6 +20,7 @@ import takeoff.logistics_service.msa.product.stock.application.dto.request.Stock
 import takeoff.logistics_service.msa.product.stock.application.dto.request.StockItemRequestDto;
 import takeoff.logistics_service.msa.product.stock.application.dto.response.DecreaseStockResponseDto;
 import takeoff.logistics_service.msa.product.stock.application.dto.response.GetStockResponseDto;
+import takeoff.logistics_service.msa.product.stock.application.dto.response.GetUserResponseDto;
 import takeoff.logistics_service.msa.product.stock.application.dto.response.IncreaseStockResponseDto;
 import takeoff.logistics_service.msa.product.stock.application.dto.response.PostStockResponseDto;
 import takeoff.logistics_service.msa.product.stock.application.exception.StockBusinessException;
@@ -31,11 +34,46 @@ import takeoff.logistics_service.msa.product.stock.domain.repository.StockReposi
 public class StockServiceImpl implements StockService {
 
 	private final StockRepository stockRepository;
+	private final UserClient userClient;
 
 	@Override
-	public PostStockResponseDto saveStock(PostStockRequestDto requestDto) {
+	public PostStockResponseDto saveStock(PostStockRequestDto requestDto, UserInfoDto userInfo) {
+		validateUserInfo(requestDto, userInfo);
 		return PostStockResponseDto.from(
 			stockRepository.save(Stock.create(requestDto.toCommand())));
+	}
+
+	//유 저 정보를 기반으로 해서 요청을 보내서 받아옵니다.
+
+	private void validateUserInfo(PostStockRequestDto requestDto, UserInfoDto userInfo) {
+		if (!userInfo.isValid()) {
+			throw StockBusinessException.from(StockErrorCode.INVALID_USER_REQUEST);
+		}
+		GetUserResponseDto userResponse = userClient.findByUserId(userInfo.userId());
+		if (!isAccessible(requestDto, userResponse)) {
+			throw StockBusinessException.from(StockErrorCode.ACCESS_DENIED);
+		}
+	}
+
+	private boolean isAccessible(PostStockRequestDto requestDto, GetUserResponseDto userResponse) {
+		return isMaster(userResponse)
+			|| isCompanyManager(userResponse)
+			|| isValidHubManager(requestDto, userResponse);
+	}
+
+	private boolean isMaster(GetUserResponseDto userResponseDto) {
+		return userResponseDto.role() == UserRole.MASTER_ADMIN;
+	}
+
+	private boolean isCompanyManager(GetUserResponseDto userResponseDto) {
+		return userResponseDto.role() == UserRole.COMPANY_MANAGER;
+	}
+
+	private boolean isValidHubManager(PostStockRequestDto requestDto,
+		GetUserResponseDto userResponseDto) {
+		return userResponseDto.role() == UserRole.HUB_MANAGER &&
+			userResponseDto.hubId() != null && userResponseDto.hubId()
+			.equals(requestDto.stockId().hubId());
 	}
 
 	@Override
