@@ -13,7 +13,11 @@ public enum ProductErrorCode implements ErrorCode {
 	STOCK_CONFLICT("PRD_005", "재고 처리 중 충돌이 발생했습니다.", HttpStatus.CONFLICT),
 	PRODUCT_NOT_FOUND("PRD_006", "요청한 상품을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	HUB_NOT_FOUND("PRD_007", "해당 허브를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-	COMPANY_NOT_FOUND("PRD_008", "해당 업체를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+	COMPANY_NOT_FOUND("PRD_008", "해당 업체를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	INVALID_USER_REQUEST("PRD_009", "잘못된 유저 요청입니다.", HttpStatus.BAD_REQUEST),
+	ACCESS_DENIED("PRD_010", "해당 리소스에 대한 접근 권한이 없습니다.", HttpStatus.FORBIDDEN),
+	UNAUTHORIZED_ACCESS("PRD_011", "인증되지 않은 사용자입니다.", HttpStatus.UNAUTHORIZED),
+	USER_NOT_FOUND("PRD_012", "해당 사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
 	private final String code;
 	private final String message;
