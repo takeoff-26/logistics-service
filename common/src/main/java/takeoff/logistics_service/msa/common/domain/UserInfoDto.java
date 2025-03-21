@@ -9,7 +9,7 @@ public record UserInfoDto(Long userId, UserRole role) {
 		return parseUserInfo(userId, role);
 	}
 
-	private static UserInfoDto empty() {
+	public static UserInfoDto empty() {
 		return new UserInfoDto(null, null);
 	}
 
@@ -19,14 +19,6 @@ public record UserInfoDto(Long userId, UserRole role) {
 		} catch (IllegalArgumentException e) {
 			return empty();
 		}
-	}
-
-	public boolean isValid() {
-		return userId != null && userId > 0 && role != null;
-	}
-
-	public boolean isAdmin() {
-		return role == UserRole.MASTER_ADMIN;
 	}
 
 	public boolean isCompanyManager() {

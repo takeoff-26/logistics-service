@@ -35,7 +35,7 @@ public class UserInfoArgumentResolver implements HandlerMethodArgumentResolver {
 			.filter(HttpServletRequest.class::isInstance)
 			.map(HttpServletRequest.class::cast)
 			.map(this::extractUserInfo)
-			.orElse(new UserInfoDto(null, null));
+			.orElse(UserInfoDto.empty());
 	}
 
 	private UserInfoDto extractUserInfo(HttpServletRequest request) {
