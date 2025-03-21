@@ -1,5 +1,8 @@
 package takeoff.logistics_service.msa.product.product.application.service;
 
+import static takeoff.logistics_service.msa.product.product.application.exception.ProductErrorCode.ACCESS_DENIED;
+import static takeoff.logistics_service.msa.product.product.application.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
+
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +18,6 @@ import takeoff.logistics_service.msa.product.product.application.dto.response.Pa
 import takeoff.logistics_service.msa.product.product.application.dto.response.PostProductResponseDto;
 import takeoff.logistics_service.msa.product.product.application.dto.response.PostStockResponseDto;
 import takeoff.logistics_service.msa.product.product.application.exception.ProductBusinessException;
-import takeoff.logistics_service.msa.product.product.application.exception.ProductErrorCode;
 import takeoff.logistics_service.msa.product.product.domain.entity.Product;
 import takeoff.logistics_service.msa.product.product.domain.repository.ProductRepository;
 
@@ -48,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
 
 	private void validateAccess(UUID resourceId, UserInfoDto userInfo) {
 		if (userInfo.isCompanyManager() && !getCompanyId(userInfo).equals(resourceId)) {
-			throw ProductBusinessException.from(ProductErrorCode.ACCESS_DENIED);
+			throw ProductBusinessException.from(ACCESS_DENIED);
 		}
 	}
 
@@ -75,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
 	private Product getProduct(UUID productId) {
 		return productRepository
 			.findByIdAndDeletedAtIsNull(productId)
-			.orElseThrow(() -> ProductBusinessException.from(ProductErrorCode.PRODUCT_NOT_FOUND));
+			.orElseThrow(() -> ProductBusinessException.from(PRODUCT_NOT_FOUND));
 	}
 
 	@Override

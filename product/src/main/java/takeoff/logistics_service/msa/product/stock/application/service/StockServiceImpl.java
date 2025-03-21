@@ -1,5 +1,10 @@
 package takeoff.logistics_service.msa.product.stock.application.service;
 
+import static takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode.ACCESS_DENIED;
+import static takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode.DUPLICATE_STOCK_ID;
+import static takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode.STOCK_LOCK_TIMEOUT;
+import static takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode.STOCK_NOT_FOUND;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +27,6 @@ import takeoff.logistics_service.msa.product.stock.application.dto.response.GetS
 import takeoff.logistics_service.msa.product.stock.application.dto.response.IncreaseStockResponseDto;
 import takeoff.logistics_service.msa.product.stock.application.dto.response.PostStockResponseDto;
 import takeoff.logistics_service.msa.product.stock.application.exception.StockBusinessException;
-import takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode;
 import takeoff.logistics_service.msa.product.stock.domain.entity.Stock;
 import takeoff.logistics_service.msa.product.stock.domain.entity.StockId;
 import takeoff.logistics_service.msa.product.stock.domain.repository.StockRepository;
@@ -44,13 +48,13 @@ public class StockServiceImpl implements StockService {
 
 	private void validateStockNotExists(PostStockRequestDto requestDto) {
 		if (stockRepository.existsById(StockId.create(requestDto.stockId().toCommand()))) {
-			throw StockBusinessException.from(StockErrorCode.DUPLICATE_STOCK_ID);
+			throw StockBusinessException.from(DUPLICATE_STOCK_ID);
 		}
 	}
 
 	private void validateAccess(UUID resourceId, UserInfoDto userInfo) {
 		if (userInfo.isHubManager() && !getHubId(userInfo).equals(resourceId)){
-			throw StockBusinessException.from(StockErrorCode.ACCESS_DENIED);
+			throw StockBusinessException.from(ACCESS_DENIED);
 		}
 	}
 
@@ -66,7 +70,7 @@ public class StockServiceImpl implements StockService {
 
 	private Stock getStock(StockId stockId) {
 		return stockRepository.findByIdAndDeletedAtIsNull(stockId)
-			.orElseThrow(() -> StockBusinessException.from(StockErrorCode.STOCK_NOT_FOUND));
+			.orElseThrow(() -> StockBusinessException.from(STOCK_NOT_FOUND));
 	}
 
 	@Override
@@ -86,7 +90,7 @@ public class StockServiceImpl implements StockService {
 			return IncreaseStockResponseDto.from(getStockWithLock(requestDto.stockId())
 				.increaseStock(requestDto.quantity()));
 		} catch (PessimisticLockingFailureException e) {
-			throw StockBusinessException.from(StockErrorCode.STOCK_LOCK_TIMEOUT);
+			throw StockBusinessException.from(STOCK_LOCK_TIMEOUT);
 		}
 	}
 
@@ -100,14 +104,14 @@ public class StockServiceImpl implements StockService {
 			return DecreaseStockResponseDto.from(getStockWithLock(requestDto.stockId())
 				.decreaseStock(requestDto.quantity()));
 		} catch (PessimisticLockingFailureException e) {
-			throw StockBusinessException.from(StockErrorCode.STOCK_LOCK_TIMEOUT);
+			throw StockBusinessException.from(STOCK_LOCK_TIMEOUT);
 		}
 	}
 
 	private Stock getStockWithLock(StockIdRequestDto requestDto) {
 		return stockRepository
 			.findByIdWithLock(StockId.create(requestDto.toCommand()))
-			.orElseThrow(() -> StockBusinessException.from(StockErrorCode.STOCK_NOT_FOUND));
+			.orElseThrow(() -> StockBusinessException.from(STOCK_NOT_FOUND));
 	}
 
 	@Override
@@ -118,7 +122,7 @@ public class StockServiceImpl implements StockService {
 				.forEach(stockItem ->
 					getStockWithLock(stockItem.stockId()).decreaseStock(stockItem.quantity()));
 		} catch (PessimisticLockingFailureException e) {
-			throw StockBusinessException.from(StockErrorCode.STOCK_LOCK_TIMEOUT);
+			throw StockBusinessException.from(STOCK_LOCK_TIMEOUT);
 		}
 	}
 
@@ -138,7 +142,7 @@ public class StockServiceImpl implements StockService {
 				.forEach(stockItem ->
 					getStockWithLock(stockItem.stockId()).increaseStock(stockItem.quantity()));
 		} catch (PessimisticLockingFailureException e) {
-			throw StockBusinessException.from(StockErrorCode.STOCK_LOCK_TIMEOUT);
+			throw StockBusinessException.from(STOCK_LOCK_TIMEOUT);
 		}
 	}
 
@@ -171,6 +175,6 @@ public class StockServiceImpl implements StockService {
 			.findAllById_ProductIdAndDeletedAtIsNullOrderByQuantityDesc(productId).stream()
 			.findFirst()
 			.map(GetStockResponseDto::from)
-			.orElseThrow(() -> StockBusinessException.from(StockErrorCode.STOCK_NOT_FOUND));
+			.orElseThrow(() -> StockBusinessException.from(STOCK_NOT_FOUND));
 	}
 }

@@ -1,5 +1,10 @@
 package takeoff.logistics_service.msa.product.stock.infrastructure.client;
 
+import static takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode.ACCESS_DENIED;
+import static takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode.INVALID_USER_REQUEST;
+import static takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode.UNAUTHORIZED_ACCESS;
+import static takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode.USER_NOT_FOUND;
+
 import feign.FeignException;
 import feign.FeignException.FeignClientException;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +13,6 @@ import takeoff.logistics_service.msa.common.exception.BusinessException;
 import takeoff.logistics_service.msa.common.exception.code.CommonErrorCode;
 import takeoff.logistics_service.msa.product.stock.application.dto.response.GetUserResponseDto;
 import takeoff.logistics_service.msa.product.stock.application.exception.StockBusinessException;
-import takeoff.logistics_service.msa.product.stock.application.exception.StockErrorCode;
 import takeoff.logistics_service.msa.product.stock.application.service.UserClient;
 
 @Component
@@ -27,12 +31,14 @@ public class FeignUserClientImpl implements UserClient {
 	}
 
 	public BusinessException handleFeignException(FeignException e) {
-		return switch (e.status()) {
-			case 400 -> StockBusinessException.from(StockErrorCode.INVALID_USER_REQUEST);
-			case 401 -> StockBusinessException.from(StockErrorCode.UNAUTHORIZED_ACCESS);
-			case 403 -> StockBusinessException.from(StockErrorCode.ACCESS_DENIED);
-			case 404 -> StockBusinessException.from(StockErrorCode.USER_NOT_FOUND);
-			default -> StockBusinessException.from(CommonErrorCode.BAD_GATEWAY);
-		};
+		return StockBusinessException.from(
+			switch (e.status()) {
+				case 400 -> INVALID_USER_REQUEST;
+				case 401 -> UNAUTHORIZED_ACCESS;
+				case 403 -> ACCESS_DENIED;
+				case 404 -> USER_NOT_FOUND;
+				default -> CommonErrorCode.BAD_GATEWAY;
+			}
+		);
 	}
 }
