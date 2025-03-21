@@ -5,6 +5,7 @@
 POST {{host}}/api/v1/app/stock
 Content-Type: {{contentType}}
 X-User-Id: 123
+X-User-Role: MASTER_ADMIN
 
 {
     "stockId": {
