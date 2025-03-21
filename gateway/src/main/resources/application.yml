@@ -50,24 +50,6 @@ spring:
             name: Authorization
             value: "{Authorization}"
 
-springdoc:
-  swagger-ui:
-    urls:
-      - name: user
-        url: /springdoc/openapi3-user-service.json
-      - name: company
-        url: /springdoc/openapi3-company-service.json
-      - name: slack
-        url: /springdoc/openapi3-slack-service.json
-      - name: product
-        url: /springdoc/openapi3-product-service.json
-      - name: hub
-        url: /springdoc/openapi3-hub-service.json
-      - name: order
-        url: /springdoc/openapi3-order-service.json
-    path: /docs
-  api-docs:
-    enabled: true
 
 springdoc:
   swagger-ui:
@@ -109,3 +91,8 @@ management:
   endpoint:
     gateway:
       enabled: true   # 게이트웨이 액추에이터 활성화
+
+jwt:
+  secret: "cJI/zwDDsqA6ZN9XEZ+jnB86KV0iAx7AF4sXHrmEJkg="
+#  access-expiration: 3600000  # AccessToken 만료 시간 (1시간)
+#  refresh-expiration: 604800000  # RefreshToken 만료 시간 (7일)
