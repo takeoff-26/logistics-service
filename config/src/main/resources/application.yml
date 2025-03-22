@@ -6,8 +6,8 @@ spring:
       server:
         git:
           uri: https://github.com/takeoff-26/logistics-service.git  # Git 저장소 URL
-          default-label: main  # Git 브랜치명
-          search-paths: config/configures
+          default-label: feature/#113
+          search-paths: config/configures/**
 
 server:
   port: 19010
