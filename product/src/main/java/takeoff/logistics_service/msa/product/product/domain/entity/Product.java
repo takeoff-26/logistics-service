@@ -18,7 +18,6 @@ import takeoff.logistics_service.msa.product.product.domain.command.ModifyProduc
 public class Product extends BaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "product_id")
 	private UUID id;
 
@@ -36,6 +35,7 @@ public class Product extends BaseEntity {
 	}
 
 	private Product(String name, UUID companyId) {
+		this.id = UUID.randomUUID();
 		this.name = name;
 		this.companyId = companyId;
 	}

@@ -5,9 +5,12 @@ import static takeoff.logistics_service.msa.product.product.application.exceptio
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.common.domain.UserInfoDto;
+import takeoff.logistics_service.msa.common.domain.UserRole;
 import takeoff.logistics_service.msa.product.product.application.dto.PaginatedResultDto;
 import takeoff.logistics_service.msa.product.product.application.dto.request.PatchProductRequestDto;
 import takeoff.logistics_service.msa.product.product.application.dto.request.PostProductRequestDto;
@@ -32,15 +35,14 @@ public class ProductServiceImpl implements ProductService {
 	private final UserClient userClient;
 
 	@Override
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public PostProductResponseDto saveProduct(
 		PostProductRequestDto requestDto, UserInfoDto userInfo) {
-
 		validateRequest(requestDto.hubId(), requestDto.companyId());
-		validateAccess(requestDto.companyId(), userInfo);
-		Product savedProduct = getSavedProduct(requestDto);
-		PostStockResponseDto savedStock = getSavedStock(requestDto, savedProduct);
-		return PostProductResponseDto.from(savedProduct, savedStock);
+		validateAccessToCompany(requestDto.companyId(), userInfo);
+		Product product = Product.create(requestDto.toCommand());
+		PostStockResponseDto savedStock = getSavedStock(product.getId(), requestDto);
+		return PostProductResponseDto.from(getSavedProduct(product), savedStock);
 	}
 
 	private void validateRequest(UUID hubId, UUID companyId) {
@@ -48,20 +50,21 @@ public class ProductServiceImpl implements ProductService {
 		companyClient.findByCompanyId(companyId);
 	}
 
-	private void validateAccess(UUID resourceId, UserInfoDto userInfo) {
-		if (userInfo.isCompanyManager() && !getCompanyId(userInfo).equals(resourceId)) {
+	private void validateAccessToCompany(UUID resourceId, UserInfoDto userInfo) {
+		boolean isCompanyManager = userInfo.role() == UserRole.COMPANY_MANAGER;
+		if (isCompanyManager && !getCompanyId(userInfo).equals(resourceId)) {
 			throw ProductBusinessException.from(ACCESS_DENIED);
 		}
 	}
 
-	private Product getSavedProduct(PostProductRequestDto requestDto) {
-		return productRepository.save(Product.create(requestDto.toCommand()));
+	@Transactional
+	protected Product getSavedProduct(Product product) {
+		return productRepository.save(product);
 	}
 
 	private PostStockResponseDto getSavedStock(
-		PostProductRequestDto requestDto, Product savedProduct) {
-		return stockClient.saveStock(
-			PostStockRequestDto.from(savedProduct.getId(), requestDto));
+		UUID productId, PostProductRequestDto requestDto) {
+		return stockClient.saveStock(PostStockRequestDto.from(productId, requestDto));
 	}
 
 	private UUID getCompanyId(UserInfoDto userInfo) {
@@ -86,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
 		UUID productId, PatchProductRequestDto requestDto, UserInfoDto userInfo) {
 
 		Product product = getProduct(productId);
-		validateAccess(product.getCompanyId(), userInfo);
+		validateAccessToCompany(product.getCompanyId(), userInfo);
 		return PatchProductResponseDto.from(product.modify(requestDto.toCommand()));
 	}
 
@@ -94,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional
 	public void deleteProduct(UUID productId, UserInfoDto userInfo) {
 		Product product = getProduct(productId);
-		validateAccess(product.getCompanyId(), userInfo);
+		validateAccessToCompany(product.getCompanyId(), userInfo);
 		product.delete(userInfo.userId());
 		stockClient.deleteStock(productId);
 	}
