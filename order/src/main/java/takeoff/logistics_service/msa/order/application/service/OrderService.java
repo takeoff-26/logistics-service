@@ -5,6 +5,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import takeoff.logistics_service.msa.order.application.client.CompanyClient;
 import takeoff.logistics_service.msa.order.application.client.DeliveryClient;
 import takeoff.logistics_service.msa.order.application.client.StockClient;
 import takeoff.logistics_service.msa.order.application.client.dto.request.AbortStockRequestDto;
@@ -32,6 +33,7 @@ public class OrderService {
   private final OrderRepository orderRepository;
   private final DeliveryClient deliveryClient;
   private final StockClient stockClient;
+  private final CompanyClient companyClient;
 
 
   @Transactional
@@ -46,17 +48,24 @@ public class OrderService {
     // TODO : 비동기로직으로 수정
 
     // 배송 경로 추적
+    // TODO : 호출하는 API 가 출발지를 정하는 것은 아니라서 출발 허브 id 를 바꾸는 로직을 리펙터링해도 됨
+    UUID fromHubId = stockClient.getStock(dto.orderItems().get(0).productId()).hubId(); // 상품 소재지 허브
+    UUID toHubId = companyClient.findByCompanyId(dto.companyId()).hubId(); // 고객회사 주소지 허브
+
     deliveryClient.saveDeliveryRoute(new PostDeliveryRoutesRequestDto(
         deliveryId,
-        null,
-        null
+        fromHubId,
+        toHubId
     ));
-    // TODO : company 로 부터 hubid 받아오는 로직 추가
 
     // 재고 관리
-    List<StockItemRequestDto> stocks = dto.orderItems().stream().map(
+    List<StockItemRequestDto> stocks = dto.orderItems().stream()
+        .map(
             item -> new StockItemRequestDto(
-                new StockIdRequestDto(item.productId(), parseHubId(item.productId())), item.quantity()))
+                new StockIdRequestDto(item.productId(), parseHubId(item.productId())),
+                item.quantity()
+            )
+        )
         .toList();
 
     PrePareStockRequestDto prePareStockRequestDto = new PrePareStockRequestDto(stocks);
@@ -94,6 +103,10 @@ public class OrderService {
 
     AbortStockRequestDto abortStockRequestDto = new AbortStockRequestDto(stocks);
     stockClient.abortStock(abortStockRequestDto);
+
+    // 주문 같이 삭제
+    deliveryClient.deleteDelivery(order.getDeliveryId());
+    deliveryClient.deleteDeliveryRoutes(order.getDeliveryId());
 
     order.delete(1L); // TODO: 사용자 ID를 받아와야 함
   }
