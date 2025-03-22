@@ -1,18 +1,17 @@
 package takeoff.logistics_service.msa.product.product.presentation.external;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,7 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -69,6 +70,10 @@ class ProductExternalControllerTest {
 	private final LocalDateTime fixedTime
 		= LocalDateTime.of(2025, 3, 21, 12, 0, 0);
 
+	private final String token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+		+ ".eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6M"
+		+ "TUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30";
+
 	@Test
 	void 상품을_생성할_수_있다() throws Exception {
 		// given
@@ -94,31 +99,22 @@ class ProductExternalControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("X-User-Id", "1")
 				.header("X-User-Role", "MASTER_ADMIN")
-				.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
+				.header(HttpHeaders.AUTHORIZATION, token)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isCreated())
-			.andDo(document("product-external/create", (
-					ResourceSnippetParameters
-						.builder()
-						.description("상품을 생성합니다")
-						.tag("Product-External"))
+			.andDo(document("상품 생성 - 필수 필드 입력",
+				preprocessRequest(Preprocessors.prettyPrint()),
+				preprocessResponse(Preprocessors.prettyPrint()),
+				resource(ResourceSnippetParameters.builder()
+					.tag("Product-External")
+					.summary("상품 생성")
+					.description("상품을 생성하기 위한 엔드포인트입니다.")
 					.requestFields(
 						fieldWithPath("name").description("상품 이름"),
 						fieldWithPath("companyId").description("업체 ID"),
 						fieldWithPath("hubId").description("허브 ID"),
-						fieldWithPath("quantity").description("초기 재고 수량 (null 가능, 기본값 0)")
-					),
-				requestHeaders(
-					headerWithName("X-User-Id").description("User ID"),
-					headerWithName("X-User-Role").description("User ID"),
-					headerWithName("Authorization").description("JWT 토큰")),
-				responseFields(
-					fieldWithPath("productId").description("생성된 상품 ID"),
-					fieldWithPath("name").description("상품 이름"),
-					fieldWithPath("companyId").description("업체 ID"),
-					fieldWithPath("hubId").description("허브 ID"),
-					fieldWithPath("quantity").description("실제 재고 수량"),
-					fieldWithPath("createdAt").description("생성 시간")
+						fieldWithPath("quantity").description("초기 재고 수량 (null 가능, 기본값 0)"))
+					.build()
 				)));
 	}
 
@@ -152,31 +148,23 @@ class ProductExternalControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("X-User-Id", "1")
 				.header("X-User-Role", "MASTER_ADMIN")
-				.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
+				.header(HttpHeaders.AUTHORIZATION, token)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isCreated())
-			.andDo(document("product-external/create-without-quantity", (
-					ResourceSnippetParameters
-						.builder()
-						.description("초기 재고 수량을 지정하지 않고 상품을 생성합니다. 기본값은 0입니다.")
-						.tag("Product-External"))
+			.andDo(document("상품 생성 - 기본 재고 수량",
+				preprocessRequest(Preprocessors.prettyPrint()),
+				preprocessResponse(Preprocessors.prettyPrint()),
+				resource(ResourceSnippetParameters.builder()
+					.tag("Product-External")
+					.summary("상품 생성 요청")
+					.description("초기 재고 수량을 지정하지 않고 상품을 생성합니다. 기본값은 0입니다.")
 					.requestFields(
 						fieldWithPath("name").description("상품 이름"),
 						fieldWithPath("companyId").description("업체 ID"),
 						fieldWithPath("hubId").description("허브 ID"),
 						fieldWithPath("quantity").description("초기 재고 수량 (null 가능, 기본값 0)")
-					),
-				requestHeaders(
-					headerWithName("X-User-Id").description("User ID"),
-					headerWithName("X-User-Role").description("User ID"),
-					headerWithName("Authorization").description("JWT 토큰")),
-				responseFields(
-					fieldWithPath("productId").description("생성된 상품 ID"),
-					fieldWithPath("name").description("상품 이름"),
-					fieldWithPath("companyId").description("업체 ID"),
-					fieldWithPath("hubId").description("허브 ID"),
-					fieldWithPath("quantity").description("실제 재고 수량"),
-					fieldWithPath("createdAt").description("생성 시간")
+					)
+					.build()
 				)));
 	}
 
@@ -208,9 +196,9 @@ class ProductExternalControllerTest {
 
 		String createResponse = mockMvc.perform(post("/api/v1/products")
 				.contentType(MediaType.APPLICATION_JSON)
-					.header("X-User-Id", "1")
-					.header("X-User-Role", "MASTER_ADMIN")
-					.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
+				.header("X-User-Id", "1")
+				.header("X-User-Role", "MASTER_ADMIN")
+				.header(HttpHeaders.AUTHORIZATION, token)
 				.content(objectMapper.writeValueAsString(createRequest)))
 			.andExpect(status().isCreated())
 			.andReturn()
@@ -226,33 +214,27 @@ class ProductExternalControllerTest {
 		// when & then
 		mockMvc.perform(patch("/api/v1/products/{productId}", productId)
 				.contentType(MediaType.APPLICATION_JSON)
-					.header("X-User-Id", "1")
-					.header("X-User-Role", "MASTER_ADMIN")
-					.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
+				.header("X-User-Id", "1")
+				.header("X-User-Role", "MASTER_ADMIN")
+				.header(HttpHeaders.AUTHORIZATION, token)
 				.content(objectMapper.writeValueAsString(updateRequest)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.productId").value(productId.toString()))
 			.andExpect(jsonPath("$.name").value("프리미엄 유기농 바나나"))
-			.andDo(document("product-external/update-name", (
-					ResourceSnippetParameters
-						.builder()
-						.description("상품 이름을 수정합니다")
-						.tag("Product-External"))
+			.andDo(document("상품 이름 수정",
+				preprocessRequest(Preprocessors.prettyPrint()),
+				preprocessResponse(Preprocessors.prettyPrint()),
+				resource(ResourceSnippetParameters.builder()
+					.tag("Product-External")
+					.summary("상품 이름 수정")
+					.description("상품 이름을 수정합니다")
 					.pathParameters(
 						parameterWithName("productId").description("수정할 상품 ID")
-					),
-				requestFields(
-					fieldWithPath("name").description("변경할 상품 이름")
-				),
-				requestHeaders(
-					headerWithName("X-User-Id").description("User ID"),
-					headerWithName("X-User-Role").description("User ID"),
-					headerWithName("Authorization").description("JWT 토큰")),
-				responseFields(
-					fieldWithPath("productId").description("상품 ID"),
-					fieldWithPath("name").description("변경된 상품 이름"),
-					fieldWithPath("companyId").description("업체 ID"),
-					fieldWithPath("updatedAt").description("수정 시간")
+					)
+					.requestFields(
+						fieldWithPath("name").description("변경할 상품 이름")
+					)
+					.build()
 				)));
 	}
 
@@ -284,9 +266,9 @@ class ProductExternalControllerTest {
 
 		String createResponse = mockMvc.perform(post("/api/v1/products")
 				.contentType(MediaType.APPLICATION_JSON)
-					.header("X-User-Id", "1")
-					.header("X-User-Role", "MASTER_ADMIN")
-					.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
+				.header("X-User-Id", "1")
+				.header("X-User-Role", "MASTER_ADMIN")
+				.header(HttpHeaders.AUTHORIZATION, token)
 				.content(objectMapper.writeValueAsString(createRequest)))
 			.andExpect(status().isCreated())
 			.andReturn()
@@ -298,31 +280,21 @@ class ProductExternalControllerTest {
 
 		// when & then
 		mockMvc.perform(get("/api/v1/products/{productId}", productId)
-					.header("X-User-Id", "1")
-					.header("X-User-Role", "MASTER_ADMIN")
-					.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.productId").value(productId.toString()))
 			.andExpect(jsonPath("$.name").value("유기농 바나나"))
-			.andDo(document("product-external/find", (
-					ResourceSnippetParameters
-						.builder()
-						.description("상품 정보를 조회합니다")
-						.tag("Product-External"))
+			.andDo(document("상품 정보 조회",
+				preprocessRequest(Preprocessors.prettyPrint()),
+				preprocessResponse(Preprocessors.prettyPrint()),
+				resource(ResourceSnippetParameters.builder()
+					.tag("Product-External")
+					.summary("상품 정보 조회")
+					.description("상품 정보를 조회합니다")
 					.pathParameters(
 						parameterWithName("productId").description("조회할 상품 ID")
-					),
-				requestHeaders(
-					headerWithName("X-User-Id").description("User ID"),
-					headerWithName("X-User-Role").description("User ID"),
-					headerWithName("Authorization").description("JWT 토큰")),
-				responseFields(
-					fieldWithPath("productId").description("상품 ID"),
-					fieldWithPath("name").description("상품 이름"),
-					fieldWithPath("companyId").description("업체 ID"),
-					fieldWithPath("createdAt").description("상품 등록 시간"),
-					fieldWithPath("updatedAt").description("최종 수정 시간")
+					)
+					.build()
 				)));
 	}
 
@@ -354,9 +326,9 @@ class ProductExternalControllerTest {
 
 		String createResponse = mockMvc.perform(post("/api/v1/products")
 				.contentType(MediaType.APPLICATION_JSON)
-					.header("X-User-Id", "1")
-					.header("X-User-Role", "MASTER_ADMIN")
-					.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
+				.header("X-User-Id", "1")
+				.header("X-User-Role", "MASTER_ADMIN")
+				.header(HttpHeaders.AUTHORIZATION, token)
 				.content(objectMapper.writeValueAsString(createRequest)))
 			.andExpect(status().isCreated())
 			.andReturn()
@@ -368,24 +340,23 @@ class ProductExternalControllerTest {
 
 		// when & then
 		mockMvc.perform(delete("/api/v1/products/{productId}", productId)
-					.header("X-User-Id", "1")
-					.header("X-User-Role", "MASTER_ADMIN")
-					.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
+				.header("X-User-Id", "1")
+				.header("X-User-Role", "MASTER_ADMIN")
+				.header(HttpHeaders.AUTHORIZATION, token)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNoContent())
-			.andDo(document("product-external/delete", (
-				ResourceSnippetParameters
-					.builder()
+			.andDo(document("상품 삭제",
+				preprocessRequest(Preprocessors.prettyPrint()),
+				preprocessResponse(Preprocessors.prettyPrint()),
+				resource(ResourceSnippetParameters.builder()
+					.tag("Product-External")
+					.summary("상품 삭제")
 					.description("상품을 삭제합니다")
-					.tag("Product-External"))
-				.pathParameters(
-					parameterWithName("productId").description("삭제할 상품 ID")
-				),
-				requestHeaders(
-					headerWithName("X-User-Id").description("User ID"),
-					headerWithName("X-User-Role").description("User ID"),
-					headerWithName("Authorization").description("JWT 토큰"))
-			));
+					.pathParameters(
+						parameterWithName("productId").description("삭제할 상품 ID")
+					)
+					.build()
+				)));
 	}
 
 	@Test
@@ -411,9 +382,9 @@ class ProductExternalControllerTest {
 		PostProductRequest request1 = new PostProductRequest("유기농 바나나", companyId, hubId, 100);
 		mockMvc.perform(post("/api/v1/products")
 				.contentType(MediaType.APPLICATION_JSON)
-					.header("X-User-Id", "1")
-					.header("X-User-Role", "MASTER_ADMIN")
-					.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
+				.header("X-User-Id", "1")
+				.header("X-User-Role", "MASTER_ADMIN")
+				.header(HttpHeaders.AUTHORIZATION, token)
 				.content(objectMapper.writeValueAsString(request1)))
 			.andExpect(status().isCreated());
 
@@ -421,9 +392,9 @@ class ProductExternalControllerTest {
 		PostProductRequest request2 = new PostProductRequest("프리미엄 사과", companyId, hubId, 50);
 		mockMvc.perform(post("/api/v1/products")
 				.contentType(MediaType.APPLICATION_JSON)
-					.header("X-User-Id", "1")
-					.header("X-User-Role", "MASTER_ADMIN")
-					.header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9")
+				.header("X-User-Id", "1")
+				.header("X-User-Role", "MASTER_ADMIN")
+				.header(HttpHeaders.AUTHORIZATION, token)
 				.content(objectMapper.writeValueAsString(request2)))
 			.andExpect(status().isCreated());
 
@@ -431,22 +402,14 @@ class ProductExternalControllerTest {
 		mockMvc.perform(get("/api/v1/products/search")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andDo(document("product-external/search-default", (
-				ResourceSnippetParameters
-					.builder()
+			.andDo(document("상품 검색 - 기본",
+				preprocessRequest(Preprocessors.prettyPrint()),
+				preprocessResponse(Preprocessors.prettyPrint()),
+				resource(ResourceSnippetParameters.builder()
+					.tag("Product-External")
+					.summary("상품 검색 - 기본")
 					.description("상품을 검색합니다. 기본 설정은 최신순, 10개씩 페이징입니다.")
-					.tag("Product-External"))
-				.responseFields(
-					fieldWithPath("content").description("상품 목록"),
-					fieldWithPath("content[].productId").description("상품 ID"),
-					fieldWithPath("content[].name").description("상품 이름"),
-					fieldWithPath("content[].companyId").description("업체 ID"),
-					fieldWithPath("content[].createdAt").description("상품 등록 시간"),
-					fieldWithPath("content[].updatedAt").description("최종 수정 시간"),
-					fieldWithPath("page").description("현재 페이지 번호"),
-					fieldWithPath("size").description("페이지 크기"),
-					fieldWithPath("totalElements").description("전체 요소 수"),
-					fieldWithPath("totalPages").description("전체 페이지 수")
+					.build()
 				)));
 
 		// 이름으로 검색
@@ -454,13 +417,17 @@ class ProductExternalControllerTest {
 				.param("name", "바나나")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andDo(document("product-external/search-by-name", (
-				ResourceSnippetParameters
-					.builder()
+			.andDo(document("상품 이름으로 검색",
+				preprocessRequest(Preprocessors.prettyPrint()),
+				preprocessResponse(Preprocessors.prettyPrint()),
+				resource(ResourceSnippetParameters.builder()
+					.tag("Product-External")
+					.summary("상품 이름으로 검색")
 					.description("상품 이름으로 검색합니다. 부분 일치 검색이 가능합니다.")
-					.tag("Product-External"))
-				.queryParameters(
-					parameterWithName("name").description("검색할 상품 이름")
+					.queryParameters(
+						parameterWithName("name").description("검색할 상품 이름")
+					)
+					.build()
 				)));
 
 		// 업체 ID로 검색
@@ -468,13 +435,17 @@ class ProductExternalControllerTest {
 				.param("companyId", companyId.toString())
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andDo(document("product-external/search-by-company-id", (
-				ResourceSnippetParameters
-					.builder()
+			.andDo(document("상품 업체 ID로 검색",
+				preprocessRequest(Preprocessors.prettyPrint()),
+				preprocessResponse(Preprocessors.prettyPrint()),
+				resource(ResourceSnippetParameters.builder()
+					.tag("Product-External")
+					.summary("업체 ID로 상품 검색")
 					.description("업체 ID로 검색합니다. 해당 업체의 모든 상품을 검색합니다.")
-					.tag("Product-External"))
-				.queryParameters(
-					parameterWithName("companyId").description("검색할 업체 ID")
+					.queryParameters(
+						parameterWithName("companyId").description("검색할 업체 ID")
+					)
+					.build()
 				)));
 
 		// 정렬 및 페이징 검색
@@ -485,17 +456,21 @@ class ProductExternalControllerTest {
 				.param("size", "10")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andDo(document("product-external/search-with-sort-and-paging", (
-				ResourceSnippetParameters
-					.builder()
+			.andDo(document("상품 정렬 및 페이징 검색",
+				preprocessRequest(Preprocessors.prettyPrint()),
+				preprocessResponse(Preprocessors.prettyPrint()),
+				resource(ResourceSnippetParameters.builder()
+					.tag("Product-External")
+					.summary("상품 정렬 및 페이징 검색")
 					.description("정렬 및 페이징 옵션을 적용하여 검색합니다.")
-					.tag("Product-External"))
-				.queryParameters(
-					parameterWithName("sortBy").description("정렬 기준 필드 (기본값: createdAt)"),
-					parameterWithName("isAsc").description(
-						"오름차순 여부 (true: 오름차순, false: 내림차순, 기본값: false)"),
-					parameterWithName("page").description("페이지 번호 (0부터 시작, 기본값: 0)"),
-					parameterWithName("size").description("페이지 크기 (유효한 값: 10, 30, 50, 기본값: 10)")
+					.queryParameters(
+						parameterWithName("sortBy").description("정렬 기준 필드 (기본값: createdAt)"),
+						parameterWithName("isAsc").description(
+							"오름차순 여부 (true: 오름차순, false: 내림차순, 기본값: false)"),
+						parameterWithName("page").description("페이지 번호 (0부터 시작, 기본값: 0)"),
+						parameterWithName("size").description("페이지 크기 (유효한 값: 10, 30, 50, 기본값: 10)")
+					)
+					.build()
 				)));
 	}
 }
