@@ -43,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
 		validateRequest(requestDto.hubId(), requestDto.companyId());
 		validateAccessToCompany(requestDto.companyId(), userInfo);
 		Product savedProduct = getSavedProduct(requestDto);
-		PostStockResponseDto savedStock = getSavedStock(requestDto, savedProduct, userInfo);
+		PostStockResponseDto savedStock = getSavedStock(requestDto, savedProduct);
 		return PostProductResponseDto.from(savedProduct, savedStock);
 	}
 
@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	private PostStockResponseDto getSavedStock(
-		PostProductRequestDto requestDto, Product savedProduct, UserInfoDto userInfo) {
+		PostProductRequestDto requestDto, Product savedProduct) {
 		try {
 			return stockClient.saveStock(
 				PostStockRequestDto.from(savedProduct.getId(), requestDto));
