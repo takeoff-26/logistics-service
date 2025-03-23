@@ -2,6 +2,7 @@ package takeoff.logistics_service.msa.product.product.application.service;
 
 import static takeoff.logistics_service.msa.product.product.application.exception.ProductErrorCode.ACCESS_DENIED;
 import static takeoff.logistics_service.msa.product.product.application.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
+import static takeoff.logistics_service.msa.product.product.application.exception.ProductErrorCode.PRODUCT_SAVE_FAILED;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -55,8 +56,13 @@ public class ProductServiceImpl implements ProductService {
 		}
 	}
 
-	protected Product getSavedProduct(Product product) {
-		return productRepository.save(product);
+	private Product getSavedProduct(Product product) {
+		try {
+			return productRepository.save(product);
+		} catch (Exception e) {// 제품 생성 실패시 고아 재고 삭제 요청
+			stockClient.deleteStock(product.getId());
+			throw ProductBusinessException.from(PRODUCT_SAVE_FAILED);
+		}
 	}
 
 	private PostStockResponseDto getSavedStock(
