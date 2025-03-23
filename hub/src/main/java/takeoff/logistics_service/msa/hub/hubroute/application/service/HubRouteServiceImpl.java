@@ -198,7 +198,7 @@ public class HubRouteServiceImpl implements HubRouteService {
             toHub.latitude(), toHub.longitude());
 
         return hubs.stream()
-            .filter(hub -> !hub.hubId().equals(fromHub.hubId()) && !hub.hubId().equals(toHub.hubId()))
+            .filter(hub -> verifyHub(fromHub, toHub, hub))
             .filter(hub -> calculateDistance(fromHub.latitude(), fromHub.longitude(), hub.latitude(), hub.longitude()) <= 200)
             .filter(hub -> {
                 // 출발 허브에서 중간 허브까지의 거리와 출발 허브에서 목적지 허브까지의 거리를 비교
@@ -211,6 +211,10 @@ public class HubRouteServiceImpl implements HubRouteService {
             .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
     }
 
+    private static boolean verifyHub(HubAllListResponseDto fromHub, HubAllListResponseDto toHub,
+        HubAllListResponseDto hub) {
+        return !hub.hubId().equals(fromHub.hubId()) && !hub.hubId().equals(toHub.hubId());
+    }
 
 
     @Override
