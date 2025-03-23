@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import takeoff.logistics_service.msa.common.annotation.RoleCheck;
 import takeoff.logistics_service.msa.common.domain.UserInfo;
 import takeoff.logistics_service.msa.common.domain.UserInfoDto;
+import takeoff.logistics_service.msa.common.domain.UserRole;
 import takeoff.logistics_service.msa.slack.application.service.SlackService;
 import takeoff.logistics_service.msa.slack.presentation.dto.PaginatedResultApi;
 import takeoff.logistics_service.msa.slack.presentation.dto.request.PatchSlackRequest;
@@ -35,16 +37,16 @@ public class SlackExternalController {
 
     //생성 이외 엔드포인트는 외부에서 호출
     @GetMapping("/{slackId}")
-    public ResponseEntity<GetSlackResponse> findBySlackId(@PathVariable("slackId")UUID slackId,
-        @UserInfo UserInfoDto userInfo) {
+    @RoleCheck(roles = {UserRole.MASTER_ADMIN})
+    public ResponseEntity<GetSlackResponse> findBySlackId(@PathVariable("slackId")UUID slackId) {
         return ResponseEntity.ok(GetSlackResponse.from(slackService.findBySlackId(slackId)));
     }
 
 
     @PatchMapping("/{slackId}")
+    @RoleCheck(roles = {UserRole.MASTER_ADMIN})
     public ResponseEntity<PatchSlackResponse> updateBySlack(@PathVariable("slackId")UUID slackId,
-        @Valid @RequestBody PatchSlackRequest requestDto,
-        @UserInfo UserInfoDto userInfo) {
+        @Valid @RequestBody PatchSlackRequest requestDto) {
         return ResponseEntity.ok(PatchSlackResponse
             .from(slackService.updateBySlack(
                 slackId,
@@ -54,6 +56,7 @@ public class SlackExternalController {
     }
 
     @DeleteMapping("/{slackId}/")
+    @RoleCheck(roles = {UserRole.MASTER_ADMIN})
     public ResponseEntity<Void> deleteBySlack(
         @PathVariable("slackId") UUID slackId,
         @UserInfo UserInfoDto userInfo) {
@@ -62,9 +65,9 @@ public class SlackExternalController {
     }
 
     @GetMapping("/search")
+    @RoleCheck(roles = {UserRole.MASTER_ADMIN})
     public ResponseEntity<PaginatedResultApi<SearchSlackResponse>> searchSlack(
-        SearchSlackRequest searchSlackRequest,
-        @UserInfo UserInfoDto userInfo) {
+        SearchSlackRequest searchSlackRequest) {
         return ResponseEntity.ok(PaginatedResultApi.from(
             slackService.searchSlack(searchSlackRequest.toApplicationDto())
         ));

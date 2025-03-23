@@ -28,7 +28,6 @@ public class SlackInternalController {
     //생성만 내부에서 호출
 
     @PostMapping("/message/{userId}")
-    @RoleCheck(roles = {UserRole.HUB_MANAGER})
     public PostSlackResponse saveSlackMessage(@Valid @RequestBody PostSlackRequest requestDto,
         @UserInfo UserInfoDto userInfo) {
         return PostSlackResponse.from(slackService.saveSlackMessage(requestDto
