@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.client.UserClient;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.client.response.GetDeliveryManagerListInfoDto;
-import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.dto.request.GetCompanyDeliverySequenceRequestDto;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.dto.response.GetCompanyDeliverySequenceResponseDto;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.dto.response.GetHubDeliverySequenceResponseDto;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.domain.repository.CompanyDeliverySequenceRepository;
@@ -25,12 +24,12 @@ public class DeliverySequenceService {
 
   @Transactional
   public GetCompanyDeliverySequenceResponseDto findNextCompanyDeliverySequence(
-      GetCompanyDeliverySequenceRequestDto dto) {
-    Integer currentSequence = companyDeliverySequenceRepository.findCurrentSequence(dto.hubId())
+      UUID hubId) {
+    Integer currentSequence = companyDeliverySequenceRepository.findCurrentSequence(hubId)
         .orElse(-1);
 
     Long nextCompanyDeliveryManager = determineNextCompanyDeliveryManager(currentSequence,
-        dto.hubId());
+        hubId);
 
     return new GetCompanyDeliverySequenceResponseDto(nextCompanyDeliveryManager);
   }

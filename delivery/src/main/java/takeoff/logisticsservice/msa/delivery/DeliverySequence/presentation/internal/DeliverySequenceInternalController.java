@@ -1,12 +1,13 @@
 package takeoff.logisticsservice.msa.delivery.DeliverySequence.presentation.internal;
 
 
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.DeliverySequenceService;
-import takeoff.logisticsservice.msa.delivery.DeliverySequence.presentation.dto.request.GetCompanyDeliverySequenceRequest;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.presentation.dto.response.GetCompanyDeliverySequenceResponse;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.presentation.dto.response.GetHubDeliverySequenceResponse;
 
@@ -19,10 +20,10 @@ public class DeliverySequenceInternalController {
 
   @GetMapping("/nextCompanyDeliverySequence")
   public GetCompanyDeliverySequenceResponse findNextCompanyDeliverySequence(
-      GetCompanyDeliverySequenceRequest request
+      @RequestParam("hubId")UUID hubId
   ) {
     return GetCompanyDeliverySequenceResponse.from(
-        deliverySequenceService.findNextCompanyDeliverySequence(request.toApplicationDto())
+        deliverySequenceService.findNextCompanyDeliverySequence(hubId)
     );
   }
 

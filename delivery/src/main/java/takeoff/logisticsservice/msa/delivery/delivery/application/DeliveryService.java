@@ -14,7 +14,6 @@ import takeoff.logistics_service.msa.common.exception.BusinessException;
 import takeoff.logistics_service.msa.common.exception.code.CommonErrorCode;
 import takeoff.logisticsservice.msa.delivery.delivery.application.client.DeliverySequenceClientInternalDelivery;
 import takeoff.logisticsservice.msa.delivery.delivery.application.client.UserClient;
-import takeoff.logisticsservice.msa.delivery.delivery.application.client.dto.request.GetCompanyDeliverySequenceRequestDto;
 import takeoff.logisticsservice.msa.delivery.delivery.application.dto.PaginatedResultDto;
 import takeoff.logisticsservice.msa.delivery.delivery.application.dto.request.SearchDeliveryRequestDto;
 import takeoff.logisticsservice.msa.delivery.delivery.application.dto.response.SearchDeliveryResponseDto;
@@ -41,9 +40,8 @@ public class DeliveryService {
   public UUID saveDelivery(PostDeliveryRequestDto dto) {
 
     Long deliveryManagerId = deliverySequenceClient.findNextCompanyDeliverySequence(
-        new GetCompanyDeliverySequenceRequestDto(
-            dto.toHubId()
-        )).companyDeliveryManagerId();
+        dto.toHubId()
+    ).companyDeliveryManagerId();
 
     Delivery delivery = Delivery.builder()
         .orderId(dto.orderID())
