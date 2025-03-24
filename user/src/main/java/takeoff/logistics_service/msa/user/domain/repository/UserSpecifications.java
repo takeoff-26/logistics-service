@@ -8,7 +8,7 @@ import takeoff.logistics_service.msa.user.domain.service.UserSearchCondition;
 
 public class UserSpecifications {
     public static Specification<User> toUserSpecification(UserSearchCondition condition) {
-        Specification<User> spec = Specification.where(null);
+        Specification<User> spec = (root, query, cb) -> cb.isNull(root.get("deletedAt"));
         if (condition.username() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("username"), condition.username()));
         }
@@ -22,7 +22,7 @@ public class UserSpecifications {
     }
 
     public static Specification<DeliveryManager> toDeliveryManagerSpecification(DeliveryManagerSearchCondition condition) {
-        Specification<DeliveryManager> spec = Specification.where(null);
+        Specification<DeliveryManager> spec = (root, query, cb) -> cb.isNull(root.get("deletedAt"));
         if (condition.hubId() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("hubId"), condition.hubId()));
         }

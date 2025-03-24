@@ -5,6 +5,8 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import takeoff.logistics_service.msa.auth.application.exception.AuthBusinessException;
+import takeoff.logistics_service.msa.auth.application.exception.AuthErrorCode;
 
 import java.security.Key;
 import java.util.Date;
@@ -54,11 +56,9 @@ public class JwtUtil {
                     .parseClaimsJws(removeBearerPrefix(token));
             return true;
         } catch (ExpiredJwtException e) {
-            log.warn("JWT 토큰이 만료되었습니다: {}", e.getMessage());
-            return false;
+            throw AuthBusinessException.from(AuthErrorCode.TOKEN_EXPIRED);
         } catch (JwtException e) {
-            log.error("유효하지 않은 JWT 토큰: {}", e.getMessage());
-            return false;
+            throw AuthBusinessException.from(AuthErrorCode.TOKEN_INVALID);
         }
     }
 
