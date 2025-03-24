@@ -42,8 +42,9 @@ public class DeliveryRouteInternalController {
         deliveryManagerId);
   }
 
-  @DeleteMapping
-  public void deleteDeliveryRoutes(UUID deliveryId, @UserInfo UserInfoDto user) {
+  @DeleteMapping("/{deliveryId}")
+  public void deleteDeliveryRoutes(@PathVariable("deliveryId") UUID deliveryId,
+      @UserInfo UserInfoDto user) {
     deliveryRouteService.DeleteDeliveryRoutes(deliveryId, user.userId());
   }
 
