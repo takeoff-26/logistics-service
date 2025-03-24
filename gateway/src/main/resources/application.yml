@@ -40,11 +40,11 @@ spring:
         - id: order
           uri: lb://order
           predicates:
-            - Path=/api/v1/orders/**,/api/v1/app/orders**/
+            - Path=/api/v1/orders/**,/api/v1/app/orders**/,,/springdoc/openapi3-order-service.json
         - id: delivery
           uri: lb://delivery
           predicates:
-            - Path=/api/v1/deliveries/**,/api/v1/app/deliveries/**, /api/v1/deliveryRoutes/**,/api/v1/app/deliveryRoutes/**,/api/v1/app/deliverySequences/**
+            - Path=/api/v1/deliveries/**,/api/v1/app/deliveries/**,/api/v1/deliveryRoutes/**,/api/v1/app/deliveryRoutes/**,/api/v1/app/deliverySequences/**,,/springdoc/openapi3-delivery-service.json
 #      default-filters:
 #        - name: AddRequestHeader
 #          args:
