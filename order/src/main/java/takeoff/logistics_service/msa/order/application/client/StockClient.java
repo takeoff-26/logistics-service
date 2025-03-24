@@ -12,7 +12,7 @@ import takeoff.logistics_service.msa.order.application.client.dto.request.PrePar
 import takeoff.logistics_service.msa.order.application.client.dto.response.GetStockResponseDto;
 
 @Component
-@FeignClient(name = "product", url = "$(internal.product.host)")
+@FeignClient(name = "product", url = "http://localhost:19001")
 public interface StockClient {
 
   @PostMapping("/api/v1/app/stock/prepare")

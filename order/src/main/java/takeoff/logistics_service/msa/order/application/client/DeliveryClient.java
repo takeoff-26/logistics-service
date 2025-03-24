@@ -13,7 +13,7 @@ import takeoff.logistics_service.msa.order.application.client.dto.request.PostDe
 import takeoff.logistics_service.msa.order.application.client.dto.request.PostDeliveryRoutesRequestDto;
 
 @Component
-@FeignClient(name = "delivery", url = "$(internal.delivery.host)")
+@FeignClient(name = "delivery", url = "http://localhost:19014")
 public interface DeliveryClient {
 
   @GetMapping("/api/v1/app/deliveries")
