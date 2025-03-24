@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import takeoff.logistics_service.msa.order.application.client.dto.response.GetCompanyResponseDto;
 
 @Component
-@FeignClient(name = "company")
+@FeignClient(name = "company", url = "$(internal.company.host)")
 public interface CompanyClient {
 
   @GetMapping("/api/v1/companies/{companyId}")

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import takeoff.logistics_service.msa.order.application.client.dto.response.GetUserResponseDto;
 
 @Component
-@FeignClient(name = "user")
+@FeignClient(name = "user", url = "$(internal.user.host)")
 public interface UserClient {
 
   @GetMapping("api/v1/app/users/{userId}")

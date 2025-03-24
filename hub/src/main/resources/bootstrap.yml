@@ -9,6 +9,8 @@ spring:
     config:
       uri: http://localhost:8888
 eureka:
+  instance:
+    hostname: localhost
   client:
     service-url:
       defaultZone: http://localhost:18999/eureka/

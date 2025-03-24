@@ -78,6 +78,8 @@ server:
   port: 19000
 
 eureka:
+  instance:
+    hostname: localhost
   client:
     service-url:
       defaultZone: http://localhost:18999/eureka/  # Eureka 서버의 URL을 지정

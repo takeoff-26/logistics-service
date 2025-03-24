@@ -23,6 +23,16 @@ spring:
 server:
   port: 19011
 
+internal:
+  user:
+    host: http://localhost:19021
+  product:
+    host: http://localhost:19001
+  delivery:
+    host: http://localhost:19014
+  company:
+    host: http://localhost:19030
+
 eureka:
   client:
     service-url:

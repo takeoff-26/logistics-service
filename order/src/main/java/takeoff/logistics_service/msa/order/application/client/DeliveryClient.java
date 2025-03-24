@@ -13,14 +13,17 @@ import takeoff.logistics_service.msa.order.application.client.dto.request.PostDe
 import takeoff.logistics_service.msa.order.application.client.dto.request.PostDeliveryRoutesRequestDto;
 
 @Component
-@FeignClient(name = "delivery")
+@FeignClient(name = "delivery", url = "$(internal.delivery.host)")
 public interface DeliveryClient {
 
   @GetMapping("/api/v1/app/deliveries")
-  List<UUID> findAllDeliveryIdByUser(Long userId);
+  List<UUID> findAllDeliveryIdByUser(@RequestParam(name = "userId") Long userId);
 
   @PostMapping("/api/v1/app/deliveries")
   UUID saveDelivery(PostDeliveryRequestDto dto);
+
+  @DeleteMapping("/api/v1/app/deliveries/{deliveryId}")
+  void deleteDelivery(@PathVariable("deliveryId") UUID deliveryId);
 
   @PostMapping("api/v1/app/deliveryRoutes")
   List<UUID> saveDeliveryRoute(PostDeliveryRoutesRequestDto dto);
@@ -29,9 +32,6 @@ public interface DeliveryClient {
   List<UUID> findAllDeliveryRoutes_DeliveryIdByDeliveryManagerId(
       @RequestParam(name = "deliveryManagerId") Long deliveryManagerId);
 
-  @DeleteMapping("/api/v1/app/deliveries/{deliveryId}")
-  void deleteDelivery(@PathVariable("deliveryId") UUID deliveryId);
-
-  @DeleteMapping("api/v1/app/deliveryRoutes")
-  public void deleteDeliveryRoutes(UUID deliveryId);
+  @DeleteMapping("api/v1/app/deliveryRoutes/{deliveryId}")
+  void deleteDeliveryRoutes(@PathVariable("deliveryId") UUID deliveryId);
 }
