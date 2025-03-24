@@ -77,7 +77,6 @@ public class DeliverySequenceService {
         .map(GetCompanyDeliveryManagerResponseDto::deliverySequence).toList()
         .indexOf(currentSequence);
   }
-  // TODO: 커스텀 예외로 변경
 
   private Long determineNextHubDeliverySequence(Integer currentSequence) {
     List<GetHubDeliveryManagerResponseDto> hubDeliveryManagers = userClient.findAllHubDeliveryManager();
