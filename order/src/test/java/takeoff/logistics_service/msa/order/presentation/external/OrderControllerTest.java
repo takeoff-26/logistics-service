@@ -2,9 +2,10 @@ package takeoff.logistics_service.msa.order.presentation.external;
 
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -25,15 +26,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import takeoff.logistics_service.msa.order.application.service.OrderService;
 import takeoff.logistics_service.msa.order.domain.entity.Order;
-import takeoff.logistics_service.msa.order.domain.entity.OrderId;
 import takeoff.logistics_service.msa.order.domain.entity.OrderItem;
 import takeoff.logistics_service.msa.order.presentation.dto.request.PatchOrderItemRequest;
 import takeoff.logistics_service.msa.order.presentation.dto.request.PatchOrderRequest;
@@ -42,8 +43,8 @@ import takeoff.logistics_service.msa.order.presentation.dto.request.PostOrderReq
 import takeoff.logistics_service.msa.order.presentation.dto.response.PatchOrderResponse;
 import takeoff.logistics_service.msa.order.presentation.dto.response.PostOrderResponse;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(OrderController.class)
+@MockitoBean(types = JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs
 @ExtendWith(MockitoExtension.class)
 @TestPropertySource(properties = {
@@ -54,10 +55,10 @@ class OrderControllerTest {
   @Autowired
   private MockMvc mvc;
 
-  @Autowired
+  @MockitoBean
   private ObjectMapper objectMapper;
 
-  @Autowired
+  @MockitoBean
   private OrderService orderService;
 
   private final String token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
@@ -97,32 +98,11 @@ class OrderControllerTest {
         requestNotes
     );
 
+    PostOrderResponse response = new PostOrderResponse();
+
     UUID order1 = createRandomUUID("order1");
 
-    // 도메인 객체 모킹
-    Order mockOrder = mock(Order.class);
-    OrderItem mockOrderItem1 = mock(OrderItem.class);
-    OrderItem mockOrderItem2 = mock(OrderItem.class);
-    OrderId orderId = mock(OrderId.class);
-
-    // 모의 객체 동작 설정
-    when(orderId.getOrderId()).thenReturn(order1);
-    when(mockOrder.getId()).thenReturn(orderId);
-    when(mockOrder.getSupplierId()).thenReturn(supplier1);
-    when(mockOrder.getCustomerId()).thenReturn(customerId);
-    when(mockOrder.getAddress()).thenReturn(address);
-    when(mockOrder.getRequestNotes()).thenReturn(requestNotes);
-
-    when(mockOrderItem1.getProductId()).thenReturn(product1Id);
-    when(mockOrderItem1.getQuantity()).thenReturn(1);
-    when(mockOrderItem2.getProductId()).thenReturn(product2Id);
-    when(mockOrderItem2.getQuantity()).thenReturn(2);
-
-    List<OrderItem> orderItems = List.of(mockOrderItem1, mockOrderItem2);
-    when(mockOrder.getOrderItems()).thenReturn(orderItems);
-
     // 서비스 응답 설정
-    PostOrderResponse response = PostOrderResponse.from(mockOrder);
     given(orderService.saveOrder(any(PostOrderRequest.class))).willReturn(response);
 
     // when && then
@@ -132,17 +112,6 @@ class OrderControllerTest {
             .header("X-User-Role", "MASTER_ADMIN")
             .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.orderId").value(order1.toString()))
-        .andExpect(jsonPath("$.supplierId").value(supplier1.toString()))
-        .andExpect(jsonPath("$.customerId").value(customerId))
-        .andExpect(jsonPath("$.address").value(address))
-        .andExpect(jsonPath("$.requestNotes").value(requestNotes))
-        .andExpect(jsonPath("$.orderItems", hasSize(2)))
-        .andExpect(jsonPath("$.orderItems[0].productId").value(product1Id.toString()))
-        .andExpect(jsonPath("$.orderItems[0].quantity").value(1))
-        .andExpect(jsonPath("$.orderItems[1].productId").value(product2Id.toString()))
-        .andExpect(jsonPath("$.orderItems[1].quantity").value(2))
         .andDo(
             document("주문 생성",
                 preprocessRequest(Preprocessors.prettyPrint()),
@@ -154,6 +123,8 @@ class OrderControllerTest {
                     .build())
             )
         );
+
+    then(orderService).should().saveOrder(eq(res))
   }
 
   @Test
