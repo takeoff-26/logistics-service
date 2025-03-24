@@ -41,6 +41,10 @@ spring:
           uri: lb://order
           predicates:
             - Path=/api/v1/orders/**,/api/v1/app/orders**/
+        - id: delivery
+          uri: lb://delivery
+          predicates:
+            - Path=/api/v1/deliveries/**,/api/v1/app/deliveries/**, /api/v1/deliveryRoutes/**,/api/v1/app/deliveryRoutes/**,/api/v1/app/deliverySequences/**
 #      default-filters:
 #        - name: AddRequestHeader
 #          args:
