@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import takeoff.logistics_service.msa.common.annotation.RoleCheck;
 import takeoff.logistics_service.msa.common.domain.UserInfo;
@@ -26,7 +27,7 @@ public class DeliveryInternalController {
   private final DeliveryService deliveryService;
 
   @GetMapping
-  public List<UUID> findAllDeliveryIdByUser(Long userId) {
+  public List<UUID> findAllDeliveryIdByUser(@RequestParam(name = "userId") Long userId) {
     return deliveryService.findAllDeliveryIdByUser(userId);
   }
 
