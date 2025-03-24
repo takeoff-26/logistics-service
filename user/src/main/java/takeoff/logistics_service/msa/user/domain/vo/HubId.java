@@ -15,7 +15,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class HubId {
 
-    @Column(name = "hub_id", nullable = false)
+    @Column(name = "hub_id")
     private UUID hubIdentifier;
 
     private HubId(UUID hubIdentifier) {

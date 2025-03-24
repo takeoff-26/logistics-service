@@ -4,8 +4,8 @@ POST http://localhost:19000/api/v1/users/signup
 Content-Type: application/json
 
 {
-  "username": "testuser7",
-  "slackEmail": "testuser7@email.com",
+  "username": "master",
+  "slackEmail": "master@email.com",
   "password": "Password1!",
   "role": "MASTER_ADMIN"
 }

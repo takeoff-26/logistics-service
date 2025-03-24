@@ -1,11 +1,14 @@
 package takeoff.logistics_service.msa.user.application.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.user.domain.entity.DeliveryManager;
+import takeoff.logistics_service.msa.user.domain.entity.UserRole;
 import takeoff.logistics_service.msa.user.domain.repository.UserRepository;
 import takeoff.logistics_service.msa.user.domain.service.DeliveryManagerSearchCondition;
 import takeoff.logistics_service.msa.user.domain.service.SearchQueryService;
@@ -24,10 +27,12 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     private final UserRepository userRepository;
     private final SearchQueryService searchQueryService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -39,22 +44,25 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         if (isDuplicate) {
             throw new IllegalArgumentException("해당 사용자 이름과 역할이 이미 존재합니다: " + requestDto.username());
         }
-        int nextSequence = 0;
-        HubId hubId = HubId.from(UUID.fromString(requestDto.identifier()));
+//        int nextSequence = 0;
+//        if (requestDto.role().equals(UserRole.COMPANY_DELIVERY_MANAGER)) {
+//            HubId hubId = HubId.from(UUID.fromString(requestDto.identifier()));
+//
+//            if (requestDto.deliveryManagerType() == DeliveryManagerType.COMPANY_DELIVERY_MANAGER) {
+//                nextSequence = userRepository.countCompanyDeliveryManagersByHubId(hubId);
+//            } else if (requestDto.deliveryManagerType() == DeliveryManagerType.HUB_DELIVERY_MANAGER) {
+//                nextSequence = userRepository.countHubDeliveryManagersByHubId(hubId);
+//            } else {
+//                throw new IllegalArgumentException("지원하지 않는 배송 관리자 타입입니다.");
+//            }
+//            if (nextSequence >= 10) {
+//                throw new IllegalStateException("해당 허브에는 최대 10명의 배송 담당자만 등록할 수 있습니다.");
+//            }
+//        }
 
-        if (requestDto.deliveryManagerType() == DeliveryManagerType.COMPANY_DELIVERY_MANAGER) {
-            nextSequence = userRepository.countCompanyDeliveryManagersByHubId(hubId);
-        } else if (requestDto.deliveryManagerType() == DeliveryManagerType.HUB_DELIVERY_MANAGER) {
-            nextSequence = userRepository.countHubDeliveryManagersByHubId(hubId);
-        } else {
-            throw new IllegalArgumentException("지원하지 않는 배송 관리자 타입입니다.");
-        }
-        if (nextSequence >= 10) {
-            throw new IllegalStateException("해당 허브에는 최대 10명의 배송 담당자만 등록할 수 있습니다.");
-        }
-
-        DeliverySequence sequence = DeliverySequence.from(nextSequence);
-        DeliveryManager deliveryManager = requestDto.toEntityWithSequence(sequence);
+        String encodePassword = passwordEncoder.encode(requestDto.password());
+        log.info(encodePassword);
+        DeliveryManager deliveryManager = requestDto.toEntityWithSequence(encodePassword);
         userRepository.save(deliveryManager);
         return PostDeliveryManagerResponseDto.from(deliveryManager);
     }
