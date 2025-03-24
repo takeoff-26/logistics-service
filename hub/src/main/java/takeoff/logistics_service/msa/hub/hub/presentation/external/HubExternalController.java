@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,13 +16,12 @@ import takeoff.logistics_service.msa.common.domain.UserInfo;
 import takeoff.logistics_service.msa.common.domain.UserInfoDto;
 import takeoff.logistics_service.msa.common.domain.UserRole;
 import takeoff.logistics_service.msa.hub.hub.application.service.HubService;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.PaginatedResultApi;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.PatchHubRequest;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.PostHubRequest;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.request.SearchHubRequest;
+import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.PaginatedResultHubResponse;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.PatchHubResponse;
 import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.PostHubResponse;
-import takeoff.logistics_service.msa.hub.hub.presentation.dto.response.SearchHubResponse;
 
 /**
  * @author : hanjihoon
@@ -67,8 +65,8 @@ public class HubExternalController {
     @RoleCheck(roles = {
         UserRole.MASTER_ADMIN,UserRole.COMPANY_MANAGER,UserRole.COMPANY_DELIVERY_MANAGER,
         UserRole.HUB_MANAGER,UserRole.HUB_DELIVERY_MANAGER})
-    public ResponseEntity<PaginatedResultApi<SearchHubResponse>> searchHub(SearchHubRequest request) {
-        return ResponseEntity.ok(PaginatedResultApi.from(hubService.searchHub(request.toApplicationDto())));
+    public ResponseEntity<PaginatedResultHubResponse> searchHub(SearchHubRequest request) {
+        return ResponseEntity.ok(PaginatedResultHubResponse.from(hubService.searchHub(request.toApplicationDto())));
     }
 
 }

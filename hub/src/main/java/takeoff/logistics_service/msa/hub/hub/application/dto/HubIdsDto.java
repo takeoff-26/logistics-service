@@ -2,7 +2,6 @@ package takeoff.logistics_service.msa.hub.hub.application.dto;
 
 import java.util.UUID;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 
 /**
  * @author : hanjihoon

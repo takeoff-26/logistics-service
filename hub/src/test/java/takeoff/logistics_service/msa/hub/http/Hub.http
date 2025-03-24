@@ -27,7 +27,7 @@ Authorization: {{access_token}}
 }
 
 ###
-DELETE {{baseUrl}}/api/v1/hubs/{{hubId}}
+DELETE {{baseUrl}}/api/v1/hubs/110205dd-93bd-4ca3-ad46-b7680c64c5fe
 Authorization: {{access_token}}
 
 ###
