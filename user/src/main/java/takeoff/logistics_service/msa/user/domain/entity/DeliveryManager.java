@@ -48,8 +48,8 @@ public abstract class DeliveryManager extends User {
         this.deliverySequence = deliverySequence;
     }
 
-    public void deleteDeliveryManager() {
-        super.delete();
+    public void deleteDeliveryManager(Long deletedByUserId) {
+        super.delete(deletedByUserId);
     }
 
 }

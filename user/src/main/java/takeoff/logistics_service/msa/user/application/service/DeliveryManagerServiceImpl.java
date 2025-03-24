@@ -7,8 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import takeoff.logistics_service.msa.common.domain.UserInfoDto;
 import takeoff.logistics_service.msa.user.domain.entity.DeliveryManager;
+
 import takeoff.logistics_service.msa.user.domain.entity.UserRole;
+
 import takeoff.logistics_service.msa.user.domain.repository.UserRepository;
 import takeoff.logistics_service.msa.user.domain.service.DeliveryManagerSearchCondition;
 import takeoff.logistics_service.msa.user.domain.service.SearchQueryService;
@@ -20,6 +23,8 @@ import takeoff.logistics_service.msa.user.presentation.dto.request.GetDeliveryMa
 import takeoff.logistics_service.msa.user.presentation.dto.request.PatchDeliveryManagerRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PostDeliveryManagerRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.response.*;
+import static takeoff.logistics_service.msa.user.application.exception.UserErrorCode.*;
+import takeoff.logistics_service.msa.user.application.exception.UserBusinessException;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,14 +41,15 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     @Override
     @Transactional
-    public PostDeliveryManagerResponseDto createDeliveryManager(PostDeliveryManagerRequestDto requestDto) {
+    public PostDeliveryManagerResponseDto createDeliveryManager(PostDeliveryManagerRequestDto requestDto, UserInfoDto userInfoDto) {
         boolean isDuplicate = userRepository.findByUsername(requestDto.username())
                 .filter(user -> user.getRole().equals(requestDto.role()))
                 .isPresent();
 
         if (isDuplicate) {
-            throw new IllegalArgumentException("해당 사용자 이름과 역할이 이미 존재합니다: " + requestDto.username());
+            throw UserBusinessException.from(USERNAME_ALREADY_EXISTS);
         }
+
 //        int nextSequence = 0;
 //        if (requestDto.role().equals(UserRole.COMPANY_DELIVERY_MANAGER)) {
 //            HubId hubId = HubId.from(UUID.fromString(requestDto.identifier()));
@@ -63,17 +69,17 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         String encodePassword = passwordEncoder.encode(requestDto.password());
         log.info(encodePassword);
         DeliveryManager deliveryManager = requestDto.toEntityWithSequence(encodePassword);
+
         userRepository.save(deliveryManager);
         return PostDeliveryManagerResponseDto.from(deliveryManager);
     }
 
     @Override
     @Transactional
-    public PatchDeliveryManagerResponseDto updateDeliveryManager(Long id, PatchDeliveryManagerRequestDto requestDto) {
+    public PatchDeliveryManagerResponseDto updateDeliveryManager(Long id, PatchDeliveryManagerRequestDto requestDto, UserInfoDto userInfoDto) {
         DeliveryManager manager = userRepository.findDeliveryManagerById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 배송 관리자를 찾을 수 없습니다. userId=" + id));
+                .orElseThrow(() -> UserBusinessException.from(DELIVERY_MANAGER_NOT_FOUND));
 
-        // ID 변경을 `DeliveryManager` 내부에서 처리하도록 위임
         if (requestDto.hubId() != null || requestDto.companyId() != null) {
             String newIdentifier = requestDto.hubId() != null ? requestDto.hubId() : requestDto.companyId();
             manager.updateIdentifier(newIdentifier);
@@ -88,14 +94,14 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
     }
 
     @Override
-    public GetDeliveryManagerResponseDto getDeliveryManagerById(Long id) {
+    public GetDeliveryManagerResponseDto getDeliveryManagerById(Long id, UserInfoDto userInfoDto) {
         DeliveryManager manager = userRepository.findDeliveryManagerById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 배송 관리자를 찾을 수 없습니다. userId=" + id));
+                .orElseThrow(() -> UserBusinessException.from(DELIVERY_MANAGER_NOT_FOUND));
         return GetDeliveryManagerResponseDto.from(manager);
     }
 
     @Override
-    public GetDeliveryManagerListResponseDto getAllDeliveryManagers(GetDeliveryManagerListRequestDto requestDto) {
+    public GetDeliveryManagerListResponseDto getAllDeliveryManagers(GetDeliveryManagerListRequestDto requestDto, UserInfoDto userInfoDto) {
         DeliveryManagerSearchCondition condition = requestDto.toCondition();
         Pageable pageable = requestDto.toPageable();
         Page<DeliveryManager> deliveryManagers = searchQueryService.searchDeliveryManagers(condition, pageable);
@@ -109,26 +115,26 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     @Override
     @Transactional
-    public DeleteDeliveryManagerResponseDto deleteDeliveryManager(Long id) {
+    public DeleteDeliveryManagerResponseDto deleteDeliveryManager(Long id, UserInfoDto deletedBy) {
         DeliveryManager manager = userRepository.findDeliveryManagerById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 배송 관리자를 찾을 수 없습니다. userID=" + id));
+                .orElseThrow(() -> UserBusinessException.from(DELIVERY_MANAGER_NOT_FOUND));
 
         if (manager.isDeleted()) {
-            throw new IllegalStateException("이미 삭제된 배송 관리자입니다.");
+            throw UserBusinessException.from(ALREADY_DELETED);
         }
-        manager.deleteDeliveryManager();
+        manager.deleteDeliveryManager(deletedBy.userId());
         return DeleteDeliveryManagerResponseDto.from(manager.getId());
     }
 
     @Override
-    public List<GetDeliveryManagerListInfoDto> getCompanyDeliveryManagersByHubId(UUID hubId) {
+    public List<GetDeliveryManagerListInfoDto> getCompanyDeliveryManagersByHubId(UUID hubId, UserInfoDto userInfoDto) {
         return userRepository.findAllCompanyDeliveryManagersByHubId(HubId.from(hubId)).stream()
                 .map(GetDeliveryManagerListInfoDto::from)
                 .toList();
     }
 
     @Override
-    public List<GetDeliveryManagerListInfoDto> getAllHubDeliveryManagers() {
+    public List<GetDeliveryManagerListInfoDto> getAllHubDeliveryManagers(UserInfoDto userInfoDto) {
         return userRepository.findAllHubDeliveryManagers().stream()
                 .map(GetDeliveryManagerListInfoDto::from)
                 .toList();
