@@ -15,7 +15,7 @@ import takeoff.logistics_service.msa.user.presentation.dto.request.PostDeliveryM
 import takeoff.logistics_service.msa.user.presentation.dto.response.*;
 
 @RestController
-@RequestMapping("/api/v1/delivery-managers")
+@RequestMapping("/api/v1/users/delivery-managers")
 @RequiredArgsConstructor
 public class DeliveryManagerExternalController {
 
