@@ -127,7 +127,7 @@ Authorization: {{access_token}}
 %}
 
 ### 1. 주문 생성 요청
-POST {{host_prefix}}:19011/api/v1/orders
+POST {{host_prefix}}:19000/api/v1/orders
 Content-Type: {{contentType}}
 Authorization: {{access_token}}}
 
@@ -147,3 +147,33 @@ Authorization: {{access_token}}}
 > {%
   client.global.set("orderId", response.body.orderId)
 %}
+
+### 2. 주문 수정
+PATCH {{host_prefix}}:19000/api/v1/orders/{orderId}
+Content-Type: {{contentType}}
+Authorization: {{access_token}}}
+
+{
+  "orderItems": [
+    {
+      "productId": "{{productId}}",
+      "quantity": 10
+    },
+  ]
+}
+
+
+### 3. 주문 삭제
+DELETE {{host_prefix}}:19000/api/v1/orders/{orderId}
+Content-Type: {{contentType}}
+Authorization: {{access_token}}}
+
+### 4. 주문 조회 (기본 조회)
+GET {{host_prefix}}:19000/api/v1/orders/search
+Content-Type: {{contentType}}
+Authorization: {{access_token}}}
+
+### 5. 주문 검색 요청 (허브 ID로 필터링)
+GET {{host_prefix}}/api/v1/orders/search?hubId={{hubId}}
+Content-Type: {{contentType}}
+Authorization: {{access_token}}}
