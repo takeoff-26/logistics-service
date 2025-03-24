@@ -44,6 +44,7 @@ public class CompanyServiceImpl implements CompanyService {
 		try {
 			hubInternalClient.checkHubExists(hubId); // 호출 시 404면 예외 발생
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw CompanyBusinessException.from(CompanyErrorCode.HUB_NOT_FOUND);
 		}
 	}

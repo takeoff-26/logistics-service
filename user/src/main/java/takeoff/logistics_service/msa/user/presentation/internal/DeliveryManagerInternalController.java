@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/app/delivery-managers")
+@RequestMapping("/api/v1/app/users/delivery-managers")
 @RequiredArgsConstructor
 public class DeliveryManagerInternalController {
 

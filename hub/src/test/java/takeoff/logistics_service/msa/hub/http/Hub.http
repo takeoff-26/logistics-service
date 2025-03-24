@@ -6,9 +6,9 @@ Authorization: {{access_token}}
 #X-User-Role: MASTER_ADMIN
 
 {
-  "hubName": "테스트 데이터51",
+  "hubName": "테스트 데이터",
   "locationApi": {
-    "address": "테스트 주소51",
+    "address": "테스트 주소",
     "latitude": 37.514219,
     "longitude": 127.112628
   }
