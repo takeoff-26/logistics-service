@@ -17,6 +17,8 @@ import takeoff.logistics_service.msa.user.presentation.dto.request.GetDeliveryMa
 import takeoff.logistics_service.msa.user.presentation.dto.request.PatchDeliveryManagerRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PostDeliveryManagerRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.response.*;
+import static takeoff.logistics_service.msa.user.application.exception.UserErrorCode.*;
+import takeoff.logistics_service.msa.user.application.exception.UserBusinessException;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +39,7 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
                 .isPresent();
 
         if (isDuplicate) {
-            throw new IllegalArgumentException("해당 사용자 이름과 역할이 이미 존재합니다: " + requestDto.username());
+            throw UserBusinessException.from(USERNAME_ALREADY_EXISTS);
         }
         int nextSequence = 0;
         HubId hubId = HubId.from(UUID.fromString(requestDto.identifier()));
@@ -47,10 +49,10 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         } else if (requestDto.deliveryManagerType() == DeliveryManagerType.HUB_DELIVERY_MANAGER) {
             nextSequence = userRepository.countHubDeliveryManagersByHubId(hubId);
         } else {
-            throw new IllegalArgumentException("지원하지 않는 배송 관리자 타입입니다.");
+            throw UserBusinessException.from(INVALID_DELIVERY_MANAGER_TYPE);
         }
         if (nextSequence >= 10) {
-            throw new IllegalStateException("해당 허브에는 최대 10명의 배송 담당자만 등록할 수 있습니다.");
+            throw UserBusinessException.from(MAX_DELIVERY_MANAGER_EXCEEDED);
         }
 
         DeliverySequence sequence = DeliverySequence.from(nextSequence);
@@ -63,9 +65,8 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
     @Transactional
     public PatchDeliveryManagerResponseDto updateDeliveryManager(Long id, PatchDeliveryManagerRequestDto requestDto) {
         DeliveryManager manager = userRepository.findDeliveryManagerById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 배송 관리자를 찾을 수 없습니다. userId=" + id));
+                .orElseThrow(() -> UserBusinessException.from(DELIVERY_MANAGER_NOT_FOUND));
 
-        // ID 변경을 `DeliveryManager` 내부에서 처리하도록 위임
         if (requestDto.hubId() != null || requestDto.companyId() != null) {
             String newIdentifier = requestDto.hubId() != null ? requestDto.hubId() : requestDto.companyId();
             manager.updateIdentifier(newIdentifier);
@@ -82,7 +83,7 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
     @Override
     public GetDeliveryManagerResponseDto getDeliveryManagerById(Long id) {
         DeliveryManager manager = userRepository.findDeliveryManagerById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 배송 관리자를 찾을 수 없습니다. userId=" + id));
+                .orElseThrow(() -> UserBusinessException.from(DELIVERY_MANAGER_NOT_FOUND));
         return GetDeliveryManagerResponseDto.from(manager);
     }
 
@@ -101,14 +102,14 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     @Override
     @Transactional
-    public DeleteDeliveryManagerResponseDto deleteDeliveryManager(Long id) {
+    public DeleteDeliveryManagerResponseDto deleteDeliveryManager(Long id, Long deletedBy) {
         DeliveryManager manager = userRepository.findDeliveryManagerById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 배송 관리자를 찾을 수 없습니다. userID=" + id));
+                .orElseThrow(() -> UserBusinessException.from(DELIVERY_MANAGER_NOT_FOUND));
 
         if (manager.isDeleted()) {
-            throw new IllegalStateException("이미 삭제된 배송 관리자입니다.");
+            throw UserBusinessException.from(ALREADY_DELETED);
         }
-        manager.deleteDeliveryManager();
+        manager.deleteDeliveryManager(deletedBy);
         return DeleteDeliveryManagerResponseDto.from(manager.getId());
     }
 

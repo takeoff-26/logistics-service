@@ -32,8 +32,10 @@ public class DeliveryManagerExternalController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<DeleteDeliveryManagerResponseDto> deleteDeliveryManager(
-            @PathVariable Long id){
-        return ResponseEntity.ok(deliveryManagerService.deleteDeliveryManager(id));
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long requesterId
+    ){
+        return ResponseEntity.ok(deliveryManagerService.deleteDeliveryManager(id, requesterId));
     }
 
     @GetMapping("/{id}")

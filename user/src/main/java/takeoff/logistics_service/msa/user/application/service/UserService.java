@@ -9,7 +9,7 @@ public interface UserService {
     PostSignupResponseDto signup(PostSignupRequestDto requestDto);
     GetUserResponseDto getUserById(Long id);
     PatchUserResponseDto updateUser(Long id, PatchUserRequestDto requestDto);
-    DeleteUserResponseDto deleteUser(Long id);
+    DeleteUserResponseDto deleteUser(Long id, Long deletedBy);
     GetUserListResponseDto getAllUsers(GetUserListRequestDto requestDto);
     UserValidationResponseDto validateUser(UserValidationRequestDto requestDto);
     List<GetManagerListInfoDto> getUsersByCompanyManagerId(Long managerId);

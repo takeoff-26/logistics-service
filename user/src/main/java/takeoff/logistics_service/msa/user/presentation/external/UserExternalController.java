@@ -22,7 +22,8 @@ public class UserExternalController {
 
     @PostMapping("/signup")
     public ResponseEntity<PostSignupResponseDto> signup(
-            @Valid @RequestBody PostSignupRequestDto requestDto) {
+            @Valid @RequestBody PostSignupRequestDto requestDto
+    ) {
         return ResponseEntity.ok(userService.signup(requestDto));
     }
 
@@ -48,14 +49,18 @@ public class UserExternalController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<DeleteUserResponseDto> deleteUser(@PathVariable Long userId) {
-        DeleteUserResponseDto responseDto = userService.deleteUser(userId);
+    public ResponseEntity<DeleteUserResponseDto> deleteUser(
+            @PathVariable Long userId,
+            @RequestHeader("X-User-Id") Long requesterId
+    ) {
+        DeleteUserResponseDto responseDto = userService.deleteUser(userId, requesterId);
         return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping
     public ResponseEntity<GetUserListResponseDto> getUsers(
-            @ModelAttribute GetUserListRequestDto requestDto) {
+            @ModelAttribute GetUserListRequestDto requestDto
+    ) {
         return ResponseEntity.ok(userService.getAllUsers(requestDto));
     }
 }

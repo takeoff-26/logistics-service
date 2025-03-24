@@ -1,9 +1,13 @@
 package takeoff.logistics_service.msa.user.presentation.dto.request;
 
 import lombok.Builder;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import takeoff.logistics_service.msa.user.domain.service.DeliveryManagerSearchCondition;
 import takeoff.logistics_service.msa.user.domain.vo.DeliveryManagerType;
+
+import java.util.List;
 
 @Builder
 public record GetDeliveryManagerListRequestDto(
@@ -17,6 +21,14 @@ public record GetDeliveryManagerListRequestDto(
     }
 
     public Pageable toPageable() {
-        return Pageable.ofSize(size != null ? size : 10).withPage(page != null ? page : 0);
+        int defaultPage = (page != null) ? page : 0;
+        int defaultSize = (size != null) ? size : 10;
+        List<Integer> allowedSizes = List.of(10, 30, 50);
+
+        if (!allowedSizes.contains(defaultSize)) {
+            defaultSize = 10;
+        }
+
+        return PageRequest.of(defaultPage, defaultSize, Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 }

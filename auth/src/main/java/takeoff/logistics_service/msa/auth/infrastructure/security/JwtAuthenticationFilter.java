@@ -13,6 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import takeoff.logistics_service.msa.auth.application.client.UserServiceFeignClient;
 import takeoff.logistics_service.msa.auth.application.dto.request.UserValidationRequestDto;
 import takeoff.logistics_service.msa.auth.application.dto.response.UserValidationResponseDto;
+import takeoff.logistics_service.msa.auth.application.exception.AuthBusinessException;
+import takeoff.logistics_service.msa.auth.application.exception.AuthErrorCode;
 import takeoff.logistics_service.msa.auth.domain.service.RedisTokenService;
 import takeoff.logistics_service.msa.auth.presentation.dto.request.LoginRequestDto;
 import takeoff.logistics_service.msa.auth.presentation.dto.response.LoginResponseDto;
@@ -43,8 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UserValidationRequestDto(loginRequest.username(), loginRequest.password()));
 
             if (userValidationResponse == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "사용자 검증 실패했습니다!");
-                return;
+                throw AuthBusinessException.from(AuthErrorCode.LOGIN_FAILED);
             }
 
             String userId = userValidationResponse.userId();
@@ -63,9 +64,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             objectMapper.writeValue(response.getOutputStream(), responseDto);
 
         } catch (FeignException.Unauthorized e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "사용자 검증 실패했습니다!");
+            throw AuthBusinessException.from(AuthErrorCode.LOGIN_FAILED);
         } catch (IOException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "로그인 요청을 읽을 수 없습니다.");
+            throw AuthBusinessException.from(AuthErrorCode.BAD_LOGIN_REQUEST);
         }
     }
 }

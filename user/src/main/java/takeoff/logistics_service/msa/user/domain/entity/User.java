@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import takeoff.logistics_service.msa.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @DiscriminatorColumn(name = "user_role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_user")
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,9 +34,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
 
     @Builder
     protected User(String username, String slackEmail, String password, UserRole role) {
@@ -63,12 +61,12 @@ public class User {
         this.slackEmail = slackEmail;
     }
 
-    public void delete() {
-        this.deletedAt = LocalDateTime.now();
+    public void delete(Long deletedByUserId) {
+        super.delete(deletedByUserId);
     }
 
     public boolean isDeleted() {
-        return this.deletedAt != null;
+        return this.getDeletedAt() != null;
     }
 
 }

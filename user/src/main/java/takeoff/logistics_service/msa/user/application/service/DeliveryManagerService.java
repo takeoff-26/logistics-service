@@ -13,7 +13,7 @@ public interface DeliveryManagerService {
     PatchDeliveryManagerResponseDto updateDeliveryManager(Long id, PatchDeliveryManagerRequestDto requestDto);
     GetDeliveryManagerResponseDto getDeliveryManagerById(Long id);
     GetDeliveryManagerListResponseDto getAllDeliveryManagers(GetDeliveryManagerListRequestDto requestDto);
-    DeleteDeliveryManagerResponseDto deleteDeliveryManager(Long id);
+    DeleteDeliveryManagerResponseDto deleteDeliveryManager(Long id, Long deletedBy);
     List<GetDeliveryManagerListInfoDto> getCompanyDeliveryManagersByHubId(UUID hubId);
     List<GetDeliveryManagerListInfoDto> getAllHubDeliveryManagers();
 
