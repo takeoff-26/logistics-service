@@ -1,7 +1,6 @@
 package takeoff.logisticsservice.msa.delivery.delivery.application;
 
 import static takeoff.logistics_service.msa.common.domain.UserRole.COMPANY_DELIVERY_MANAGER;
-import static takeoff.logistics_service.msa.common.domain.UserRole.COMPANY_MANAGER;
 import static takeoff.logistics_service.msa.common.domain.UserRole.HUB_MANAGER;
 
 import java.util.List;
@@ -35,7 +34,6 @@ public class DeliveryService {
   private final UserClient userClient;
 
 
-  // TODO : 분산 트랜잭션
   @Transactional
   public UUID saveDelivery(PostDeliveryRequestDto dto) {
 
@@ -88,7 +86,7 @@ public class DeliveryService {
     delivery.delete(userId);
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public PaginatedResultDto<SearchDeliveryResponseDto> searchDelivery(
       SearchDeliveryRequestDto dto,
       Long userId,
@@ -132,12 +130,6 @@ public class DeliveryService {
       throw BusinessException.from(CommonErrorCode.FORBIDDEN);
     }
 
-  }
-
-  private void validateCompanyManagerAccess(UUID resourceId, Long userId, UserRole userRole) {
-    if (userRole.equals(COMPANY_MANAGER) && !getCompanyId(userId).equals(resourceId)) {
-      throw BusinessException.from(CommonErrorCode.FORBIDDEN);
-    }
   }
 
   private UUID getHubId(Long userId) {
