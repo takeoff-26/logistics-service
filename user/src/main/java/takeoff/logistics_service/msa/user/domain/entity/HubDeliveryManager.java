@@ -19,7 +19,7 @@ import java.util.UUID;
 public class HubDeliveryManager extends DeliveryManager {
 
     @Embedded
-    private HubId hubId;
+    private HubId hubId;  // 허브 ID 추가
 
     protected HubDeliveryManager(String username, String slackEmail, String password, UserRole role, DeliverySequence deliverySequence) {
         super(username, slackEmail, password, role, deliverySequence, DeliveryManagerType.HUB_DELIVERY_MANAGER);
