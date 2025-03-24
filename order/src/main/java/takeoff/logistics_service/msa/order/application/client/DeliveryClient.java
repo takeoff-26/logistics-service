@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import takeoff.logistics_service.msa.common.config.FeignClientConfig;
 import takeoff.logistics_service.msa.order.application.client.dto.request.PostDeliveryRequestDto;
 import takeoff.logistics_service.msa.order.application.client.dto.request.PostDeliveryRoutesRequestDto;
 
 @Component
-@FeignClient(name = "delivery", url = "http://localhost:19014")
+@FeignClient(name = "delivery", configuration = FeignClientConfig.class)
 public interface DeliveryClient {
 
   @GetMapping("/api/v1/app/deliveries")
@@ -28,9 +29,9 @@ public interface DeliveryClient {
   @PostMapping("api/v1/app/deliveryRoutes")
   List<UUID> saveDeliveryRoute(PostDeliveryRoutesRequestDto dto);
 
-  @GetMapping("api/v1/app/deliveryRoutes")
+  @GetMapping("api/v1/app/deliveryRoutes/{deliveryManagerId}")
   List<UUID> findAllDeliveryRoutes_DeliveryIdByDeliveryManagerId(
-      @RequestParam(name = "deliveryManagerId") Long deliveryManagerId);
+      @PathVariable(name = "deliveryManagerId") Long deliveryManagerId);
 
   @DeleteMapping("api/v1/app/deliveryRoutes/{deliveryId}")
   void deleteDeliveryRoutes(@PathVariable("deliveryId") UUID deliveryId);

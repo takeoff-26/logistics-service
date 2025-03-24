@@ -20,7 +20,7 @@ import takeoff.logisticsservice.msa.delivery.delivery.presentation.dto.request.P
 import takeoff.logisticsservice.msa.delivery.delivery.presentation.dto.request.PostDeliveryRequestDto;
 
 @RestController
-@RequestMapping("/api/vi/app/deliveries")
+@RequestMapping("/api/v1/app/deliveries")
 @RequiredArgsConstructor
 public class DeliveryInternalController {
 
