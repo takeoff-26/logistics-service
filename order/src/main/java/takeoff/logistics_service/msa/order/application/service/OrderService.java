@@ -49,8 +49,10 @@ public class OrderService {
 
   @Transactional
   public PostOrderResponse saveOrder(PostOrderRequest dto) {
-    Order order = Order.builder().supplierId(dto.supplierId()).orderItems(dto.orderItems().stream()
-            .map(orderItemDto -> OrderItem.builder().productId(orderItemDto.productId())
+    Order order = Order.builder().id(UUID.randomUUID()).supplierId(dto.supplierId())
+        .orderItems(dto.orderItems().stream()
+            .map(orderItemDto -> OrderItem.builder().id(UUID.randomUUID())
+                .productId(orderItemDto.productId())
                 .quantity(orderItemDto.quantity()).build()).toList()).customerId(dto.customerId())
         .address(dto.deliveryAddress()).requestNotes(dto.requestNotes()).build();
 
@@ -81,9 +83,9 @@ public class OrderService {
 
     PrePareStockRequestDto prePareStockRequestDto = new PrePareStockRequestDto(stocks);
     stockClient.prepareStock(prePareStockRequestDto);
-
     orderRepository.save(order);
     return PostOrderResponse.from(order);
+
   }
 
   @Transactional
