@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import takeoff.logistics_service.msa.common.domain.UserInfoDto;
 import takeoff.logistics_service.msa.user.domain.entity.CompanyManager;
 import takeoff.logistics_service.msa.user.domain.entity.HubManager;
 import takeoff.logistics_service.msa.user.domain.entity.User;
@@ -14,14 +15,16 @@ import takeoff.logistics_service.msa.user.domain.entity.UserRole;
 import takeoff.logistics_service.msa.user.domain.repository.UserRepository;
 import takeoff.logistics_service.msa.user.domain.service.SearchQueryService;
 import takeoff.logistics_service.msa.user.domain.service.UserSearchCondition;
-import takeoff.logistics_service.msa.user.domain.vo.CompanyId;
-import takeoff.logistics_service.msa.user.domain.vo.HubId;
 import takeoff.logistics_service.msa.user.presentation.common.dto.PaginationDto;
-import takeoff.logistics_service.msa.user.presentation.dto.request.*;
+import takeoff.logistics_service.msa.user.presentation.dto.request.GetUserListRequestDto;
+import takeoff.logistics_service.msa.user.presentation.dto.request.PatchUserRequestDto;
+import takeoff.logistics_service.msa.user.presentation.dto.request.PostSignupRequestDto;
+import takeoff.logistics_service.msa.user.presentation.dto.request.UserValidationRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.response.*;
+import static takeoff.logistics_service.msa.user.application.exception.UserErrorCode.*;
+import takeoff.logistics_service.msa.user.application.exception.UserBusinessException;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,26 +49,26 @@ public class UserServiceImpl implements UserService {
 
     private void validateDuplicateUser(String slackEmail, String username, UserRole role) {
         if (userRepository.findBySlackEmail(slackEmail).isPresent()) {
-            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
+            throw UserBusinessException.from(EMAIL_ALREADY_EXISTS);
         }
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("이미 사용 중인 사용자 이름입니다.");
+            throw UserBusinessException.from(USERNAME_ALREADY_EXISTS);
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public GetUserResponseDto getUserById(Long id) {
+    public GetUserResponseDto getUserById(Long id, UserInfoDto userInfoDto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다. userId=" + id));
+                .orElseThrow(() -> UserBusinessException.from(USER_NOT_FOUND));
         return GetUserResponseDto.from(user);
     }
 
     @Override
     @Transactional
-    public PatchUserResponseDto updateUser(Long id, PatchUserRequestDto requestDto) {
+    public PatchUserResponseDto updateUser(Long id, PatchUserRequestDto requestDto, UserInfoDto userInfoDto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다. userId=" + id));
+                .orElseThrow(() -> UserBusinessException.from(USER_NOT_FOUND));
         user.updateUserInfo(
                 requestDto.username() != null ? requestDto.username() : user.getUsername(),
                 requestDto.slackEmail() != null ? requestDto.slackEmail() : user.getSlackEmail()
@@ -75,18 +78,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public DeleteUserResponseDto deleteUser(Long id) {
+    public DeleteUserResponseDto deleteUser(Long id, UserInfoDto deletedBy) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> UserBusinessException.from(USER_NOT_FOUND));
         if (user.isDeleted()) {
-            throw new IllegalStateException("이미 삭제된 사용자입니다.");
+            throw UserBusinessException.from(ALREADY_DELETED);
         }
-        user.delete();
+        user.delete(deletedBy.userId());
         return DeleteUserResponseDto.from(user);
     }
 
     @Override
-    public GetUserListResponseDto getAllUsers(GetUserListRequestDto requestDto) {
+    public GetUserListResponseDto getAllUsers(GetUserListRequestDto requestDto, UserInfoDto userInfoDto) {
         UserSearchCondition condition = requestDto.toCondition();
         Pageable pageable = requestDto.toPageable();
         Page<User> users = searchQueryService.searchUsers(condition, pageable);
@@ -102,32 +105,32 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserValidationResponseDto validateUser(UserValidationRequestDto requestDto) {
         User user = userRepository.findByUsername(requestDto.username())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> UserBusinessException.from(USERNAME_ALREADY_EXISTS));
         log.info(user.getUsername());
         log.info(String.valueOf(user.getId()));
         log.info(String.valueOf(user.getRole()));
         log.info("실행--------");
 
         if (!passwordEncoder.matches(requestDto.password(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw UserBusinessException.from(INVALID_PASSWORD);
         }
 
         return UserValidationResponseDto.from(user);
     }
 
     @Override
-    public List<GetManagerListInfoDto> getUsersByCompanyManagerId(Long managerId) {
+    public List<GetManagerListInfoDto> getUsersByCompanyManagerId(Long managerId, UserInfoDto userInfoDto) {
         CompanyManager manager = userRepository.findCompanyManagerById(managerId)
-                .orElseThrow(() -> new IllegalArgumentException("회사 매니저를 찾을 수 없습니다."));
+                .orElseThrow(() -> UserBusinessException.from(DELIVERY_MANAGER_NOT_FOUND));
         return userRepository.findAllEmployeesByCompanyId(manager.getCompanyId()).stream()
                 .map(GetManagerListInfoDto::from)
                 .toList();
     }
 
     @Override
-    public List<GetManagerListInfoDto> getUsersByHubManagerId(Long managerId) {
+    public List<GetManagerListInfoDto> getUsersByHubManagerId(Long managerId, UserInfoDto userInfoDto) {
         HubManager manager = userRepository.findHubManagerById(managerId)
-                .orElseThrow(() -> new IllegalArgumentException("허브 매니저를 찾을 수 없습니다."));
+                .orElseThrow(() -> UserBusinessException.from(DELIVERY_MANAGER_NOT_FOUND));
         return userRepository.findAllEmployeesByHubId(manager.getHubId()).stream()
                 .map(GetManagerListInfoDto::from)
                 .toList();
