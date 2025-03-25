@@ -184,6 +184,75 @@ services:
     env_file:
       - .env
 
+  company:
+    build:
+      context: .
+      dockerfile: company/Dockerfile
+    container_name: company
+    depends_on:
+      - user
+    ports:
+      - "19030:19030"
+    networks:
+      - app_network
+    env_file:
+      - .env
+
+  delivery:
+    build:
+      context: .
+      dockerfile: delivery/Dockerfile
+    container_name: delivery
+    depends_on:
+      - user
+    ports:
+      - "19014:19014"
+    networks:
+      - app_network
+    env_file:
+      - .env
+
+  hub:
+    build:
+      context: .
+      dockerfile: hub/Dockerfile
+    container_name: hub
+    depends_on:
+      - user
+    ports:
+      - "19042:19042"
+    networks:
+      - app_network
+    env_file:
+      - .env
+
+  order:
+    build:
+      context: .
+      dockerfile: order/Dockerfile
+    container_name: order
+    depends_on:
+      - user
+    ports:
+      - "19011:19011"
+    networks:
+      - app_network
+    env_file:
+      - .env
+
+  slack:
+    build:
+      context: .
+      dockerfile: slack/Dockerfile
+    container_name: slack
+    depends_on:
+      - user
+    ports:
+      - "19041:19041"
+    networks:
+      - app_network
+    env_file:
+      - .env
 
 networks:
   app_network:
