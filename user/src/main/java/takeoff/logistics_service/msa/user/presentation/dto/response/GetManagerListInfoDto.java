@@ -12,20 +12,17 @@ public record GetManagerListInfoDto(
         String username,
         String slackEmail,
         String role,
-        UUID companyId,
-        UUID hubId
+        String companyId,
+        String  hubId
 ) {
     public static GetManagerListInfoDto from(Employee employee) {
-        CompanyId companyId = employee.getCompanyId();
-        HubId hubId = employee.getHubId();
-
         return GetManagerListInfoDto.builder()
                 .userId(employee.getId())
                 .username(employee.getUsername())
                 .slackEmail(employee.getSlackEmail())
                 .role(employee.getRole().name())
-                .companyId(companyId != null ? companyId.getCompanyIdentifier() : null)
-                .hubId(hubId != null ? hubId.getHubIdentifier() : null)
+                .companyId(employee.getCompanyIdAsString())
+                .hubId(employee.getHubIdAsString())
                 .build();
     }
 }

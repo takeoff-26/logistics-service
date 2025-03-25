@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import takeoff.logistics_service.msa.common.domain.BaseEntity;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Inheritance(strategy = InheritanceType.JOINED)

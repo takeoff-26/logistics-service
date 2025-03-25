@@ -24,7 +24,7 @@ public class CompanyDeliveryManager extends DeliveryManager {
     }
     @Override
     public String getIdentifier() {
-        return this.hubId.getHubIdentifier().toString();
+        return this.hubId != null ? this.hubId.getHubIdentifier().toString() : null;
     }
     public void updateIdentifier(String identifier) {
         this.hubId = HubId.from(UUID.fromString(identifier));

@@ -1,5 +1,6 @@
 package takeoff.logistics_service.msa.user.infrastructure.persistence;
 
+import org.apache.catalina.Manager;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -35,8 +36,8 @@ public interface JpaUserRepository extends JpaRepository<User, Long>, UserReposi
     List<CompanyDeliveryManager> findAllCompanyDeliveryManagersByHubId(HubId hubId);
 
     @Override
-    @Query("SELECT m FROM HubDeliveryManager m WHERE m.hubId IS NULL AND m.deletedAt IS NULL")
-    List<HubDeliveryManager> findAllHubDeliveryManagers();
+    @Query("SELECT m FROM DeliveryManager m WHERE m.deliveryManagerType = 'HUB_DELIVERY_MANAGER' AND m.deletedAt IS NULL")
+    List<DeliveryManager> findAllHubDeliveryManagers();
 
     @Override
     @Query("SELECT e FROM Employee e WHERE e.companyId = :companyId AND e.deletedAt IS NULL")
@@ -59,8 +60,7 @@ public interface JpaUserRepository extends JpaRepository<User, Long>, UserReposi
     int countCompanyDeliveryManagersByHubId(HubId hubId);
 
     @Override
-    @Query("SELECT COUNT(m) FROM HubDeliveryManager m WHERE m.hubId = :hubId AND m.deletedAt IS NULL")
-    int countHubDeliveryManagersByHubId(HubId hubId);
-
+    @Query("SELECT COUNT(m) FROM DeliveryManager m WHERE m.deliveryManagerType = 'HUB_DELIVERY_MANAGER' AND m.deletedAt IS NULL")
+    int countAllHubDeliveryManagers();
 
 }

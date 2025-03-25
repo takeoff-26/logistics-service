@@ -30,28 +30,16 @@ public record PostDeliveryManagerRequestDto(
         @NotBlank(message = "허브 또는 회사 ID는 필수 입력 항목입니다.")
         String identifier, // HubId 또는 CompanyId
 
-        @NotNull(message = "배송 순번은 필수 입력 항목입니다.")
         Integer deliverySequence
 ) {
-    public DeliveryManager toEntity() {
+    public DeliveryManager toEntityWithSequence(String encodedPassword, String identifier, PostDeliveryManagerRequestDto requestDto) {
         return DeliveryManager.create(
                 username,
                 slackEmail,
-                password,
+                encodedPassword,
                 role,
                 identifier,
-                DeliverySequence.from(deliverySequence),
-                deliveryManagerType
-        );
-    }
-    public DeliveryManager toEntityWithSequence(DeliverySequence sequence) {
-        return DeliveryManager.create(
-                username,
-                slackEmail,
-                password,
-                role,
-                identifier,
-                sequence,
+                DeliverySequence.from(requestDto.deliverySequence),
                 deliveryManagerType
         );
     }

@@ -1,8 +1,10 @@
 package takeoff.logistics_service.msa.user.application.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.common.domain.UserInfoDto;
@@ -25,6 +27,7 @@ import takeoff.logistics_service.msa.user.application.exception.UserBusinessExce
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,6 +35,7 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     private final UserRepository userRepository;
     private final SearchQueryService searchQueryService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -43,22 +47,13 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         if (isDuplicate) {
             throw UserBusinessException.from(USERNAME_ALREADY_EXISTS);
         }
-        int nextSequence = 0;
-        HubId hubId = HubId.from(UUID.fromString(requestDto.identifier()));
+        String identifier = requestDto.identifier();
 
-        if (requestDto.deliveryManagerType() == DeliveryManagerType.COMPANY_DELIVERY_MANAGER) {
-            nextSequence = userRepository.countCompanyDeliveryManagersByHubId(hubId);
-        } else if (requestDto.deliveryManagerType() == DeliveryManagerType.HUB_DELIVERY_MANAGER) {
-            nextSequence = userRepository.countHubDeliveryManagersByHubId(hubId);
-        } else {
-            throw UserBusinessException.from(INVALID_DELIVERY_MANAGER_TYPE);
-        }
-        if (nextSequence >= 10) {
-            throw UserBusinessException.from(MAX_DELIVERY_MANAGER_EXCEEDED);
-        }
+        String encodePassword = passwordEncoder.encode(requestDto.password());
+        log.info(encodePassword);
 
-        DeliverySequence sequence = DeliverySequence.from(nextSequence);
-        DeliveryManager deliveryManager = requestDto.toEntityWithSequence(sequence);
+        log.info(String.valueOf(identifier));
+        DeliveryManager deliveryManager = requestDto.toEntityWithSequence(encodePassword, identifier, requestDto);
         userRepository.save(deliveryManager);
         return PostDeliveryManagerResponseDto.from(deliveryManager);
     }

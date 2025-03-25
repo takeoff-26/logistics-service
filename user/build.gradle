@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id("com.epages.restdocs-api-spec") version "0.19.4"
 }
 
 group = 'takeoff.logistics_service.msa'
@@ -32,6 +33,19 @@ dependencies {
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 	implementation project(":common")
 
+	testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
+
+	// Jackson Databind 의존성 (JSON 직렬화 및 역직렬화)
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	// 추가적으로 Jackson2 JSON 인코더/디코더 설정이 필요한 경우
+	implementation 'org.springframework.boot:spring-boot-starter-json'
+
+	//DOCS
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+	testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.19.4'
+	testImplementation 'com.h2database:h2'
+
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -49,10 +63,50 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+compileJava {
+	dependsOn 'clean'
+}
+
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
+}
+
+openapi3 {
+	server = 'http://localhost:19000'
+	title = 'USER API'
+	description = '사용자 서비스 및 인증 서비스 관련된 api 문서 입니다'
+	version = '1.0.0'
+	format = 'json'
+	tagDescriptionsPropertiesFile = 'src/docs/tag-descriptions.yaml'
+
+	separatePublicApi = true
+}
+
+tasks.register('setDocs') {
+	dependsOn 'openapi3'
+	doLast {
+		copy {
+			from "build/api-spec"
+			include "*.json"
+			include "*.yaml"
+			into "build/resources/main/static/springdoc"
+			rename { String fileName ->
+				if (fileName.endsWith('.json')) {
+					return fileName.replace('.json', '-user-service.json')
+				} else if (fileName.endsWith('.yaml')) {
+					return fileName.replace('.yaml', '-user-service.yml')
+				}
+				return fileName
+			}
+		}
+	}
+}
+
+// bootRun 실행 시 문서 생성 태스크를 실행합니다.
+bootRun {
+	dependsOn 'setDocs'
 }
 
 tasks.named('test') {

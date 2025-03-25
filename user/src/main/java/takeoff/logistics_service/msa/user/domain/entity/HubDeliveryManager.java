@@ -16,9 +16,6 @@ import takeoff.logistics_service.msa.user.domain.vo.HubId;
 @Table(name = "p_hub_delivery_manager")
 public class HubDeliveryManager extends DeliveryManager {
 
-    @Embedded
-    private HubId hubId;
-
     protected HubDeliveryManager(String username, String slackEmail, String password, UserRole role, DeliverySequence deliverySequence) {
         super(username, slackEmail, password, role, deliverySequence, DeliveryManagerType.HUB_DELIVERY_MANAGER);
     }
