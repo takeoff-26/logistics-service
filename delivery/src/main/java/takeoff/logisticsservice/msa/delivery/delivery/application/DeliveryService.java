@@ -42,6 +42,7 @@ public class DeliveryService {
     ).companyDeliveryManagerId();
 
     Delivery delivery = Delivery.builder()
+        .id(UUID.randomUUID())
         .orderId(dto.orderID())
         .deliveryManagerId(deliveryManagerId)
         .customerId(dto.customerId())

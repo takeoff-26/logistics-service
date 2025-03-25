@@ -47,7 +47,9 @@ public class Delivery extends BaseEntity {
   private UUID toHubId;
 
   @Builder
-  public Delivery(UUID orderId, Long deliveryManagerId, Long customerId, UUID fromHubId, UUID toHubId) {
+  public Delivery(UUID id, UUID orderId, Long deliveryManagerId, Long customerId, UUID fromHubId,
+      UUID toHubId) {
+    this.id = DeliveryId.from(id);
     this.orderId = orderId;
     this.deliveryManagerId = deliveryManagerId;
     this.customerId = customerId;

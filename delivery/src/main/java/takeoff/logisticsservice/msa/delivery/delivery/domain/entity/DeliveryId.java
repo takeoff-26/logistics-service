@@ -22,7 +22,7 @@ public class DeliveryId implements Serializable {
     return new DeliveryId(id);
   }
 
-  public DeliveryId(UUID id) {
+  private DeliveryId(UUID id) {
     this.id = id;
   }
 }
