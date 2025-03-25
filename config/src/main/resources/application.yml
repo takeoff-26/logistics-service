@@ -6,13 +6,12 @@ spring:
       server:
         git:
           uri: https://github.com/takeoff-26/logistics-service.git
-          default-label: dev
+          default-label: docker
           search-paths: config/configures/**
 
 server:
   port: 8888
-
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:18999/eureka/
+      defaultZone: http://server:18999/eureka/

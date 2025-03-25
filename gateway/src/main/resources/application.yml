@@ -83,13 +83,13 @@ server:
 
 eureka:
   instance:
-    hostname: localhost
+    hostname: server
   client:
     service-url:
-      defaultZone: http://localhost:18999/eureka/  # Eureka 서버의 URL을 지정
+      defaultZone: http://server:18999/eureka/  # Eureka 서버의 URL을 지정
 
 jwt:
-  secret: "cJI/zwDDsqA6ZN9XEZ+jnB86KV0iAx7AF4sXHrmEJkg="
+  secret: ${JWT_SECRET_KEY}
   access-expiration: 3600000  # AccessToken 만료 시간 (1시간)
   refresh-expiration: 604800000  # RefreshToken 만료 시간 (7일)
 

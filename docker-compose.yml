@@ -1,4 +1,6 @@
 services:
+  # 인프라
+
   db:
     container_name: db
     image: postgres:latest
@@ -7,6 +9,12 @@ services:
     environment:
       POSTGRES_USER: sa
       POSTGRES_PASSWORD: sa
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sa" ]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
     networks:
       - app_network
     volumes:
@@ -53,6 +61,124 @@ services:
       - prometheus
     volumes:
       - grafana-storage:/var/lib/grafana  # Grafana 데이터 저장소
+
+  # MSA 모듈
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: server
+    ports:
+      - "18999:18999"
+    networks:
+      - app_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:18999" ]
+      start_period: 10s
+      interval: 5s
+      timeout: 5s
+      retries: 55
+    depends_on:
+      - zipkin
+      - redis
+      - prometheus
+      - grafana
+      - db
+
+  config:
+    build:
+      context: .
+      dockerfile: config/Dockerfile
+    container_name: config
+    depends_on:
+      server:
+        condition: service_healthy
+    ports:
+      - "8888:8888"
+    networks:
+      - app_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    container_name: gateway
+    depends_on:
+      config:
+        condition: service_healthy
+    ports:
+      - "19000:19000"
+    networks:
+      - app_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:19000/actuator/health" ]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
+    env_file:
+      - .env
+
+  user:
+    build:
+      context: .
+      dockerfile: user/Dockerfile
+    container_name: user
+    depends_on:
+      config:
+        condition: service_healthy
+    ports:
+      - "19021:19021"
+    networks:
+      - app_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:19021/actuator/health" ]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
+    env_file:
+      - .env
+
+  auth:
+    build:
+      context: .
+      dockerfile: auth/Dockerfile
+    container_name: auth
+    depends_on:
+      server:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      user:
+        condition: service_healthy
+    ports:
+      - "19022:19022"
+    networks:
+      - app_network
+    env_file:
+      - .env
+
+  product:
+    build:
+      context: .
+      dockerfile: product/Dockerfile
+    container_name: product
+    depends_on:
+      - user
+    ports:
+      - "19001:19001"
+    networks:
+      - app_network
+    env_file:
+      - .env
+
 
 networks:
   app_network:

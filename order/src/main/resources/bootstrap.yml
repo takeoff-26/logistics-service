@@ -7,7 +7,7 @@ spring:
     active: local
   cloud:
     config:
-      uri: http://localhost:8888
+      uri: http://config:8888
 
 eureka:
   instance:
@@ -15,4 +15,4 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://localhost:18999/eureka/
+      defaultZone: http://server:18999/eureka/

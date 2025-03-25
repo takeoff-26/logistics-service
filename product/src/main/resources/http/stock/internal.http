@@ -28,7 +28,7 @@ Content-Type: {{contentType}}
 }
 
 ### 상품 ID 로 가장 재고 많은 결과 얻어오기 (하나만)
-GET {{host}}/api/v1/app/stock?productId=550e8400-e29b-41d4-a716-446655440002
+GET http://localhost:19001/api/v1/app/stock?productId=ad6f9155-4932-4817-bf70-e1f153af8968
 
 
 ### 재고 준비 (여러 상품 일괄)
