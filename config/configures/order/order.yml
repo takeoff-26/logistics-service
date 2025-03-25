@@ -6,6 +6,9 @@ management:
     sampling:
       probability: 1.0
 
+server:
+  port: 19011
+
 springdoc:
   swagger-ui:
     enabled: true
