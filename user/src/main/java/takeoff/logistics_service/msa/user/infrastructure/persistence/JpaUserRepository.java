@@ -35,8 +35,9 @@ public interface JpaUserRepository extends JpaRepository<User, Long>, UserReposi
     List<CompanyDeliveryManager> findAllCompanyDeliveryManagersByHubId(HubId hubId);
 
     @Override
-    @Query("SELECT m FROM HubDeliveryManager m WHERE m.hubId IS NULL AND m.deletedAt IS NULL")
+    @Query("SELECT m FROM HubDeliveryManager m WHERE m.deliveryManagerType = 'HUB_DELIVERY_MANAGER' AND m.deletedAt IS NULL")
     List<HubDeliveryManager> findAllHubDeliveryManagers();
+
 
     @Override
     @Query("SELECT e FROM Employee e WHERE e.companyId = :companyId AND e.deletedAt IS NULL")
