@@ -49,14 +49,17 @@ public class OrderService {
 
   @Transactional
   public PostOrderResponse saveOrder(PostOrderRequest dto) {
-    Order order = Order.builder().supplierId(dto.supplierId()).orderItems(dto.orderItems().stream()
-            .map(orderItemDto -> OrderItem.builder().productId(orderItemDto.productId())
+    Order order = Order.builder().id(UUID.randomUUID()).supplierId(dto.supplierId())
+        .orderItems(dto.orderItems().stream()
+            .map(orderItemDto -> OrderItem.builder().id(UUID.randomUUID())
+                .productId(orderItemDto.productId())
                 .quantity(orderItemDto.quantity()).build()).toList()).customerId(dto.customerId())
         .address(dto.deliveryAddress()).requestNotes(dto.requestNotes()).build();
 
     // 배송 경로 추적
     // TODO : 호출하는 API 가 출발지를 정하는 것은 아니라서 출발 허브 id 를 바꾸는 로직을 리펙터링해도 됨
-    UUID fromHubId = stockClient.getStock(dto.orderItems().get(0).productId()).hubId(); // 상품 소재지 허브
+    UUID fromHubId = stockClient.getStock(dto.orderItems().get(0).productId()).stockId()
+        .hubId(); // 상품 소재지 허브
     UUID toHubId = companyClient.findByCompanyId(dto.companyId()).hubId(); // 고객회사 주소지 허브
     order.registerHub(toHubId);
 
@@ -81,9 +84,9 @@ public class OrderService {
 
     PrePareStockRequestDto prePareStockRequestDto = new PrePareStockRequestDto(stocks);
     stockClient.prepareStock(prePareStockRequestDto);
-
     orderRepository.save(order);
     return PostOrderResponse.from(order);
+
   }
 
   @Transactional
@@ -165,7 +168,7 @@ public class OrderService {
 
 
   private UUID parseHubId(UUID pid) {
-    return stockClient.getStock(pid).hubId();
+    return stockClient.getStock(pid).stockId().hubId();
   }
 
   private UUID getHubId(Long userId) {

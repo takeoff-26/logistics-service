@@ -24,7 +24,6 @@ public class DeliveryRouteService {
   private final DeliverySequenceClientInternalDeliveryRoute deliverySequenceClient;
 
   @Transactional
-
   public List<UUID> saveDeliveryRoutes(PostDeliveryRoutesRequestDto dto) {
     PostHubRouteResponseDto postHubRouteResponseDto = hubClient.postHubRoute(
         new PostHubRouteRequestDto(dto.departureHubId(), dto.destinationHubId()));
@@ -54,13 +53,13 @@ public class DeliveryRouteService {
         .toList();
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public GetDeliveryRouteResponseDto findAllDeliveryRoutesByDeliveryId(UUID deliveryId) {
     List<DeliveryRoute> deliveryRoutes = deliveryRouteRepository.findAllByDeliveryId(deliveryId);
     return GetDeliveryRouteResponseDto.of(deliveryRoutes);
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public List<UUID> findAllDeliveryRoutes_DeliveryIdByDeliveryManagerId(Long deliveryManagerId) {
     List<DeliveryRoute> deliveryRoutes = deliveryRouteRepository.findAllByDeliveryManagerId(
         deliveryManagerId);

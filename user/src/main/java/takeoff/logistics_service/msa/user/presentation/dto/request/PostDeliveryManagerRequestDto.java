@@ -13,35 +13,47 @@ import takeoff.logistics_service.msa.user.domain.vo.DeliverySequence;
 @Builder
 public record PostDeliveryManagerRequestDto(
     @NotBlank(message = "사용자 이름은 필수 입력 항목입니다.")
-        String username,
+    String username,
 
     @NotBlank(message = "이메일은 필수 입력 항목입니다.")
-        @Email(message = "유효한 이메일 형식을 입력해주세요.")
-        String slackEmail,
+    @Email(message = "유효한 이메일 형식을 입력해주세요.")
+    String slackEmail,
 
     @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
-        String password,
+    String password,
 
     @NotNull(message = "사용자 역할은 필수 입력 항목입니다.")
-        UserRole role,
+    UserRole role,
 
     @NotNull(message = "배송 관리자 타입은 필수 입력 항목입니다.")
-        DeliveryManagerType deliveryManagerType,
-
+    DeliveryManagerType deliveryManagerType,
 
     UUID identifier, // HubId 또는 CompanyId
 
     Integer deliverySequence
 ) {
-    public DeliveryManager toEntityWithSequence(String encodePassword,UUID identifier, PostDeliveryManagerRequestDto requestDto) {
-        return DeliveryManager.create(
-                username,
-                slackEmail,
-                encodePassword,
-                role,
-                identifier,
-                DeliverySequence.from(requestDto.deliverySequence()),
-                deliveryManagerType
+
+  public DeliveryManager toEntityWithSequence(String encodePassword, UUID identifier,
+      PostDeliveryManagerRequestDto requestDto) {
+    return switch (deliveryManagerType) {
+      case HUB_DELIVERY_MANAGER -> DeliveryManager.create(
+            username,
+            slackEmail,
+            encodePassword,
+            role,
+            UUID.randomUUID(),
+            DeliverySequence.from(requestDto.deliverySequence()),
+            deliveryManagerType
         );
-    }
+      case COMPANY_DELIVERY_MANAGER -> DeliveryManager.create(
+           username,
+           slackEmail,
+           encodePassword,
+           role,
+           identifier,
+           DeliverySequence.from(requestDto.deliverySequence()),
+           deliveryManagerType
+       );
+    };
+  }
 }

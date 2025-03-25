@@ -3,6 +3,7 @@ package takeoff.logisticsservice.msa.delivery.delivery.presentation.external;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import takeoff.logistics_service.msa.common.annotation.RoleCheck;
@@ -25,7 +26,7 @@ public class DeliveryExternalController {
   @RoleCheck(roles = {UserRole.MASTER_ADMIN, UserRole.COMPANY_MANAGER, UserRole.HUB_MANAGER,
       UserRole.COMPANY_DELIVERY_MANAGER, UserRole.HUB_DELIVERY_MANAGER})
   public ResponseEntity<PaginatedResultApi<SearchDeliveryResponse>> searchDelivery(
-      SearchDeliveryRequest request,
+      @ModelAttribute SearchDeliveryRequest request,
       @UserInfo UserInfoDto user
   ) {
     return ResponseEntity.ok()

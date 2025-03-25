@@ -47,8 +47,9 @@ public class Order extends BaseEntity {
   private String requestNotes;
 
   @Builder
-  Order(UUID supplierId, List<OrderItem> orderItems,
+  Order(UUID id, UUID supplierId, List<OrderItem> orderItems,
       Long customerId,  String address, String requestNotes) {
+    this.id = OrderId.from(id);
     this.supplierId = supplierId;
     this.orderItems = orderItems;
     this.customerId = customerId;

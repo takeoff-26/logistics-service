@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableFeignClients
-@ComponentScan({"takeoff.logistics_service.msa.common", "takeoff.logistics_service.msa.delivery"})
+@ComponentScan({"takeoff.logistics_service.msa.common", "takeoff.logisticsservice.msa.delivery"})
 
 public class DeliveryApplication {
 

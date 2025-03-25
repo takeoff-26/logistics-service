@@ -5,6 +5,9 @@ spring:
     web-application-type: reactive  # Spring 애플리케이션이 리액티브 웹 애플리케이션으로 설정됨
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
       routes:
         - id: auth
           uri: lb://auth
@@ -14,6 +17,10 @@ spring:
           uri: lb://user
           predicates:
             - Path=/api/v1/users/**,/api/v1/app/users/**
+        - id: user-internal
+          uri: lb://user
+          predicates:
+            - Path=/api/v1/app/users/**
         - id: company
           uri: lb://company
           predicates:
@@ -33,7 +40,16 @@ spring:
         - id: order
           uri: lb://order
           predicates:
-            - Path=/api/v1/orders/**,/api/v1/app/orders/**
+            - Path=/api/v1/orders/**,/api/v1/app/orders**/,,/springdoc/openapi3-order-service.json
+        - id: delivery
+          uri: lb://delivery
+          predicates:
+            - Path=/api/v1/deliveries/**,/api/v1/app/deliveries/**,/api/v1/deliveryRoutes/**,/api/v1/app/deliveryRoutes/**,/api/v1/app/deliverySequences/**,,/springdoc/openapi3-delivery-service.json
+#      default-filters:
+#        - name: AddRequestHeader
+#          args:
+#            name: Authorization
+#            value: "{Authorization}"
 
 springdoc:
   swagger-ui:
@@ -66,6 +82,8 @@ server:
   port: 19000
 
 eureka:
+  instance:
+    hostname: localhost
   client:
     service-url:
       defaultZone: http://localhost:18999/eureka/  # Eureka 서버의 URL을 지정
