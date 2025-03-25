@@ -2,12 +2,11 @@ package takeoff.logistics_service.msa.user.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @Embeddable
 @Getter
@@ -15,7 +14,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class HubId {
 
-    @Column(name = "hub_id", nullable = false)
+    @Column(name = "hub_id")
     private UUID hubIdentifier;
 
     private HubId(UUID hubIdentifier) {

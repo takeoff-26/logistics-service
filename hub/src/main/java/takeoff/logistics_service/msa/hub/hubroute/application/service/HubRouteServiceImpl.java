@@ -15,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.FindHubRoutesDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubAllListResponseDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
-import takeoff.logistics_service.msa.hub.hubroute.application.dto.client.HubClient;
-import takeoff.logistics_service.msa.hub.hubroute.application.dto.client.NaverRequestClient;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.HubIdsDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostDeliveryHubRouteRequestDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHubRouteRequestDto;
@@ -28,6 +26,8 @@ import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.PostH
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.PutHubRouteResponseDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.exception.HubRouteBusinessException;
 import takeoff.logistics_service.msa.hub.hubroute.application.exception.HubRouteErrorCode;
+import takeoff.logistics_service.msa.hub.hubroute.application.service.client.HubClient;
+import takeoff.logistics_service.msa.hub.hubroute.application.service.client.NaverRequestClient;
 import takeoff.logistics_service.msa.hub.hubroute.domain.entity.HubRoute;
 import takeoff.logistics_service.msa.hub.hubroute.domain.repository.HubRouteRepository;
 
@@ -48,7 +48,6 @@ public class HubRouteServiceImpl implements HubRouteService {
     private static final int EARTH_RADIUS_KM = 6371;
 
     @Override
-    @Cacheable(value = "hubRoutes", key = "#requestDto.fromHubId + '-' + #requestDto.toHubId")
     public PostHubRouteResponseDto createHubRoute(PostHubRouteRequestDto requestDto) {
 
         List<GetRouteResponseDto> responseToHub = hubClient.findByToHubIdAndFromHubId(
@@ -72,7 +71,6 @@ public class HubRouteServiceImpl implements HubRouteService {
     //P2P, Hub To Hub Relay 구현
     //데이터베이스에 경로가 없어도 경로를 구해서 저장하게끔 구현
     @Override
-    @Cacheable(value = "hubRoutes", key = "#request.fromHubId + '-' + #request.toHubId")
     public HubRoutesDto getDeliveryHubRouteList(PostDeliveryHubRouteRequestDto request) {
         List<HubAllListResponseDto> allHubs = hubClient.findAllHubs();
 

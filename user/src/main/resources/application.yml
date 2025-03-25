@@ -11,7 +11,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -25,14 +25,3 @@ eureka:
       defaultZone: http://localhost:18999/eureka/
   instance:
     prefer-ip-address: true  # 서비스 등록 시 IP 주소 사용
-
-springdoc:
-  swagger-ui:
-    enabled: true
-    path: /docs
-    url: /springdoc/openapi3-user-service.json
-    operations-sorter: method
-    tags-sorter: alpha
-  api-docs:
-    enabled: true
-    path: /api-docs-user-service

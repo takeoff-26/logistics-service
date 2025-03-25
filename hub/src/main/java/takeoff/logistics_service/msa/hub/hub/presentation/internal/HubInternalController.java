@@ -39,8 +39,7 @@ public class HubInternalController {
     @PostMapping("/stopover")
     @RoleCheck(roles = {UserRole.MASTER_ADMIN,UserRole.HUB_MANAGER,UserRole.HUB_DELIVERY_MANAGER})
     public List<GetRouteResponse> findByToHubIdAndFromHubId(@RequestBody HubIds hubIds) {
-        return (hubService.findByToHubIdAndFromHubId(hubIds.toApplicationDto()))
-            .stream()
+        return hubService.findByToHubIdAndFromHubId(hubIds.toApplicationDto()).stream()
             .map(GetRouteResponse::from)
             .toList();
     }
@@ -50,9 +49,8 @@ public class HubInternalController {
         UserRole.MASTER_ADMIN,UserRole.COMPANY_MANAGER,UserRole.COMPANY_DELIVERY_MANAGER,
         UserRole.HUB_MANAGER,UserRole.HUB_DELIVERY_MANAGER})
     public List<GetAllHubs> findByAllHub() {
-        return hubService.findAllHub()
-            .stream()
+        return (hubService.findAllHub().stream()
             .map(GetAllHubs::from)
-            .toList();
+            .toList());
     }
 }

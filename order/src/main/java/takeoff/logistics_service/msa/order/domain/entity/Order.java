@@ -37,6 +37,9 @@ public class Order extends BaseEntity {
   @Column(name = "delivery_id", nullable = false)
   private UUID deliveryId;
 
+  @Column(name = "managed_hub_id", nullable = false)
+  private UUID managedHubId;
+
   @Column(name = "delivery_address", nullable = false)
   private String address;
 
@@ -44,14 +47,22 @@ public class Order extends BaseEntity {
   private String requestNotes;
 
   @Builder
-  Order(UUID supplierId, List<OrderItem> orderItems,
-      Long customerId, UUID deliveryId, String address, String requestNotes) {
+  Order(UUID id, UUID supplierId, List<OrderItem> orderItems,
+      Long customerId,  String address, String requestNotes) {
+    this.id = OrderId.from(id);
     this.supplierId = supplierId;
-    this.orderItems = orderItems;
     this.customerId = customerId;
     this.address = address;
     this.requestNotes = requestNotes;
+
+    this.orderItems = orderItems != null ? orderItems : new ArrayList<>();
+    this.orderItems.forEach(item -> item.enrollOrder(this));
   }
+
+  public void registerHub(UUID managedHubId) {
+    this.managedHubId = managedHubId;
+  }
+
 
   public void modifyDeliveryId(UUID deliveryId) {
     this.deliveryId = deliveryId;

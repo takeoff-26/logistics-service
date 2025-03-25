@@ -2,7 +2,6 @@ package takeoff.logistics_service.msa.order.infrastructure.persistence;
 
 import com.querydsl.core.types.dsl.ComparableExpression;
 import com.querydsl.core.types.dsl.SimpleExpression;
-import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
@@ -29,4 +28,5 @@ public interface JpaOrderRepository extends
     bindings.bind(root.supplierId).first(SimpleExpression::eq);
     bindings.bind(root.createdAt).first(ComparableExpression::goe);
   }
+
 }

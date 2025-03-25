@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.common.domain.UserInfoDto;
 import takeoff.logistics_service.msa.company.application.client.HubInternalClient;
-import takeoff.logistics_service.msa.company.application.dto.request.PutCompanyRequestDto;
 import takeoff.logistics_service.msa.company.application.dto.request.PostCompanyRequestDto;
+import takeoff.logistics_service.msa.company.application.dto.request.PutCompanyRequestDto;
 import takeoff.logistics_service.msa.company.application.dto.request.SearchCompanyRequestDto;
 import takeoff.logistics_service.msa.company.application.dto.response.GetCompanyResponseDto;
 import takeoff.logistics_service.msa.company.application.dto.response.PaginatedResultDto;
-import takeoff.logistics_service.msa.company.application.dto.response.PutCompanyResponseDto;
 import takeoff.logistics_service.msa.company.application.dto.response.PostCompanyResponseDto;
+import takeoff.logistics_service.msa.company.application.dto.response.PutCompanyResponseDto;
 import takeoff.logistics_service.msa.company.application.exception.CompanyBusinessException;
 import takeoff.logistics_service.msa.company.application.exception.CompanyErrorCode;
 import takeoff.logistics_service.msa.company.domain.entity.Company;
@@ -44,6 +44,7 @@ public class CompanyServiceImpl implements CompanyService {
 		try {
 			hubInternalClient.checkHubExists(hubId); // 호출 시 404면 예외 발생
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw CompanyBusinessException.from(CompanyErrorCode.HUB_NOT_FOUND);
 		}
 	}
