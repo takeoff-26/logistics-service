@@ -32,7 +32,13 @@ services:
     container_name: redis
     image: redis:latest
     ports:
-      - "6379:6379"  # 레디스 기본 포트
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
     networks:
       - app_network
 
@@ -155,7 +161,7 @@ services:
       server:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
       user:
         condition: service_healthy
     ports:
