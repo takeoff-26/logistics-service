@@ -56,6 +56,7 @@
 - [Postgres Lock Timeout](https://github.com/takeoff-26/logistics-service/wiki/Troubleshooting:Lock-Time-Out)
 - [RedisCache 직렬화 역직렬화 문제](https://github.com/takeoff-26/logistics-service/wiki/Troubleshooting:-RedisCache-%EC%A7%81%EB%A0%AC%ED%99%94-%EC%97%AD%EC%A7%81%EB%A0%AC%ED%99%94-%EB%AC%B8%EC%A0%9C)
 - [외부 api 호출시 사용하는 보상트랜잭션](https://github.com/takeoff-26/logistics-service/wiki/Troubleshooting:-%EC%99%B8%EB%B6%80-api-%ED%98%B8%EC%B6%9C%EC%8B%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B3%B4%EC%83%81%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98)
+- [비관적 LOCK, 낙관적 LOCK](https://github.com/takeoff-26/logistics-service/wiki/Troubleshooting:-%EB%82%99%EA%B4%80%EC%A0%81-LOCK,-%EB%B9%84%EA%B4%80%EC%A0%81-LOCK)
 
 ## 💡 Refactoring:리팩토링
 - [의존관계 역방향 제거](https://github.com/takeoff-26/logistics-service/wiki/Refactoring:-%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84-%EC%97%AD%EB%B0%A9%ED%96%A5-%EC%A0%9C%EA%B1%B0)
