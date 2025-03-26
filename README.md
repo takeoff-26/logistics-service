@@ -61,6 +61,8 @@
 - [의존관계 역방향 제거](https://github.com/takeoff-26/logistics-service/wiki/Refactoring:-%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84-%EC%97%AD%EB%B0%A9%ED%96%A5-%EC%A0%9C%EA%B1%B0)
 - [Spring Circuit Breaker 적용](https://github.com/takeoff-26/logistics-service/wiki/Refactoring:-Spring-Circuit-Breaker-%EC%A0%81%EC%9A%A9)
 
+## API 산출
+- [API](https://github.com/takeoff-26/logistics-service/wiki/API)
 
 ## 요구사항
 
