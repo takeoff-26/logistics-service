@@ -1,16 +1,17 @@
 # **take_off**
 
 ## 🔗 목차
-[![프로젝트 소개](https://img.shields.io/badge/📌-프로젝트_소개-1F3A53?style=flat-square&logoColor=white)](#프로젝트-개요)
-[![기술 스택](https://img.shields.io/badge/🛠️-기술_스택-24435C?style=flat-square&logoColor=white)](#기술) 
-[![실행 방법](https://img.shields.io/badge/💻-실행_방법-294C65?style=flat-square&logoColor=white)](#실행-방법) 
-[![설계 산출물](https://img.shields.io/badge/📐-설계_산출물-2E556E?style=flat-square&logoColor=white)](#설계산출물)
-[![컨벤션](https://img.shields.io/badge/📋-컨벤션-335E77?style=flat-square&logoColor=white)](#컨벤션)
-[![공통 관심사](https://img.shields.io/badge/🌐-공통_관심사-335E77?style=flat-square&logoColor=white)](#공통-관심사)
-[![트러블슈팅](https://img.shields.io/badge/🔍-트러블슈팅-2E556E?style=flat-square&logoColor=white)](#트러블슈팅)
-[![리팩토링](https://img.shields.io/badge/♻️-리팩토링-294C65?style=flat-square&logoColor=white)](#리팩토링)
-[![요구사항](https://img.shields.io/badge/📝-요구사항-1F3A53?style=flat-square&logoColor=white)](#요구사항)
-[![팀원 소개](https://img.shields.io/badge/👥-팀원_소개-1A314A?style=flat-square&logoColor=white)](#팀원-소개)
+
+[![프로젝트 소개](https://img.shields.io/badge/📌-프로젝트_소개-1F3A53?style=flat-square&logoColor=white)](#-프로젝트-개요)
+[![기술 스택](https://img.shields.io/badge/🛠️-기술_스택-24435C?style=flat-square&logoColor=white)](#️-기술-스택) 
+[![실행 방법](https://img.shields.io/badge/💻-실행_방법-294C65?style=flat-square&logoColor=white)](#-실행-방법) 
+[![설계 산출물](https://img.shields.io/badge/📐-설계_산출물-2E556E?style=flat-square&logoColor=white)](#-설계-산출물)
+[![컨벤션](https://img.shields.io/badge/📋-컨벤션-335E77?style=flat-square&logoColor=white)](#-컨벤션)   
+[![공통 관심사](https://img.shields.io/badge/🌐-공통_관심사-335E77?style=flat-square&logoColor=white)](#-공통-관심사)
+[![트러블슈팅](https://img.shields.io/badge/🔍-트러블슈팅-2E556E?style=flat-square&logoColor=white)](#-트러블슈팅)
+[![리팩토링](https://img.shields.io/badge/♻️-리팩토링-294C65?style=flat-square&logoColor=white)](#️-리팩토링)
+[![요구사항](https://img.shields.io/badge/📝-요구사항-1F3A53?style=flat-square&logoColor=white)](#-요구사항)
+[![팀원 소개](https://img.shields.io/badge/👥-팀원_소개-1A314A?style=flat-square&logoColor=white)](#️-팀원-소개)
 
 ---
 
@@ -267,7 +268,7 @@ git clone https://github.com/takeoff-26/logistics-service.git
  
 ---
 
-## 🙆🏻‍♀️🙆 팀원 소개
+## 👥 팀원 소개
 |     멤&nbsp;&nbsp;&nbsp;&nbsp;버                                   |                     역할               | 소감                                                                                                                                                                                                                           |
 |----------------------------------------------|----------------------------------------------------------|------------------------------|
 | [한지훈](https://github.com/hanjihoon03)  | Leader. 허브, 허브 경로 생성, 슬랙 | MSA 프로젝트는 처음이여서 고려할 점도 많고 독립적으로 동작 하고 각 서비스간 통신을 해 데이터를 주고 받는 과정이 어려웠고 좀 더 많은 것을 적용하지 못한 아쉬움과 일정 관리의 부족함으로 시간이 부족했던게 많은 여러모로 아쉬운 프로젝트였습니다.                                                                                                              |
