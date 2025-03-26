@@ -2,8 +2,8 @@
 
 ## 🔗 목차
 
-[![기술 스택](https://img.shields.io/badge/🛠️-기술_스택-24435C?style=flat-square&logoColor=white)](#️-기술-스택) 
 [![실행 방법](https://img.shields.io/badge/💻-실행_방법-294C65?style=flat-square&logoColor=white)](#-실행-방법) 
+[![기술 스택](https://img.shields.io/badge/🛠️-기술_스택-24435C?style=flat-square&logoColor=white)](#️-기술-스택) 
 [![설계 산출물](https://img.shields.io/badge/📐-설계_산출물-2E556E?style=flat-square&logoColor=white)](#-설계-산출물)
 [![컨벤션](https://img.shields.io/badge/📋-컨벤션-335E77?style=flat-square&logoColor=white)](#-컨벤션)
 [![공통 관심사](https://img.shields.io/badge/🌐-공통_관심사-335E77?style=flat-square&logoColor=white)](#-공통-관심사)
