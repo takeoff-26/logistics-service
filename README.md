@@ -67,7 +67,7 @@ git clone https://github.com/takeoff-26/logistics-service.git
 
 - **API 문서**: [API 명세](https://teamsparta.notion.site/API-1b42dc3ef51480d5a411d1c15c6ccdc7)  
 - **ERD 설계**: [ERD 문서](https://teamsparta.notion.site/ERD-1b52dc3ef51480638c01f87086c52bd8)  
-- **아키텍처 문서**: [아키텍처 개요](https://github.com/takeoff-26/logistics-service/wiki/aggregate-map)  
+- **아키텍처 문서**: [아키텍처 개요](https://github.com/takeoff-26/logistics-service/wiki/architecture)  
 - **애그리게이트 맵**: [Aggregate Map](https://github.com/takeoff-26/logistics-service/wiki/aggregate-map)
 - **API 산출**: [API 문서](https://github.com/takeoff-26/logistics-service/wiki/API)  
 
