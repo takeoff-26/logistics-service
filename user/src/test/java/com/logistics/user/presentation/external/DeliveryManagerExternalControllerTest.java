@@ -7,13 +7,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logistics_service.msa.user.UserApplication;
+import takeoff.logistics_service.msa.user.application.client.CompanyClient;
+import takeoff.logistics_service.msa.user.application.client.HubClient;
 import takeoff.logistics_service.msa.user.application.service.DeliveryManagerService;
 import takeoff.logistics_service.msa.user.domain.entity.UserRole;
 import takeoff.logistics_service.msa.user.domain.vo.DeliveryManagerType;
@@ -21,6 +25,7 @@ import takeoff.logistics_service.msa.user.presentation.common.dto.PaginationDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PatchDeliveryManagerRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.request.PostDeliveryManagerRequestDto;
 import takeoff.logistics_service.msa.user.presentation.dto.response.*;
+import takeoff.logistics_service.msa.user.presentation.external.DeliveryManagerExternalController;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @SpringBootTest(classes = UserApplication.class)
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs(uriPort = 19000)
@@ -54,6 +60,12 @@ class DeliveryManagerExternalControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private CompanyClient companyClient;
+
+    @MockitoBean
+    private HubClient hubClient;
 
     private final UUID testHubId = UUID.nameUUIDFromBytes("hub-for-test".getBytes());
 
@@ -82,7 +94,7 @@ class DeliveryManagerExternalControllerTest {
                         .build());
 
 
-        mockMvc.perform(post("/api/v1/delivery-managers/create")
+        mockMvc.perform(post("/api/v1/users/delivery-managers/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andExpect(status().isOk())
@@ -142,7 +154,7 @@ class DeliveryManagerExternalControllerTest {
 
 
         // when & then
-        mockMvc.perform(post("/api/v1/delivery-managers/create")
+        mockMvc.perform(post("/api/v1/users/delivery-managers/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andExpect(status().isOk())
@@ -187,7 +199,7 @@ class DeliveryManagerExternalControllerTest {
         when(deliveryManagerService.getDeliveryManagerById(eq(id), any()))
                 .thenReturn(response);
 
-        mockMvc.perform(get("/api/v1/delivery-managers/{id}", id))
+        mockMvc.perform(get("/api/v1/users/delivery-managers/{id}", id))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("delivery-manager/get-by-id",
@@ -225,7 +237,7 @@ class DeliveryManagerExternalControllerTest {
         when(deliveryManagerService.getAllDeliveryManagers(any(), any()))
                 .thenReturn(response);
 
-        mockMvc.perform(get("/api/v1/delivery-managers")
+        mockMvc.perform(get("/api/v1/users/delivery-managers")
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
@@ -281,7 +293,7 @@ class DeliveryManagerExternalControllerTest {
         when(deliveryManagerService.updateDeliveryManager(eq(id), any(), any()))
                 .thenReturn(response);
 
-        mockMvc.perform(patch("/api/v1/delivery-managers/{id}", id)
+        mockMvc.perform(patch("/api/v1/users/delivery-managers/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andExpect(status().isOk())
@@ -317,7 +329,7 @@ class DeliveryManagerExternalControllerTest {
         when(deliveryManagerService.deleteDeliveryManager(eq(id), any()))
                 .thenReturn(DeleteDeliveryManagerResponseDto.from(id));
 
-        mockMvc.perform(delete("/api/v1/delivery-managers/{id}", id))
+        mockMvc.perform(delete("/api/v1/users/delivery-managers/{id}", id))
                 .andExpect(status().isOk())
                 .andDo(document("delivery-manager/delete",
                         preprocessRequest(prettyPrint()),

@@ -9,6 +9,8 @@ import takeoff.logistics_service.msa.user.domain.entity.UserRole;
 import takeoff.logistics_service.msa.user.domain.vo.DeliveryManagerType;
 import takeoff.logistics_service.msa.user.domain.vo.DeliverySequence;
 
+import java.util.UUID;
+
 @Builder
 public record PostDeliveryManagerRequestDto(
     @NotBlank(message = "사용자 이름은 필수 입력 항목입니다.")
@@ -27,10 +29,10 @@ public record PostDeliveryManagerRequestDto(
     @NotNull(message = "배송 관리자 타입은 필수 입력 항목입니다.")
     DeliveryManagerType deliveryManagerType,
 
-        @NotBlank(message = "허브 또는 회사 ID는 필수 입력 항목입니다.")
-        String identifier, // HubId 또는 CompanyId
+    @NotBlank(message = "허브 또는 회사 ID는 필수 입력 항목입니다.")
+    String identifier,
 
-        Integer deliverySequence
+    Integer deliverySequence
 ) {
     public DeliveryManager toEntityWithSequence(String encodedPassword, String identifier, PostDeliveryManagerRequestDto requestDto) {
         return DeliveryManager.create(

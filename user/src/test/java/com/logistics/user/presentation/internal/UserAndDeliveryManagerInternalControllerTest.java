@@ -142,7 +142,7 @@ class UserAndDeliveryManagerInternalControllerTest {
                 List.of(new GetDeliveryManagerListInfoDto(1L, "dm1", "d1@slack.com", "COMPANY_DELIVERY_MANAGER", hubId.toString(), 0))
         );
 
-        mockMvc.perform(get("/api/v1/app/delivery-managers/company")
+        mockMvc.perform(get("/api/v1/app/users/delivery-managers/company")
                         .param("hubId", hubId.toString()))
                 .andExpect(status().isOk())
                 .andDo(document("delivery-manager-internal/get-company-by-hub-id",
@@ -167,7 +167,7 @@ class UserAndDeliveryManagerInternalControllerTest {
                 List.of(new GetDeliveryManagerListInfoDto(1L, "dm1", "d1@slack.com", "HUB_DELIVERY_MANAGER", "hub-id", 0))
         );
 
-        mockMvc.perform(get("/api/v1/app/delivery-managers/hub"))
+        mockMvc.perform(get("/api/v1/app/users/delivery-managers/hub"))
                 .andExpect(status().isOk())
                 .andDo(document("delivery-manager-internal/get-all-hub",
                         preprocessRequest(prettyPrint()),
