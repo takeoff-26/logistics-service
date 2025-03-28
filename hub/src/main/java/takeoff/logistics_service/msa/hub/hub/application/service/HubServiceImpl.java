@@ -76,11 +76,11 @@ public class HubServiceImpl implements HubService {
     @Override
     public List<GetRouteResponseDto> findByToHubIdAndFromHubId(HubIdsDto hubIdsDto) {
 
-        return (hubRepository.findByIdInAndDeletedAtIsNull(
+        return hubRepository.findByIdInAndDeletedAtIsNull(
                 List.of(hubIdsDto.toHubId(), hubIdsDto.fromHubId()))
             .stream()
             .map(GetRouteResponseDto::from)
-            .toList());
+            .toList();
     }
 
     @Override
