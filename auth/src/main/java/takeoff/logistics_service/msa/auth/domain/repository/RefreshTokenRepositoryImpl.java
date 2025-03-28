@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisTokenRepositoryImpl implements RedisTokenRepository {
+public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private static final long REFRESH_TOKEN_EXPIRATION = 7; // 7일
