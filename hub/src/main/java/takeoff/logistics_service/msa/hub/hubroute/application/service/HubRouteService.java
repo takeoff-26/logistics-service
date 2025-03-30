@@ -1,6 +1,7 @@
 package takeoff.logistics_service.msa.hub.hubroute.application.service;
 
 import java.util.UUID;
+import org.springframework.http.ResponseEntity;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostDeliveryHubRouteRequestDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHubRouteRequestDto;
@@ -25,4 +26,5 @@ public interface HubRouteService {
 
     HubRoutesDto getDeliveryHubRouteList(PostDeliveryHubRouteRequestDto request);
 
+    String CreateHubRouteKafka(PostHubRouteRequestDto application);
 }
