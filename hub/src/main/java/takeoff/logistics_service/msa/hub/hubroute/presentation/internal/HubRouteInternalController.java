@@ -38,9 +38,8 @@ public class HubRouteInternalController {
 
     @PostMapping("/kafka")
     @RoleCheck(roles = {UserRole.MASTER_ADMIN,UserRole.HUB_DELIVERY_MANAGER})
-    public ResponseEntity<String> CreateHubRouteKafka(@RequestBody PostHubRouteRequest request) {
-        return ResponseEntity.ok(hubRouteService.CreateHubRouteKafkaRequest(request.toApplication()));
+    public ResponseEntity<String> createHubRouteKafka(@RequestBody PostHubRouteRequest request) {
+        return ResponseEntity.ok(hubRouteService.createHubRouteKafkaRequest(request.toApplication()));
     }
-
 
 }
