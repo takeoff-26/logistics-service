@@ -19,8 +19,8 @@ public class GatewaySecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(exchange -> exchange
-                    .pathMatchers("/api/v1/auth/login", "/auth/token/refresh", "/api/v1/users/signup",
-                        "/api/v1/app/**", "/docs","/springdoc/**", "/api/v1/app/users/validate").permitAll()
+                    .pathMatchers("/api/v1/auth/login", "/auth/token/refresh", "/api/v1/users/signup", "/api/v1/users/**",
+                        "/api/v1/app/**", "/docs","/springdoc/**", "/api/v1/app/users/validate", "/api/v1/delivery-managers/**").permitAll()
                     .anyExchange().permitAll()
                 )
                 .build();

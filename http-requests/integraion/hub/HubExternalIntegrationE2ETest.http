@@ -1,4 +1,6 @@
 ### External
+@baseUrl = http://localhost:19000
+
 POST {{baseUrl}}/api/v1/hubs
 Content-Type: application/json
 Authorization: {{access_token}}

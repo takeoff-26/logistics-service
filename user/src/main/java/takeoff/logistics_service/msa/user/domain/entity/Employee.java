@@ -25,5 +25,13 @@ public abstract class Employee extends User {
         return null;
     }
 
+    public String getCompanyIdAsString() {
+        return getCompanyId() != null ? getCompanyId().getCompanyIdentifier().toString() : null;
+    }
+
+    public String getHubIdAsString() {
+        return getHubId() != null ? getHubId().getHubIdentifier().toString() : null;
+    }
+
     public abstract String getIdentifier();
 }

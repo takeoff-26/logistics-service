@@ -3,12 +3,13 @@ package takeoff.logistics_service.msa.user.presentation.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.UUID;
 import lombok.Builder;
 import takeoff.logistics_service.msa.user.domain.entity.DeliveryManager;
 import takeoff.logistics_service.msa.user.domain.entity.UserRole;
 import takeoff.logistics_service.msa.user.domain.vo.DeliveryManagerType;
 import takeoff.logistics_service.msa.user.domain.vo.DeliverySequence;
+
+import java.util.UUID;
 
 @Builder
 public record PostDeliveryManagerRequestDto(
@@ -28,32 +29,20 @@ public record PostDeliveryManagerRequestDto(
     @NotNull(message = "배송 관리자 타입은 필수 입력 항목입니다.")
     DeliveryManagerType deliveryManagerType,
 
-    UUID identifier, // HubId 또는 CompanyId
+    @NotBlank(message = "허브 또는 회사 ID는 필수 입력 항목입니다.")
+    String identifier,
 
     Integer deliverySequence
 ) {
-
-  public DeliveryManager toEntityWithSequence(String encodePassword, UUID identifier,
-      PostDeliveryManagerRequestDto requestDto) {
-    return switch (deliveryManagerType) {
-      case HUB_DELIVERY_MANAGER -> DeliveryManager.create(
-            username,
-            slackEmail,
-            encodePassword,
-            role,
-            UUID.randomUUID(),
-            DeliverySequence.from(requestDto.deliverySequence()),
-            deliveryManagerType
+    public DeliveryManager toEntityWithSequence(String encodedPassword, String identifier, PostDeliveryManagerRequestDto requestDto) {
+        return DeliveryManager.create(
+                username,
+                slackEmail,
+                encodedPassword,
+                role,
+                identifier,
+                DeliverySequence.from(requestDto.deliverySequence),
+                deliveryManagerType
         );
-      case COMPANY_DELIVERY_MANAGER -> DeliveryManager.create(
-           username,
-           slackEmail,
-           encodePassword,
-           role,
-           identifier,
-           DeliverySequence.from(requestDto.deliverySequence()),
-           deliveryManagerType
-       );
-    };
-  }
+    }
 }

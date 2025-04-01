@@ -19,3 +19,33 @@ springdoc:
   api-docs:
     enabled: true
     path: /api-docs-user-service
+  enable-default-group: false
+  group-configs:
+    - group: User-External
+      display-name: "사용자 외부 API"
+      packages-to-scan:
+        - takeoff.logistics_service.msa.user.presentation.external
+      paths-to-match:
+        - /api/v1/users
+        - /api/v1/users/signup
+        - /api/v1/users/{userId}
+    - group: DeliveryManager-External
+      display-name: "배송 담당자 외부 API"
+      packages-to-scan:
+        - takeoff.logistics_service.msa.user.presentation.external
+      paths-to-match:
+        - /api/v1/users/delivery-managers/**
+    - group: User-Internal
+      display-name: "사용자 내부 API"
+      packages-to-scan:
+        - takeoff.logistics_service.msa.user.presentation.internal
+      paths-to-match:
+        - /api/v1/app/users/validate
+        - /api/v1/app/users/managers/company/users
+        - /api/v1/app/users/managers/hub/users
+    - group: DeliveryManager-Internal
+      display-name: "배송 담당자 내부 API"
+      packages-to-scan:
+        - takeoff.logistics_service.msa.user.presentation.internal
+      paths-to-match:
+        - /api/v1/app/users/delivery-managers/**

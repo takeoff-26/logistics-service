@@ -1,22 +1,18 @@
 package takeoff.logistics_service.msa.user.infrastructure.persistence;
 
-import java.util.List;
-import java.util.Optional;
+import org.apache.catalina.Manager;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import takeoff.logistics_service.msa.user.domain.entity.CompanyDeliveryManager;
-import takeoff.logistics_service.msa.user.domain.entity.CompanyManager;
-import takeoff.logistics_service.msa.user.domain.entity.DeliveryManager;
-import takeoff.logistics_service.msa.user.domain.entity.Employee;
-import takeoff.logistics_service.msa.user.domain.entity.HubDeliveryManager;
-import takeoff.logistics_service.msa.user.domain.entity.HubManager;
-import takeoff.logistics_service.msa.user.domain.entity.User;
+import takeoff.logistics_service.msa.user.domain.entity.*;
 import takeoff.logistics_service.msa.user.domain.repository.UserRepository;
 import takeoff.logistics_service.msa.user.domain.vo.CompanyId;
 import takeoff.logistics_service.msa.user.domain.vo.HubId;
 import takeoff.logistics_service.msa.user.infrastructure.persistence.custom.CustomUserRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface JpaUserRepository extends JpaRepository<User, Long>, UserRepository, JpaSpecificationExecutor<User>, CustomUserRepository {
     @Override
@@ -40,9 +36,8 @@ public interface JpaUserRepository extends JpaRepository<User, Long>, UserReposi
     List<CompanyDeliveryManager> findAllCompanyDeliveryManagersByHubId(HubId hubId);
 
     @Override
-    @Query("SELECT m FROM HubDeliveryManager m WHERE m.deliveryManagerType = 'HUB_DELIVERY_MANAGER' AND m.deletedAt IS NULL")
-    List<HubDeliveryManager> findAllHubDeliveryManagers();
-
+    @Query("SELECT m FROM DeliveryManager m WHERE m.deliveryManagerType = 'HUB_DELIVERY_MANAGER' AND m.deletedAt IS NULL")
+    List<DeliveryManager> findAllHubDeliveryManagers();
 
     @Override
     @Query("SELECT e FROM Employee e WHERE e.companyId = :companyId AND e.deletedAt IS NULL")
@@ -65,8 +60,7 @@ public interface JpaUserRepository extends JpaRepository<User, Long>, UserReposi
     int countCompanyDeliveryManagersByHubId(HubId hubId);
 
     @Override
-    @Query("SELECT COUNT(m) FROM HubDeliveryManager m WHERE m.hubId = :hubId AND m.deletedAt IS NULL")
-    int countHubDeliveryManagersByHubId(HubId hubId);
-
+    @Query("SELECT COUNT(m) FROM DeliveryManager m WHERE m.deliveryManagerType = 'HUB_DELIVERY_MANAGER' AND m.deletedAt IS NULL")
+    int countAllHubDeliveryManagers();
 
 }

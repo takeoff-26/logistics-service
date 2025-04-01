@@ -16,11 +16,7 @@ spring:
         - id: user
           uri: lb://user
           predicates:
-            - Path=/api/v1/users/**,/api/v1/app/users/**
-        - id: user-internal
-          uri: lb://user
-          predicates:
-            - Path=/api/v1/app/users/**
+            - Path=/api/v1/users/**,/api/v1/app/users/**,/api/v1/delivery-managers/**,/springdoc/openapi3-user-service.json
         - id: company
           uri: lb://company
           predicates:
