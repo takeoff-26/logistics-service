@@ -1,4 +1,4 @@
-package takeoff.logistics_service.msa.product.stock.infrastructure.config;
+package takeoff.logistics_service.msa.product.stock.infrastructure.persistence.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
