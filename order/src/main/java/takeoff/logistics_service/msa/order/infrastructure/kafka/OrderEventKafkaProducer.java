@@ -1,12 +1,12 @@
 package takeoff.logistics_service.msa.order.infrastructure.kafka;
 
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import takeoff.logistics_service.msa.order.application.client.dto.request.PostDeliveryRequestDto;
 import takeoff.logistics_service.msa.order.application.service.kafka.OrderEventProducer;
+import takeoff.logistics_service.msa.order.application.service.kafka.dto.KafkaCompanyDto;
+import takeoff.logistics_service.msa.order.application.service.kafka.dto.KafkaToDeliveryDto;
 
 /**
  * @author : hanjihoon
@@ -22,14 +22,15 @@ public class OrderEventKafkaProducer implements OrderEventProducer {
     private final String companyTopicName;
 
     @Override
-    public void sendToDelivery(PostDeliveryRequestDto event) {
-        kafkaTemplate.send(deliveryTopicName, event);
+    public void sendToDelivery(KafkaToDeliveryDto kafkaToDeliverydto) {
+        kafkaTemplate.send(deliveryTopicName, kafkaToDeliverydto);
         log.info(deliveryTopicName , ": 이벤트 발행");
     }
 
     @Override
-    public void sendToCompany(UUID companyId) {
-        kafkaTemplate.send(companyTopicName, companyId);
+    public void sendToCompany(KafkaCompanyDto dto) {
+        kafkaTemplate.send(companyTopicName, dto);
         log.info(companyTopicName + ": 이벤트 발행");
     }
+
 }

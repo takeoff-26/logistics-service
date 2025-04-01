@@ -1,7 +1,8 @@
 package takeoff.logistics_service.msa.order.application.service.kafka;
 
-import java.util.UUID;
-import takeoff.logistics_service.msa.order.application.client.dto.request.PostDeliveryRequestDto;
+import takeoff.logistics_service.msa.order.application.service.kafka.dto.KafkaCompanyDto;
+import takeoff.logistics_service.msa.order.application.service.kafka.dto.KafkaToDeliveryDto;
+import takeoff.logistics_service.msa.order.infrastructure.kafka.dto.KafkaToDelivery;
 
 /**
  * @author : hanjihoon
@@ -9,7 +10,7 @@ import takeoff.logistics_service.msa.order.application.client.dto.request.PostDe
  */
 public interface OrderEventProducer {
 
-    void sendToDelivery(PostDeliveryRequestDto event);
+    void sendToDelivery(KafkaToDeliveryDto kafkaToDeliveryDto);
 
-    void sendToCompany(UUID companyId);
+    void sendToCompany(KafkaCompanyDto dto);
 }

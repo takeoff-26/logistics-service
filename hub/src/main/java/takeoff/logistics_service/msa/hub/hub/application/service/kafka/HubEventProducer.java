@@ -9,4 +9,5 @@ import takeoff.logistics_service.msa.hub.hub.application.dto.kafka.KafkaFromToHu
 public interface HubEventProducer {
     void sendToHubRoute(KafkaFromToHubDto event);
 
+    void sendToDeliveryRoute(KafkaFromToHubDto kafka);
 }

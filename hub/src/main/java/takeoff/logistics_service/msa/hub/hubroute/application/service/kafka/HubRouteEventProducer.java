@@ -8,5 +8,6 @@ import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHu
  */
 public interface HubRouteEventProducer {
     void sendToHub(PostHubRouteRequestDto event);
+    void sendToHubFromDelivery(PostHubRouteRequestDto event);
 }
 

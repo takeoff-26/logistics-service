@@ -9,6 +9,8 @@ import takeoff.logistics_service.msa.company.application.dto.response.GetCompany
 import takeoff.logistics_service.msa.company.application.dto.response.PaginatedResultDto;
 import takeoff.logistics_service.msa.company.application.dto.response.PostCompanyResponseDto;
 import takeoff.logistics_service.msa.company.application.dto.response.PutCompanyResponseDto;
+import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaDeliveryToCompanyDto;
+import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaOrderToCompanyDto;
 
 public interface CompanyService {
 
@@ -21,4 +23,9 @@ public interface CompanyService {
 	void deleteCompany(UUID companyId, UserInfoDto userInfoDto);
 
 	PaginatedResultDto<GetCompanyResponseDto> searchCompany(SearchCompanyRequestDto applicationDto, UserInfoDto userInfoDto);
+
+	//kafka
+	void getCompanyHubIdKafka(KafkaOrderToCompanyDto dto);
+
+	void companyHubIdsKafka(KafkaDeliveryToCompanyDto kafkaDeliveryToCompanyDto);
 }

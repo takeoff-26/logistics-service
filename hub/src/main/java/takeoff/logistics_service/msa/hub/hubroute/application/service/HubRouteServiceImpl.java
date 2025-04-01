@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.FindHubRoutesDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubAllListResponseDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaDeliveryRouteToHubDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaFromToHubListDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.HubIdsDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostDeliveryHubRouteRequestDto;
@@ -34,6 +35,7 @@ import takeoff.logistics_service.msa.hub.hubroute.application.service.client.Nav
 import takeoff.logistics_service.msa.hub.hubroute.application.service.kafka.HubRouteEventProducer;
 import takeoff.logistics_service.msa.hub.hubroute.domain.entity.HubRoute;
 import takeoff.logistics_service.msa.hub.hubroute.domain.repository.HubRouteRepository;
+import takeoff.logistics_service.msa.hub.hubroute.infrastructure.kafka.dto.KafkaDeliveryRouteToHub;
 
 /**
  * @author : hanjihoon
@@ -171,6 +173,17 @@ public class HubRouteServiceImpl implements HubRouteService {
                 return hubRouteRepository.save(hubRoute);
             })
             .map(PostHubRouteResponseDto::from);
+    }
+
+    //kafka DeliveryRoute -> hubRoute
+    //PostHubRouteResponseDto(List<FindHubRoutes> hubAllListResponseList
+    @Override
+    public void deliveryRouteToHubRouteKafka(KafkaDeliveryRouteToHubDto kafkaDeliveryRouteToHubDto) {
+        //from, to hub 찾아오고 경로 계산해서 넘겨야함
+        //여기서 hub에 쏘고 다시 받고 다시 받은 곳에서 경로 계산이랑 반환 값 가지고 딜리버리 라우트에 쏴야함
+        //딜리버리 라우트에서는 .sequenceNumber(1 + postHubRouteResponseDto.hubAllListResponseList().stream().toList().indexOf(route))
+        //이 부분 업데이트 해야함
+        hubRouteEventKafkaProducer.sendToHub(PostHubRouteRequestDto.from(kafkaDeliveryRouteToHubDto));
     }
 
 

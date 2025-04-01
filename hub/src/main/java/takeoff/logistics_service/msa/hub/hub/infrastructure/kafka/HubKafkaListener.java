@@ -27,5 +27,13 @@ public class HubKafkaListener {
         hubService.findByToHubIdAndFromHubIdToKafka(event);
     }
 
+    @KafkaListener(
+        topics = "delivery-route-to-hub-route-to-hub-events",
+        containerFactory = "hubIdsDtoKafkaListenerContainerFactory"
+    )
+    public void handleDeliveryRouteToHubHubRouteToHubResponse(HubIdsDto event) {
+        log.info("허브 응답 수신: {}", event);
+        hubService.findByToHubIdAndFromHubIdToDeliveryKafka(event);
+    }
 
 }

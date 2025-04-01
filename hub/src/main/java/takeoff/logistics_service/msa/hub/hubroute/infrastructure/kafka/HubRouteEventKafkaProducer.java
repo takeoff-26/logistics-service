@@ -18,10 +18,17 @@ public class HubRouteEventKafkaProducer implements HubRouteEventProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final String hubRouteTopicName;
+    private final String deliveryRouteHubRouteTopicName;
 
     @Override
     public void sendToHub(PostHubRouteRequestDto event) {
         kafkaTemplate.send(hubRouteTopicName, event);
         log.info(hubRouteTopicName + ": 이벤트 발행");
+    }
+
+    @Override
+    public void sendToHubFromDelivery(PostHubRouteRequestDto event) {
+        kafkaTemplate.send(deliveryRouteHubRouteTopicName, event);
+        log.info(deliveryRouteHubRouteTopicName + ": 이벤트 발행");
     }
 }

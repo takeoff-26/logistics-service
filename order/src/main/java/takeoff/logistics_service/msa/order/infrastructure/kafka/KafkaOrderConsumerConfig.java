@@ -2,6 +2,7 @@ package takeoff.logistics_service.msa.order.infrastructure.kafka;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import takeoff.logistics_service.msa.order.infrastructure.kafka.dto.KafkaUpdateOrderDeliveryId;
 import takeoff.logistics_service.msa.order.infrastructure.kafka.serializer.DtoDeserializer;
 
 
@@ -35,14 +37,26 @@ public class KafkaOrderConsumerConfig {
         );
     }
     @Bean
-    public ConsumerFactory<String, KafkaFromToHubListDto> kafkaFromToHubListDtoConsumerFactory() {
-        return consumerOrderFactory(KafkaFromToHubListDto.class);
+    public ConsumerFactory<String, UUID> UUIDConsumerFactory() {
+        return consumerOrderFactory(UUID.class);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, KafkaFromToHubListDto> kafkaFromToHubListDtoContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, KafkaFromToHubListDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(kafkaFromToHubListDtoConsumerFactory());
+    public ConcurrentKafkaListenerContainerFactory<String, UUID> UUIDContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, UUID> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(UUIDConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, KafkaUpdateOrderDeliveryId> KafkaUpdateOrderDeliveryIdConsumerFactory() {
+        return consumerOrderFactory(KafkaUpdateOrderDeliveryId.class);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaUpdateOrderDeliveryId> KafkaUpdateOrderDeliveryIdContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, KafkaUpdateOrderDeliveryId> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(KafkaUpdateOrderDeliveryIdConsumerFactory());
         return factory;
     }
 }

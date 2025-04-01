@@ -6,6 +6,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaFromToHubListDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.service.HubRouteService;
+import takeoff.logistics_service.msa.hub.hubroute.infrastructure.kafka.dto.KafkaDeliveryRouteToHub;
 
 /**
  * @author : hanjihoon
@@ -25,6 +26,16 @@ public class HubRouteKafkaListener {
     public void handleHubRouteListResponse(KafkaFromToHubListDto event) {
         log.info("허브 라우트 리스트 응답 수신: {}", event);
         hubRouteService.createHubRouteExecute(event);
+    }
+
+
+    @KafkaListener(
+        topics = "delivery-route-to-hub-events",
+        containerFactory = "kafkaFromToHubListDtoContainerFactory"
+    )
+    public void handleDeliveryRouteToHubResponse(KafkaDeliveryRouteToHub kafkaDeliveryRouteToHub) {
+        log.info("허브 라우트 리스트 응답 수신: {}", kafkaDeliveryRouteToHub);
+        hubRouteService.deliveryRouteToHubRouteKafka(kafkaDeliveryRouteToHub.toApplication());
     }
 
 

@@ -10,6 +10,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import takeoff.logisticsservice.msa.delivery.delivery.infrastructure.kafka.dto.KafkaOrderToDelivery;
 import takeoff.logisticsservice.msa.delivery.delivery.infrastructure.kafka.serializer.DtoDeserializer;
 
 
@@ -43,6 +44,18 @@ public class KafkaDeliveryConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, Long> LongContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Long> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(LongConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, KafkaOrderToDelivery> KafkaOrderToDeliveryConsumerFactory() {
+        return consumerOrderFactory(KafkaOrderToDelivery.class);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaOrderToDelivery> KafkaOrderToDeliveryContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, KafkaOrderToDelivery> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(KafkaOrderToDeliveryConsumerFactory());
         return factory;
     }
 }

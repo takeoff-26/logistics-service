@@ -89,6 +89,11 @@ public class Delivery extends BaseEntity {
     this.deliveryManagerId = deliveryManagerId;
   }
 
+  public void modifyDeliveryToHubAndFromHub(UUID toHubId, UUID fromHubId) {
+    this.toHubId = toHubId;
+    this.fromHubId = fromHubId;
+  }
+
   public UUID getIdLiteral() {
     return id.getId();
   }

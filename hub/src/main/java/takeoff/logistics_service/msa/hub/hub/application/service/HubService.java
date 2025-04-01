@@ -23,6 +23,8 @@ public interface HubService {
 
     PatchHubResponseDto updateHub(UUID hubId, PatchHubRequestDto requestDto);
 
+    void findByToHubIdAndFromHubIdToDeliveryKafka(HubIdsDto hubIdsDto);
+
     void deleteHub(UUID hubId, Long userId);
 
     GetHubResponseDto findByHubId(UUID hubId);

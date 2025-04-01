@@ -16,8 +16,14 @@ public class KafkaDeliveryTopicConfig {
 
     private static final String DELIVERY_TO_SEQUENCE_TOPIC_NAME = "delivery-to-sequence-events";
 
+    private static final String DELIVERY_UPDATE_TO_ORDER_TOPIC_NAME = "delivery-to-update-order-events";
+    private static final String DELIVERY_TO_DELIVERY_ROUTE_TOPIC_NAME = "delivery-to-deliveryRoute_events";
+
     private static final String DELIVERY_SEQUENCE_TOPIC_NAME = "delivery-sequence-events";
     private static final String COMPANY_TOPIC_NAME = "company-events";
+
+    private static final String DELIVERY_ROUTE_TO_HUB_TOPIC_NAME = "delivery-route-to-hub-events";
+    private static final String DELIVERY_TO_COMPANY_TOPIC_NAME = "delivery-to-company-events";
     private static final String STOCK_TOPIC_NAME = "stock-events";
     @Bean
     public NewTopic orderTopic() {
@@ -74,6 +80,42 @@ public class KafkaDeliveryTopicConfig {
     @Bean
     public String deliveryToSequenceTopicName() {
         return DELIVERY_TO_SEQUENCE_TOPIC_NAME;
+    }
+
+    @Bean
+    public NewTopic deliveryToCompanyTopic() {
+        return new NewTopic("delivery-to-company-events", 3, (short) 1);
+    }
+    @Bean
+    public String deliveryToCompanyTopicName() {
+        return DELIVERY_TO_COMPANY_TOPIC_NAME;
+    }
+
+    @Bean
+    public NewTopic deliveryToUpdateOrderTopic() {
+        return new NewTopic("delivery-to-update-order-events", 3, (short) 1);
+    }
+    @Bean
+    public String deliveryToUpdateOrderTopicName() {
+        return DELIVERY_UPDATE_TO_ORDER_TOPIC_NAME;
+    }
+
+    @Bean
+    public NewTopic deliveryToDeliveryRouteTopic() {
+        return new NewTopic("delivery-to-deliveryRoute_events", 3, (short) 1);
+    }
+    @Bean
+    public String deliveryToDeliveryRouteTopicName() {
+        return DELIVERY_TO_DELIVERY_ROUTE_TOPIC_NAME;
+    }
+
+    @Bean
+    public NewTopic deliveryRouteToHubRouteTopic() {
+        return new NewTopic("delivery-route-to-hub-events", 3, (short) 1);
+    }
+    @Bean
+    public String deliveryRouteToHubTopicName() {
+        return DELIVERY_ROUTE_TO_HUB_TOPIC_NAME;
     }
 
 }
