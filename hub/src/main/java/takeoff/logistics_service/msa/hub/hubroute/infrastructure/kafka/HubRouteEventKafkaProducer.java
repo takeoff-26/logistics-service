@@ -16,12 +16,12 @@ import takeoff.logistics_service.msa.hub.hubroute.application.service.kafka.HubR
 @RequiredArgsConstructor
 public class HubRouteEventKafkaProducer implements HubRouteEventProducer {
 
-    private final KafkaTemplate<String, PostHubRouteRequestDto> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final String hubRouteTopicName;
 
     @Override
     public void sendToHub(PostHubRouteRequestDto event) {
         kafkaTemplate.send(hubRouteTopicName, event);
-        log.info(hubRouteTopicName , ": 이벤트 발행");
+        log.info(hubRouteTopicName + ": 이벤트 발행");
     }
 }

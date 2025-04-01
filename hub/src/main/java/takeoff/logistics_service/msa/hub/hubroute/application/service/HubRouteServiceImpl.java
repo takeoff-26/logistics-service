@@ -31,9 +31,9 @@ import takeoff.logistics_service.msa.hub.hubroute.application.exception.HubRoute
 import takeoff.logistics_service.msa.hub.hubroute.application.exception.HubRouteErrorCode;
 import takeoff.logistics_service.msa.hub.hubroute.application.service.client.HubClient;
 import takeoff.logistics_service.msa.hub.hubroute.application.service.client.NaverRequestClient;
+import takeoff.logistics_service.msa.hub.hubroute.application.service.kafka.HubRouteEventProducer;
 import takeoff.logistics_service.msa.hub.hubroute.domain.entity.HubRoute;
 import takeoff.logistics_service.msa.hub.hubroute.domain.repository.HubRouteRepository;
-import takeoff.logistics_service.msa.hub.hubroute.infrastructure.kafka.HubRouteEventKafkaProducer;
 
 /**
  * @author : hanjihoon
@@ -48,7 +48,7 @@ public class HubRouteServiceImpl implements HubRouteService {
     private final HubRouteRepository hubRouteRepository;
     private final HubClient hubClient;
     private final NaverRequestClient naverRequestClient;
-    private final HubRouteEventKafkaProducer hubRouteEventKafkaProducer;
+    private final HubRouteEventProducer hubRouteEventKafkaProducer;
 
     private static final int EARTH_RADIUS_KM = 6371;
     private static final String KAFKA_FAIL_MESSAGE = "내부 메시지 큐에 오류가 있습니다.";

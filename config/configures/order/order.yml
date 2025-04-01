@@ -19,3 +19,11 @@ springdoc:
   api-docs:
     enabled: true
     path: /api-docs-order-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: saga-takeoff-group
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: "*"

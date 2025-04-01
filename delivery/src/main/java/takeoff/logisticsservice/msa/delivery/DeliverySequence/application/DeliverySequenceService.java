@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.client.UserClient;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.client.response.GetDeliveryManagerListInfoDto;
+import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.dto.kafka.KafkaDeliverySequenceCompanyIdDto;
+import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.dto.kafka.KafkaDeliverySequenceListenerDto;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.dto.response.GetCompanyDeliverySequenceResponseDto;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.dto.response.GetHubDeliverySequenceResponseDto;
+import takeoff.logisticsservice.msa.delivery.DeliverySequence.application.kafka.DeliverySequenceEventProducer;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.domain.repository.CompanyDeliverySequenceRepository;
 import takeoff.logisticsservice.msa.delivery.DeliverySequence.domain.repository.HubDeliverySequenceRepository;
 
@@ -21,6 +24,7 @@ public class DeliverySequenceService {
   private final UserClient userClient;
   private final CompanyDeliverySequenceRepository companyDeliverySequenceRepository;
   private final HubDeliverySequenceRepository hubDeliverySequenceRepository;
+  private final DeliverySequenceEventProducer deliverySequenceEventProducer;
 
   @Transactional
   public GetCompanyDeliverySequenceResponseDto findNextCompanyDeliverySequence(
@@ -42,6 +46,22 @@ public class DeliverySequenceService {
 
     return new GetHubDeliverySequenceResponseDto(nextHubDeliveryManager);
   }
+
+  //kafka 리스너
+  @Transactional
+  public void findNextCompanyDeliverySequenceKafka(
+      KafkaDeliverySequenceListenerDto event) {
+    Integer currentSequence = companyDeliverySequenceRepository.findCurrentSequence(event.toHubId())
+        .orElse(-1);
+
+    Long nextCompanyDeliveryManager = determineNextCompanyDeliveryManager(currentSequence,
+        event.toHubId());
+    // 다시 delivery로 send
+    deliverySequenceEventProducer.sendToDelivery(
+        KafkaDeliverySequenceCompanyIdDto.from(
+            event.deliveryId(), nextCompanyDeliveryManager));
+  }
+
 
   private Long determineNextCompanyDeliveryManager(Integer currentSequence, UUID hubId) {
     List<GetDeliveryManagerListInfoDto> companyDeliveryManagers = userClient.findAllCompanyDeliveryManagerByHubId(
