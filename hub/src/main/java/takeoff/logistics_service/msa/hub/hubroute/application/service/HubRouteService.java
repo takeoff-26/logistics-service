@@ -1,7 +1,9 @@
 package takeoff.logistics_service.msa.hub.hubroute.application.service;
 
 import java.util.UUID;
+import reactor.core.publisher.Mono;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaDeliveryRouteToHubDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaFromToHubListDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostDeliveryHubRouteRequestDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHubRouteRequestDto;
@@ -16,6 +18,10 @@ import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.PutHu
  */
 public interface HubRouteService {
 
+    //kafka DeliveryRoute -> hubRoute
+    //PostHubRouteResponseDto(List<FindHubRoutes> hubAllListResponseList
+    void deliveryRouteToHubRouteKafka(KafkaDeliveryRouteToHubDto kafkaDeliveryRouteToHubDto);
+
     GetHubRouteResponseDto findByHubRoute(UUID hubRouteId);
 
     PutHubRouteResponseDto updateHubRoute(UUID hubRouteId, PutHubRouteRequestDto requestDto);
@@ -26,6 +32,7 @@ public interface HubRouteService {
 
     HubRoutesDto getDeliveryHubRouteList(PostDeliveryHubRouteRequestDto request);
 
-    String CreateHubRouteKafkaRequest(PostHubRouteRequestDto application);
-    PostHubRouteResponseDto createHubRouteExecute(KafkaFromToHubListDto event);
+    String createHubRouteKafkaRequest(PostHubRouteRequestDto application);
+    Mono<PostHubRouteResponseDto> createHubRouteExecute(KafkaFromToHubListDto event);
+
 }

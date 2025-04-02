@@ -19,7 +19,6 @@ public class HubEventKafkaProducer implements HubEventProducer {
 
     private final KafkaTemplate<String, KafkaFromToHubDto> kafkaTemplate;
 
-
     private final String hubTopicName;
 
     @Override

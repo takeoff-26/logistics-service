@@ -40,6 +40,10 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation project(':common')
 
+    //kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+
     //DOCS
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'

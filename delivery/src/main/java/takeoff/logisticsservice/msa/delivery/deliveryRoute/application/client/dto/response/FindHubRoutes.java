@@ -2,7 +2,9 @@ package takeoff.logisticsservice.msa.delivery.deliveryRoute.application.client.d
 
 import java.util.Objects;
 import java.util.UUID;
+import lombok.Builder;
 
+@Builder
 public record FindHubRoutes(
     UUID hubRouteId,
     UUID fromHubId,

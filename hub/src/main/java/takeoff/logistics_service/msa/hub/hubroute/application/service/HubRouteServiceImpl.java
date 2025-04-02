@@ -13,10 +13,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.FindHubRoutesDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubAllListResponseDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaDeliveryRouteToHubDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaFromToHubListDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaHubRoutesDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.HubIdsDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostDeliveryHubRouteRequestDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHubRouteRequestDto;
@@ -30,9 +33,9 @@ import takeoff.logistics_service.msa.hub.hubroute.application.exception.HubRoute
 import takeoff.logistics_service.msa.hub.hubroute.application.exception.HubRouteErrorCode;
 import takeoff.logistics_service.msa.hub.hubroute.application.service.client.HubClient;
 import takeoff.logistics_service.msa.hub.hubroute.application.service.client.NaverRequestClient;
+import takeoff.logistics_service.msa.hub.hubroute.application.service.kafka.HubRouteEventProducer;
 import takeoff.logistics_service.msa.hub.hubroute.domain.entity.HubRoute;
 import takeoff.logistics_service.msa.hub.hubroute.domain.repository.HubRouteRepository;
-import takeoff.logistics_service.msa.hub.hubroute.infrastructure.kafka.HubRouteEventKafkaProducer;
 
 /**
  * @author : hanjihoon
@@ -47,7 +50,7 @@ public class HubRouteServiceImpl implements HubRouteService {
     private final HubRouteRepository hubRouteRepository;
     private final HubClient hubClient;
     private final NaverRequestClient naverRequestClient;
-    private final HubRouteEventKafkaProducer hubRouteEventKafkaProducer;
+    private final HubRouteEventProducer hubRouteEventKafkaProducer;
 
     private static final int EARTH_RADIUS_KM = 6371;
     private static final String KAFKA_FAIL_MESSAGE = "내부 메시지 큐에 오류가 있습니다.";
@@ -70,7 +73,6 @@ public class HubRouteServiceImpl implements HubRouteService {
                 return HubRouteBusinessException.from(HubRouteErrorCode.NAVER_ERROR);
             })
             .block();
-
 
         HubRoute hubRoute = result.toEntity(result, requestDto);
         HubRoute savedHubRoute = hubRouteRepository.save(hubRoute);
@@ -96,12 +98,14 @@ public class HubRouteServiceImpl implements HubRouteService {
         HubAllListResponseDto fromHub = allHubs.stream()
             .filter(hub -> hub.hubId().equals(request.fromHubId()))
             .findFirst()
-            .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
+            .orElseThrow(
+                () -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
 
         HubAllListResponseDto toHub = allHubs.stream()
             .filter(hub -> hub.hubId().equals(request.toHubId()))
             .findFirst()
-            .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
+            .orElseThrow(
+                () -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
 
         log.info("시작 허브: {}", fromHub.hubName());
         log.info("끝 허브: {}", toHub.hubName());
@@ -114,68 +118,25 @@ public class HubRouteServiceImpl implements HubRouteService {
 
         if (distance <= 200) {
             // P2P 200km 이하일 경우
-            log.info("200km 이하 입니다.");
-            Optional<HubRoute> byFromHubIdAndToHubId = hubRouteRepository.findByFromHubIdAndToHubId(
-                fromHub.hubId(), toHub.hubId());
-            if (byFromHubIdAndToHubId.isEmpty()) {
-                // 저장된 경로가 없는 경우
-                log.info("200km 이하이며 경로가 없습니다.");
-                List<GetRouteResponseDto> createHubRoute = Stream.of(fromHub, toHub)
-                    .map(hub -> new GetRouteResponseDto(hub.hubId(), hub.hubName(), hub.address(),
-                        hub.latitude(), hub.longitude()))
-                    .toList();
-                HubRoute hubRoute = getHubRouteFromNaver(createHubRoute, fromHub, toHub);
-                HubRoute savedRoute = hubRouteRepository.save(hubRoute);
-                hubRoutesList.add(FindHubRoutesDto.from(savedRoute));
-            } else {
-                // 저장된 경로가 있는 경우
-                log.info("200km 이하이며 경로가 있습니다.");
-                hubRoutesList.add(FindHubRoutesDto.from(byFromHubIdAndToHubId
-                    .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
-            }
+            distanceLoe200P2P(fromHub, toHub, hubRoutesList);
         } else {
             // 200km이 넘을 경우
-            log.info("200km 이상입니다.");
-            HubAllListResponseDto stopoverHub = findClosestHubWithinDistance(fromHub, toHub, allHubs);
-
-            // 시작점 -> 중간 지점까지 저장된 경로가 있는지 확인
-            Optional<HubRoute> byFromHubIdAndStopoverHubId = hubRouteRepository.findByFromHubIdAndToHubId(
-                fromHub.hubId(), stopoverHub.hubId());
-            if (byFromHubIdAndStopoverHubId.isEmpty()) {
-                // 저장된 경로가 없을 때 네이버 API를 통해 계산 후 저장
-                log.info("200km 이상이며 초반 경로가 없습니다.");
-                List<GetRouteResponseDto> createHubRoute = Stream.of(fromHub, stopoverHub)
-                    .map(hub -> new GetRouteResponseDto(hub.hubId(), hub.hubName(), hub.address(),
-                        hub.latitude(), hub.longitude()))
-                    .toList();
-                HubRoute hubRoute = getHubRouteFromNaver(createHubRoute, fromHub, stopoverHub);
-                HubRoute savedRoute = hubRouteRepository.save(hubRoute);
-                hubRoutesList.add(FindHubRoutesDto.from(savedRoute));
-            } else {
-                // 저장된 경로가 있는 경우
-                log.info("200km 이상이며 초반 경로가 있습니다.");
-                hubRoutesList.add(FindHubRoutesDto.from(byFromHubIdAndStopoverHubId
-                    .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
-            }
+            HubAllListResponseDto stopoverHub = distanceGt200HubToHub(
+                fromHub, toHub, allHubs, hubRoutesList);
 
             // 중간 지점 -> 도착 지점까지 경로가 있는지 확인
             Optional<HubRoute> byStopoverHubIdAndToHubId = hubRouteRepository.findByFromHubIdAndToHubId(
                 stopoverHub.hubId(), toHub.hubId());
+
             if (byStopoverHubIdAndToHubId.isEmpty()) {
                 // 저장된 경로가 없을 때 네이버 API를 통해 계산 후 저장
-                log.info("200km 이상이며 후반 경로가 없습니다.");
-                List<GetRouteResponseDto> createHubRoute = Stream.of(stopoverHub, toHub)
-                    .map(hub -> new GetRouteResponseDto(hub.hubId(), hub.hubName(), hub.address(),
-                        hub.latitude(), hub.longitude()))
-                    .toList();
-                HubRoute hubRoute = getHubRouteFromNaver(createHubRoute, stopoverHub, toHub);
-                HubRoute savedRoute = hubRouteRepository.save(hubRoute);
-                hubRoutesList.add(FindHubRoutesDto.from(savedRoute));
+                findNoRouteCreateRoute(stopoverHub, toHub, hubRoutesList);
             } else {
                 // 저장된 경로가 있는 경우
                 log.info("200km 이상이며 후반 경로가 있습니다.");
                 hubRoutesList.add(FindHubRoutesDto.from(byStopoverHubIdAndToHubId
-                    .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
+                    .orElseThrow(() -> HubRouteBusinessException.from(
+                        HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
             }
         }
 
@@ -184,7 +145,7 @@ public class HubRouteServiceImpl implements HubRouteService {
 
     //kafka 실행 허브 라우트 -> 허브 -> 허브 라우트
     @Override
-    public String CreateHubRouteKafkaRequest(PostHubRouteRequestDto application) {
+    public String createHubRouteKafkaRequest(PostHubRouteRequestDto application) {
         try {
             hubRouteEventKafkaProducer.sendToHub(application);
         } catch (Exception e) {
@@ -195,26 +156,85 @@ public class HubRouteServiceImpl implements HubRouteService {
 
     //kafka 허브 경로 생성 실행 메서드
     @Override
-    public PostHubRouteResponseDto createHubRouteExecute(KafkaFromToHubListDto event) {
-
-        GetHubRouteNaverResponseDto result = naverRequestClient.sendRequestToNaver(event.fromToHubList())
+    public Mono<PostHubRouteResponseDto> createHubRouteExecute(KafkaFromToHubListDto event) {
+        return naverRequestClient.sendRequestToNaver(event.fromToHubList())
             .onErrorMap(error -> {
                 log.error("NaverAPI 응답을 받을 수 없습니다.", error);
                 return HubRouteBusinessException.from(HubRouteErrorCode.NAVER_ERROR);
             })
-            .block();
+            .map(result -> {
+                HubRoute hubRoute = result.toEntity(
+                    result,
+                    PostHubRouteRequestDto.createDto(
+                        event.fromToHubList().get(0).hubId(),
+                        event.fromToHubList().get(1).hubId()
+                    )
+                );
+                return hubRouteRepository.save(hubRoute);
+            })
+            .map(PostHubRouteResponseDto::from);
+    }
 
-        HubRoute hubRoute = result.toEntity(
-            result,
-            PostHubRouteRequestDto.createDto(
-            event.fromToHubList().get(0).hubId(),
-            event.fromToHubList().get(1).hubId()
-            )
+    //kafka DeliveryRoute -> hubRoute
+    //PostHubRouteResponseDto(List<FindHubRoutes> hubAllListResponseList
+    @Override
+    public void deliveryRouteToHubRouteKafka(KafkaDeliveryRouteToHubDto kafkaDeliveryRouteToHubDto) {
+        //from, to hub 찾아오고 경로 계산해서 넘겨야함
+        //여기서 hub에 쏘고 다시 받고 다시 받은 곳에서 경로 계산이랑 반환 값 가지고 딜리버리 라우트에 쏴야함
+        //딜리버리 라우트에서는 .sequenceNumber(1 + postHubRouteResponseDto.hubAllListResponseList().stream().toList().indexOf(route))
+        //이 부분 업데이트 해야함
+        List<HubAllListResponseDto> allHubs = hubClient.findAllHubs();
+
+        // 결과 저장할 HubRoute가 담긴 List
+        List<FindHubRoutesDto> hubRoutesList = new ArrayList<>();
+
+        HubAllListResponseDto fromHub = allHubs.stream()
+            .filter(hub -> hub.hubId().equals(kafkaDeliveryRouteToHubDto.fromHubId()))
+            .findFirst()
+            .orElseThrow(
+                () -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
+
+        HubAllListResponseDto toHub = allHubs.stream()
+            .filter(hub -> hub.hubId().equals(kafkaDeliveryRouteToHubDto.toHubId()))
+            .findFirst()
+            .orElseThrow(
+                () -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
+
+        log.info("시작 허브: {}", fromHub.hubName());
+        log.info("끝 허브: {}", toHub.hubName());
+
+        // 허브 간 거리 계산
+        double distance = calculateDistance(
+            fromHub.latitude(), fromHub.longitude(),
+            toHub.latitude(), toHub.longitude()
         );
-        HubRoute savedHubRoute = hubRouteRepository.save(hubRoute);
 
-        return PostHubRouteResponseDto.from(savedHubRoute);
+        if (distance <= 200) {
+            // P2P 200km 이하일 경우
+            distanceLoe200P2P(fromHub, toHub, hubRoutesList);
+        } else {
+            // 200km이 넘을 경우
+            HubAllListResponseDto stopoverHub = distanceGt200HubToHub(
+                fromHub, toHub, allHubs, hubRoutesList);
 
+            // 중간 지점 -> 도착 지점까지 경로가 있는지 확인
+            Optional<HubRoute> byStopoverHubIdAndToHubId = hubRouteRepository.findByFromHubIdAndToHubId(
+                stopoverHub.hubId(), toHub.hubId());
+
+            if (byStopoverHubIdAndToHubId.isEmpty()) {
+                // 저장된 경로가 없을 때 네이버 API를 통해 계산 후 저장
+                findNoRouteCreateRoute(stopoverHub, toHub, hubRoutesList);
+            } else {
+                // 저장된 경로가 있는 경우
+                log.info("200km 이상이며 후반 경로가 있습니다.");
+                hubRoutesList.add(FindHubRoutesDto.from(byStopoverHubIdAndToHubId
+                    .orElseThrow(() -> HubRouteBusinessException.from(
+                        HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
+            }
+        }
+
+        hubRouteEventKafkaProducer.sendToHubFromDelivery(new KafkaHubRoutesDto(
+            hubRoutesList,kafkaDeliveryRouteToHubDto.deliveryId()));
     }
 
 
@@ -246,23 +266,22 @@ public class HubRouteServiceImpl implements HubRouteService {
 
         return hubs.stream()
             .filter(hub -> verifyHub(fromHub, toHub, hub))
-            .filter(hub -> calculateDistance(fromHub.latitude(), fromHub.longitude(), hub.latitude(), hub.longitude()) <= 200)
+            .filter(hub ->
+                calculateDistance(fromHub.latitude(), fromHub.longitude(), hub.latitude(),
+                    hub.longitude()) <= 200)
             .filter(hub -> {
                 // 출발 허브에서 중간 허브까지의 거리와 출발 허브에서 목적지 허브까지의 거리를 비교
-                double distanceToHub = calculateDistance(fromHub.latitude(), fromHub.longitude(), hub.latitude(), hub.longitude());
+                double distanceToHub = calculateDistance(fromHub.latitude(), fromHub.longitude(),
+                    hub.latitude(), hub.longitude());
                 return distanceToHub <= directDistance;
             })
             .min(Comparator.comparingDouble(hub ->
-                calculateDistance(toHub.latitude(), toHub.longitude(), hub.latitude(), hub.longitude())
+                calculateDistance(toHub.latitude(), toHub.longitude(), hub.latitude(),
+                    hub.longitude())
             ))
-            .orElseThrow(() -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
+            .orElseThrow(
+                () -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
     }
-
-    private static boolean verifyHub(HubAllListResponseDto fromHub, HubAllListResponseDto toHub,
-        HubAllListResponseDto hub) {
-        return !hub.hubId().equals(fromHub.hubId()) && !hub.hubId().equals(toHub.hubId());
-    }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -324,6 +343,78 @@ public class HubRouteServiceImpl implements HubRouteService {
         double centralAngle =
             2 * Math.atan2(Math.sqrt(haversineFormula), Math.sqrt(1 - haversineFormula));
         return EARTH_RADIUS_KM * centralAngle;
+    }
+
+
+    private void findNoRouteCreateRoute(HubAllListResponseDto stopoverHub,
+        HubAllListResponseDto toHub,
+        List<FindHubRoutesDto> hubRoutesList) {
+        log.info("200km 이상이며 후반 경로가 없습니다.");
+        List<GetRouteResponseDto> createHubRoute = Stream.of(stopoverHub, toHub)
+            .map(hub -> new GetRouteResponseDto(hub.hubId(), hub.hubName(), hub.address(),
+                hub.latitude(), hub.longitude()))
+            .toList();
+        HubRoute hubRoute = getHubRouteFromNaver(createHubRoute, stopoverHub, toHub);
+        HubRoute savedRoute = hubRouteRepository.save(hubRoute);
+        hubRoutesList.add(FindHubRoutesDto.from(savedRoute));
+    }
+
+    private HubAllListResponseDto distanceGt200HubToHub(HubAllListResponseDto fromHub,
+        HubAllListResponseDto toHub, List<HubAllListResponseDto> allHubs,
+        List<FindHubRoutesDto> hubRoutesList) {
+        log.info("200km 이상입니다.");
+        HubAllListResponseDto stopoverHub = findClosestHubWithinDistance(fromHub, toHub, allHubs);
+
+        // 시작점 -> 중간 지점까지 저장된 경로가 있는지 확인
+        Optional<HubRoute> byFromHubIdAndStopoverHubId = hubRouteRepository.findByFromHubIdAndToHubId(
+            fromHub.hubId(), stopoverHub.hubId());
+        if (byFromHubIdAndStopoverHubId.isEmpty()) {
+            // 저장된 경로가 없을 때 네이버 API를 통해 계산 후 저장
+            log.info("200km 이상이며 초반 경로가 없습니다.");
+            List<GetRouteResponseDto> createHubRoute = Stream.of(fromHub, stopoverHub)
+                .map(hub -> new GetRouteResponseDto(hub.hubId(), hub.hubName(), hub.address(),
+                    hub.latitude(), hub.longitude()))
+                .toList();
+            HubRoute hubRoute = getHubRouteFromNaver(createHubRoute, fromHub, stopoverHub);
+            HubRoute savedRoute = hubRouteRepository.save(hubRoute);
+            hubRoutesList.add(FindHubRoutesDto.from(savedRoute));
+        } else {
+            // 저장된 경로가 있는 경우
+            log.info("200km 이상이며 초반 경로가 있습니다.");
+            hubRoutesList.add(FindHubRoutesDto.from(byFromHubIdAndStopoverHubId
+                .orElseThrow(
+                    () -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
+        }
+        return stopoverHub;
+    }
+
+    private void distanceLoe200P2P(HubAllListResponseDto fromHub, HubAllListResponseDto toHub,
+        List<FindHubRoutesDto> hubRoutesList) {
+        log.info("200km 이하 입니다.");
+        Optional<HubRoute> byFromHubIdAndToHubId = hubRouteRepository.findByFromHubIdAndToHubId(
+            fromHub.hubId(), toHub.hubId());
+        if (byFromHubIdAndToHubId.isEmpty()) {
+            // 저장된 경로가 없는 경우
+            log.info("200km 이하이며 경로가 없습니다.");
+            List<GetRouteResponseDto> createHubRoute = Stream.of(fromHub, toHub)
+                .map(hub -> new GetRouteResponseDto(hub.hubId(), hub.hubName(), hub.address(),
+                    hub.latitude(), hub.longitude()))
+                .toList();
+            HubRoute hubRoute = getHubRouteFromNaver(createHubRoute, fromHub, toHub);
+            HubRoute savedRoute = hubRouteRepository.save(hubRoute);
+            hubRoutesList.add(FindHubRoutesDto.from(savedRoute));
+        } else {
+            // 저장된 경로가 있는 경우
+            log.info("200km 이하이며 경로가 있습니다.");
+            hubRoutesList.add(FindHubRoutesDto.from(byFromHubIdAndToHubId
+                .orElseThrow(
+                    () -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
+        }
+    }
+
+    private static boolean verifyHub(HubAllListResponseDto fromHub, HubAllListResponseDto toHub,
+        HubAllListResponseDto hub) {
+        return !hub.hubId().equals(fromHub.hubId()) && !hub.hubId().equals(toHub.hubId());
     }
 
 }
