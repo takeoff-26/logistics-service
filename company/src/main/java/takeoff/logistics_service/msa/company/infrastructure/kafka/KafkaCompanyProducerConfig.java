@@ -16,10 +16,10 @@ import takeoff.logistics_service.msa.company.infrastructure.kafka.serializer.Dto
  * @Date : 2025. 03. 30.
  */
 @Configuration
-public class KafkaOrderProducerConfig {
+public class KafkaCompanyProducerConfig {
 
     @Bean
-    public <T> ProducerFactory<String, T> producerOrderFactory() {
+    public <T> ProducerFactory<String, T> producerCompanyFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -29,6 +29,6 @@ public class KafkaOrderProducerConfig {
 
     @Bean
     public <T> KafkaTemplate<String, T> KafkaTemplate() {
-        return new KafkaTemplate<>(producerOrderFactory());
+        return new KafkaTemplate<>(producerCompanyFactory());
     }
 }

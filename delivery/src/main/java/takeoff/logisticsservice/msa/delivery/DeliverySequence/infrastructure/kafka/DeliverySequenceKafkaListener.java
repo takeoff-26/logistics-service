@@ -20,7 +20,7 @@ public class DeliverySequenceKafkaListener {
 
     @KafkaListener(
         topics = "delivery-sequence-events",
-        containerFactory = "UUIDContainerFactory"
+        containerFactory = "kafkaDeliveryIdAndCompanyIdListenerContainerFactory"
     )
     public void handleHubRouteListResponse(KafkaDeliverySequenceListenerDto event) {
         log.info("허브 라우트 리스트 응답 수신: {}", event);

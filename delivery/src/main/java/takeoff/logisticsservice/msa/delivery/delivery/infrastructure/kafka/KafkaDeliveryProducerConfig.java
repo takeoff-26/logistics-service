@@ -19,7 +19,7 @@ import takeoff.logisticsservice.msa.delivery.delivery.infrastructure.kafka.seria
 public class KafkaDeliveryProducerConfig {
 
     @Bean
-    public <T> ProducerFactory<String, T> producerOrderFactory() {
+    public <T> ProducerFactory<String, T> producerDeliveryFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -29,6 +29,6 @@ public class KafkaDeliveryProducerConfig {
 
     @Bean
     public <T> KafkaTemplate<String, T> KafkaTemplate() {
-        return new KafkaTemplate<>(producerOrderFactory());
+        return new KafkaTemplate<>(producerDeliveryFactory());
     }
 }

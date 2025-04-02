@@ -21,7 +21,7 @@ public class CompanyKafkaListener {
 
     @KafkaListener(
         topics = "company-events",
-        containerFactory = "KafkaOrderToCompanyConsumerFactory"
+        containerFactory = "kafkaOrderToCompanyContainerFactory"
     )
     public void handleOrderToCompanyResponse(KafkaOrderToCompany event) {
         log.info("오더 응답 수신: {}", event);
@@ -29,7 +29,7 @@ public class CompanyKafkaListener {
     }
     @KafkaListener(
         topics = "delivery-to-company-events",
-        containerFactory = "KafkaDeliveryToCompanyContainerFactory"
+        containerFactory = "kafkaDeliveryToCompanyContainerFactory"
     )
     public void handleDeliveryToCompanyResponse(KafkaDeliveryToCompany kafkaDeliveryToCompany) {
         log.info("오더 응답 수신: {}", kafkaDeliveryToCompany);

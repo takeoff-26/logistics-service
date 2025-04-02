@@ -10,9 +10,9 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import takeoff.logisticsservice.msa.delivery.delivery.infrastructure.kafka.serializer.DtoDeserializer;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.dto.KafkaHubRouteResponseDto;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.infrastructure.kafka.dto.KafkaDeliveryToDeliveryRoute;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.infrastructure.kafka.serializer.DtoDeserializer;
 
 
 /**
@@ -24,7 +24,7 @@ import takeoff.logisticsservice.msa.delivery.deliveryRoute.infrastructure.kafka.
 public class KafkaDeliveryRouteConsumerConfig {
 
     @Bean
-    public <T> ConsumerFactory<String, T> consumerOrderFactory(Class<T> targetType) {
+    public <T> ConsumerFactory<String, T> consumerDeliveryRouteFactory(Class<T> targetType) {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -38,7 +38,7 @@ public class KafkaDeliveryRouteConsumerConfig {
     }
     @Bean
     public ConsumerFactory<String, KafkaDeliveryToDeliveryRoute> kafkaDeliveryToDeliveryRouteConsumerFactory() {
-        return consumerOrderFactory(KafkaDeliveryToDeliveryRoute.class);
+        return consumerDeliveryRouteFactory(KafkaDeliveryToDeliveryRoute.class);
     }
 
     @Bean
@@ -50,7 +50,7 @@ public class KafkaDeliveryRouteConsumerConfig {
 
     @Bean
     public ConsumerFactory<String, KafkaHubRouteResponseDto> kafkaHubRouteResponseDtoConsumerFactory() {
-        return consumerOrderFactory(KafkaHubRouteResponseDto.class);
+        return consumerDeliveryRouteFactory(KafkaHubRouteResponseDto.class);
     }
 
     @Bean

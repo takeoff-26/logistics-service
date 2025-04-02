@@ -22,7 +22,7 @@ public class DeliveryKafkaListener {
 
     @KafkaListener(
         topics = "delivery-to-sequence-events",
-        containerFactory = "deliveryIdAndCompanyIdConsumerFactory"
+        containerFactory = "kafkaDeliveryIdAndCompanyIdListenerContainerFactory"
     )
     public void handleHubRouteListResponse(KafkaDeliveryIdAndCompanyIdListener event) {
         log.info("딜리버리 응답 수신: {}", event);
@@ -31,7 +31,7 @@ public class DeliveryKafkaListener {
 
     @KafkaListener(
         topics = "delivery-events",
-        containerFactory = "KafkaOrderToDeliveryConsumerFactory"
+        containerFactory = "kafkaOrderToDeliveryContainerFactory"
     )
     public void handleHubRouteListResponse(KafkaOrderToDelivery kafkaOrderToDelivery) {
         log.info("딜리버리 응답 수신: {}", kafkaOrderToDelivery);
@@ -40,7 +40,7 @@ public class DeliveryKafkaListener {
 
     @KafkaListener(
         topics = "company-to-delivery-events",
-        containerFactory = "KafkaOrderToDeliveryConsumerFactory"
+        containerFactory = "kafkaCompanyToDeliveryContainerFactory"
     )
     public void handleCompanyToDeliveryResponse(KafkaCompanyToDelivery kafkaOrderToDelivery) {
         log.info("딜리버리 응답 수신: {}", kafkaOrderToDelivery);

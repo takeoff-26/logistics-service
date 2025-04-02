@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * @Date : 2025. 03. 30.
  */
 @Configuration
-public class KafkaOrderTopicConfig {
+public class KafkaCompanyTopicConfig {
 
     private static final String ORDER_TOPIC_NAME = "order-events";
     private static final String DELIVERY_TOPIC_NAME = "delivery-events";

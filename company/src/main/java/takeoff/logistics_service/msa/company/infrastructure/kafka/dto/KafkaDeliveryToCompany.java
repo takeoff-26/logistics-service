@@ -15,9 +15,9 @@ public record KafkaDeliveryToCompany(UUID deliveryId,
 
     public KafkaDeliveryToCompanyDto toApplication() {
         return KafkaDeliveryToCompanyDto.builder()
-            .supplierHubId(deliveryId)
-            .companyHubId(companyId)
-            .supplierHubId(supplierId)
+            .deliveryId(deliveryId)
+            .companyId(companyId)
+            .supplierId(supplierId)
             .build();
     }
 

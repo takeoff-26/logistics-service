@@ -1,6 +1,7 @@
 package takeoff.logistics_service.msa.company.application.kafka;
 
 import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaCompanyToDeliveryDto;
+import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaCompanyToOrderDto;
 
 /**
  * @author : hanjihoon
@@ -8,7 +9,7 @@ import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaCompanyT
  */
 public interface CompanyEventProducer {
 
-    void sendToOrder(KafkaCompanyToDeliveryDto kafkaCompanyToDeliveryDto);
+    void sendToOrder(KafkaCompanyToOrderDto kafkaCompanyToOrderDto);
 
     void sendToDelivery(KafkaCompanyToDeliveryDto kafkaCompanyToDeliveryDto);
 }
