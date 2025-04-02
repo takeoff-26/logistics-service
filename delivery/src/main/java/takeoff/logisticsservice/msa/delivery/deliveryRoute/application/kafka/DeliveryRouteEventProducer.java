@@ -1,6 +1,7 @@
 package takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka;
 
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.client.dto.request.PostHubRouteRequestDto;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.dto.KafkaHubRouteRequestDto;
 
 /**
  * @author : hanjihoon
@@ -8,5 +9,5 @@ import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.client.dt
  */
 public interface DeliveryRouteEventProducer {
 
-    void sendToHub(PostHubRouteRequestDto from);
+    void sendToHub(KafkaHubRouteRequestDto from);
 }

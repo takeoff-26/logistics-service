@@ -14,6 +14,8 @@ import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.client.dt
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.dto.request.PostDeliveryRoutesRequestDto;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.dto.response.GetDeliveryRouteResponseDto;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.DeliveryRouteEventProducer;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.dto.KafkaHubRouteRequestDto;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.dto.KafkaHubRouteResponseDto;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.domain.entity.DeliveryRoute;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.domain.repository.DeliveryRouteRepository;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.infrastructure.kafka.dto.KafkaDeliveryToDeliveryRoute;
@@ -90,27 +92,28 @@ public class DeliveryRouteService {
   //kafka
   @Transactional
   public void saveDeliveryRoutesKafka(KafkaDeliveryToDeliveryRoute kafkaDeliveryToDeliveryRoute) {
-    PostHubRouteResponseDto postHubRouteResponseDto = hubClient.postHubRoute(
-        new PostHubRouteRequestDto(
-            kafkaDeliveryToDeliveryRoute.fromHubId(),
-            kafkaDeliveryToDeliveryRoute.toHubId()));
 
-    deliveryRouteEventProducer.sendToHub(PostHubRouteRequestDto.from(
+    deliveryRouteEventProducer.sendToHub(KafkaHubRouteRequestDto.from(
+        kafkaDeliveryToDeliveryRoute.deliveryId(),
         kafkaDeliveryToDeliveryRoute.fromHubId(),
         kafkaDeliveryToDeliveryRoute.toHubId())
     );
 
+  }
+
+  //kafka 허브 경로 저장
+  @Transactional
+  public void HubRouteToDelivery(KafkaHubRouteResponseDto kafkaHubRouteResponseDto) {
 
     GetHubDeliverySequenceResponseDto nextHubDeliverySequence =
         deliverySequenceClient.findNextHubDeliverySequence();
 
-
-    List<DeliveryRoute> deliveryRoutes = postHubRouteResponseDto.hubAllListResponseList().stream()
+    List<DeliveryRoute> deliveryRoutes = kafkaHubRouteResponseDto.hubAllListResponseList().stream()
         .map(route -> DeliveryRoute.builder()
             .id(UUID.randomUUID())
-            .deliveryId(kafkaDeliveryToDeliveryRoute.deliveryId())
+            .deliveryId(kafkaHubRouteResponseDto.deliveryId())
             .deliveryManagerId(nextHubDeliverySequence.nextHubDeliveryManagerId())
-            .sequenceNumber(1 + postHubRouteResponseDto.hubAllListResponseList().stream().toList().indexOf(route))
+            .sequenceNumber(1 + kafkaHubRouteResponseDto.hubAllListResponseList().stream().toList().indexOf(route))
             .fromHubId(route.fromHubId())
             .toHubId(route.toHubId())
             .estimatedDistance(route.getDistance())
@@ -121,11 +124,6 @@ public class DeliveryRouteService {
         .toList();
 
     deliveryRouteRepository.saveAll(deliveryRoutes);
-
-  }
-
-  @Transactional
-  public void HubRouteToDelivery() {
 
   }
 

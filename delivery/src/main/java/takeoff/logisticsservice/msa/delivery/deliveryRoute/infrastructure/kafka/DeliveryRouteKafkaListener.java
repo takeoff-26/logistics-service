@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.client.dto.response.PostHubRouteResponseDto;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.dto.KafkaHubRouteResponseDto;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.service.DeliveryRouteService;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.infrastructure.kafka.dto.KafkaDeliveryToDeliveryRoute;
 
@@ -20,20 +22,20 @@ public class DeliveryRouteKafkaListener {
 
     @KafkaListener(
         topics = "delivery-to-deliveryRoute_events",
-        containerFactory = "UUIDContainerFactory"
+        containerFactory = "kafkaDeliveryToDeliveryRouteContainerFactory"
     )
     public void handleDeliveryRouteResponse(KafkaDeliveryToDeliveryRoute kafkaDeliveryToDeliveryRoute) {
         log.info("딜리버리 라우트 리스트 응답 수신: {}", kafkaDeliveryToDeliveryRoute);
         deliveryRouteService.saveDeliveryRoutesKafka(kafkaDeliveryToDeliveryRoute);
     }
-//    @KafkaListener(
-//        topics = "hub-to-delivery-route-events",
-//        containerFactory = "UUIDContainerFactory"
-//    )
-//    public void handleHubToDeliveryRouteResponse(KafkaFromToHubDto kafka) {
-//        log.info("딜리버리 라우트 리스트 응답 수신: {}", kafka);
-//        deliveryRouteService.(kafka.toApplication);
-//    }
+    @KafkaListener(
+        topics = "hub-to-delivery-route-events",
+        containerFactory = "kafkaHubRouteResponseDtoContainerFactory"
+    )
+    public void handleHubToDeliveryRouteResponse(KafkaHubRouteResponseDto kafkaHubRouteResponseDto) {
+        log.info("딜리버리 라우트 리스트 응답 수신: {}", kafkaHubRouteResponseDto);
+        deliveryRouteService.HubRouteToDelivery(kafkaHubRouteResponseDto);
+    }
     //여기를 허브 라우트에서 만들어진 값을 넣어야 함
 
 

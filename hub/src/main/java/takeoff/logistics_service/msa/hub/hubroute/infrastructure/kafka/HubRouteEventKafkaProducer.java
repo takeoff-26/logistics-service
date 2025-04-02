@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaHubRoutesDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHubRouteRequestDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.service.kafka.HubRouteEventProducer;
 
@@ -18,7 +20,7 @@ public class HubRouteEventKafkaProducer implements HubRouteEventProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final String hubRouteTopicName;
-    private final String deliveryRouteHubRouteTopicName;
+    private final String hubToDeliveryRouteTopicName;
 
     @Override
     public void sendToHub(PostHubRouteRequestDto event) {
@@ -27,8 +29,8 @@ public class HubRouteEventKafkaProducer implements HubRouteEventProducer {
     }
 
     @Override
-    public void sendToHubFromDelivery(PostHubRouteRequestDto event) {
-        kafkaTemplate.send(deliveryRouteHubRouteTopicName, event);
-        log.info(deliveryRouteHubRouteTopicName + ": 이벤트 발행");
+    public void sendToHubFromDelivery(KafkaHubRoutesDto kafkaHubRoutesDto) {
+        kafkaTemplate.send(hubToDeliveryRouteTopicName, kafkaHubRoutesDto);
+        log.info(hubToDeliveryRouteTopicName + ": 이벤트 발행");
     }
 }

@@ -113,7 +113,6 @@ public class HubServiceImpl implements HubService {
             .toList();
 
         hubEventProducer.sendToHubRoute(KafkaFromToHubDto.toKafka(resultList));
-        hubEventProducer.sendToDeliveryRoute(KafkaFromToHubDto.toKafka(resultList));
     }
 
     @Override

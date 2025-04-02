@@ -9,11 +9,13 @@ import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaDel
  * @Date : 2025. 04. 02.
  */
 @Builder
-public record KafkaDeliveryRouteToHub(UUID fromHubId,
+public record KafkaDeliveryRouteToHub(UUID deliveryId,
+                                      UUID fromHubId,
                                       UUID toHubId) {
 
     public KafkaDeliveryRouteToHubDto toApplication() {
         return KafkaDeliveryRouteToHubDto.builder()
+            .deliveryId(deliveryId)
             .fromHubId(fromHubId)
             .toHubId(toHubId)
             .build();

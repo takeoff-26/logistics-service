@@ -11,6 +11,7 @@ import takeoff.logisticsservice.msa.delivery.delivery.application.dto.kafka.Kafk
 import takeoff.logisticsservice.msa.delivery.delivery.application.kafka.DeliveryEventProducer;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.client.dto.request.PostHubRouteRequestDto;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.DeliveryRouteEventProducer;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.dto.KafkaHubRouteRequestDto;
 
 
 /**
@@ -26,8 +27,8 @@ public class DeliveryRouteEventKafkaProducer implements DeliveryRouteEventProduc
     private final String deliveryRouteToHubTopicName;
 
     @Override
-    public void sendToHub(PostHubRouteRequestDto postHubRouteRequestDto) {
-        kafkaTemplate.send(deliveryRouteToHubTopicName, postHubRouteRequestDto);
+    public void sendToHub(KafkaHubRouteRequestDto kafkaHubRouteRequestDto) {
+        kafkaTemplate.send(deliveryRouteToHubTopicName, kafkaHubRouteRequestDto);
         log.info(deliveryRouteToHubTopicName + ": 이벤트 발행");
     }
 }

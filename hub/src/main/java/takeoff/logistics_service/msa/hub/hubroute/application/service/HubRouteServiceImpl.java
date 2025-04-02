@@ -19,6 +19,7 @@ import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubAllListResp
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaDeliveryRouteToHubDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaFromToHubListDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaHubRoutesDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.HubIdsDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostDeliveryHubRouteRequestDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHubRouteRequestDto;
@@ -183,7 +184,58 @@ public class HubRouteServiceImpl implements HubRouteService {
         //여기서 hub에 쏘고 다시 받고 다시 받은 곳에서 경로 계산이랑 반환 값 가지고 딜리버리 라우트에 쏴야함
         //딜리버리 라우트에서는 .sequenceNumber(1 + postHubRouteResponseDto.hubAllListResponseList().stream().toList().indexOf(route))
         //이 부분 업데이트 해야함
-        hubRouteEventKafkaProducer.sendToHub(PostHubRouteRequestDto.from(kafkaDeliveryRouteToHubDto));
+        List<HubAllListResponseDto> allHubs = hubClient.findAllHubs();
+
+        // 결과 저장할 HubRoute가 담긴 List
+        List<FindHubRoutesDto> hubRoutesList = new ArrayList<>();
+
+        HubAllListResponseDto fromHub = allHubs.stream()
+            .filter(hub -> hub.hubId().equals(kafkaDeliveryRouteToHubDto.fromHubId()))
+            .findFirst()
+            .orElseThrow(
+                () -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
+
+        HubAllListResponseDto toHub = allHubs.stream()
+            .filter(hub -> hub.hubId().equals(kafkaDeliveryRouteToHubDto.toHubId()))
+            .findFirst()
+            .orElseThrow(
+                () -> HubRouteBusinessException.from(HubRouteErrorCode.HUB_ROUTE_NOT_FOUND));
+
+        log.info("시작 허브: {}", fromHub.hubName());
+        log.info("끝 허브: {}", toHub.hubName());
+
+        // 허브 간 거리 계산
+        double distance = calculateDistance(
+            fromHub.latitude(), fromHub.longitude(),
+            toHub.latitude(), toHub.longitude()
+        );
+
+        if (distance <= 200) {
+            // P2P 200km 이하일 경우
+            distanceLoe200P2P(fromHub, toHub, hubRoutesList);
+        } else {
+            // 200km이 넘을 경우
+            HubAllListResponseDto stopoverHub = distanceGt200HubToHub(
+                fromHub, toHub, allHubs, hubRoutesList);
+
+            // 중간 지점 -> 도착 지점까지 경로가 있는지 확인
+            Optional<HubRoute> byStopoverHubIdAndToHubId = hubRouteRepository.findByFromHubIdAndToHubId(
+                stopoverHub.hubId(), toHub.hubId());
+
+            if (byStopoverHubIdAndToHubId.isEmpty()) {
+                // 저장된 경로가 없을 때 네이버 API를 통해 계산 후 저장
+                findNoRouteCreateRoute(stopoverHub, toHub, hubRoutesList);
+            } else {
+                // 저장된 경로가 있는 경우
+                log.info("200km 이상이며 후반 경로가 있습니다.");
+                hubRoutesList.add(FindHubRoutesDto.from(byStopoverHubIdAndToHubId
+                    .orElseThrow(() -> HubRouteBusinessException.from(
+                        HubRouteErrorCode.HUB_ROUTE_NOT_FOUND))));
+            }
+        }
+
+        hubRouteEventKafkaProducer.sendToHubFromDelivery(new KafkaHubRoutesDto(
+            hubRoutesList,kafkaDeliveryRouteToHubDto.deliveryId()));
     }
 
 

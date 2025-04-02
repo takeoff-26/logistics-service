@@ -8,7 +8,8 @@ import lombok.Builder;
  * @Date : 2025. 04. 02.
  */
 @Builder
-public record KafkaDeliveryRouteToHubDto(UUID fromHubId,
+public record KafkaDeliveryRouteToHubDto(UUID deliveryId,
+                                         UUID fromHubId,
                                          UUID toHubId) {
 
 }

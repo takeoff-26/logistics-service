@@ -38,5 +38,13 @@ public class HubRouteKafkaListener {
         hubRouteService.deliveryRouteToHubRouteKafka(kafkaDeliveryRouteToHub.toApplication());
     }
 
+    @KafkaListener(
+        topics = "hub-to-delivery-route-events",
+        containerFactory = "kafkaFromToHubListDtoContainerFactory"
+    )
+    public void handleHubToHubRouteToDeliveryResponse(KafkaDeliveryRouteToHub kafkaDeliveryRouteToHub) {
+        log.info("허브 라우트 리스트 응답 수신: {}", kafkaDeliveryRouteToHub);
+        hubRouteService.deliveryRouteToHubRouteKafka(kafkaDeliveryRouteToHub.toApplication());
+    }
 
 }

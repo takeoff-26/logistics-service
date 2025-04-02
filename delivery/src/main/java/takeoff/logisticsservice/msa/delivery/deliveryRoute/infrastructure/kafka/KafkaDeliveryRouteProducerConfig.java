@@ -16,7 +16,7 @@ import takeoff.logistics_service.msa.order.infrastructure.kafka.serializer.DtoSe
  * @Date : 2025. 03. 30.
  */
 @Configuration
-public class KafkaDeliverySequenceProducerConfig {
+public class KafkaDeliveryRouteProducerConfig {
 
     @Bean
     public <T> ProducerFactory<String, T> producerOrderFactory() {

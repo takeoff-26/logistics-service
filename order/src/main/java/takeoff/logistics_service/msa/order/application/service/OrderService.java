@@ -178,7 +178,7 @@ public class OrderService {
   }
 
   @Transactional
-  public PostOrderResponse saveOrderToKafka(PostOrderRequest dto) {
+  public String saveOrderToKafka(PostOrderRequest dto) {
     Order order = Order.builder().id(UUID.randomUUID()).supplierId(dto.supplierId())
         .orderItems(dto.orderItems().stream()
             .map(orderItemDto -> OrderItem.builder().id(UUID.randomUUID())
@@ -206,8 +206,8 @@ public class OrderService {
 
 
     //딜리버리에서 딜리버리 라우트로 쏘아야 함
-    deliveryClient.saveDeliveryRoute(
-        new PostDeliveryRoutesRequestDto(deliveryId, fromHubId, toHubId));
+//    deliveryClient.saveDeliveryRoute(
+//        new PostDeliveryRoutesRequestDto(deliveryId, fromHubId, toHubId));
 
     // 재고 관리
     List<StockItemRequestDto> stocks = dto.orderItems().stream().map(
@@ -218,7 +218,7 @@ public class OrderService {
     PrePareStockRequestDto prePareStockRequestDto = new PrePareStockRequestDto(stocks);
     stockClient.prepareStock(prePareStockRequestDto);
 
-    return PostOrderResponse.from(order);
+    return "주문 생성 중 입니다.";
 
   }
 

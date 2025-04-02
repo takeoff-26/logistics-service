@@ -41,6 +41,14 @@ public class OrderController {
         .body(orderService.saveOrder(request));
   }
 
+  @PostMapping("/kafka")
+  @RoleCheck(roles = {UserRole.MASTER_ADMIN, UserRole.COMPANY_MANAGER, UserRole.HUB_MANAGER,
+      UserRole.COMPANY_DELIVERY_MANAGER, UserRole.HUB_DELIVERY_MANAGER})
+  public ResponseEntity<String> saveOrderToKafka(@RequestBody PostOrderRequest request) {
+    return ResponseEntity.ok()
+        .body(orderService.saveOrderToKafka(request));
+  }
+
 
   @PatchMapping("/{orderId}")
   @RoleCheck(roles = {UserRole.MASTER_ADMIN, UserRole.HUB_MANAGER})

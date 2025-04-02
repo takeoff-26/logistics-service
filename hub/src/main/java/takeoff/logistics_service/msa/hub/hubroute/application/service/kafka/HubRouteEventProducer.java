@@ -1,5 +1,7 @@
 package takeoff.logistics_service.msa.hub.hubroute.application.service.kafka;
 
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.HubRoutesDto;
+import takeoff.logistics_service.msa.hub.hubroute.application.dto.kafka.KafkaHubRoutesDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHubRouteRequestDto;
 
 /**
@@ -8,6 +10,6 @@ import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PostHu
  */
 public interface HubRouteEventProducer {
     void sendToHub(PostHubRouteRequestDto event);
-    void sendToHubFromDelivery(PostHubRouteRequestDto event);
+    void sendToHubFromDelivery(KafkaHubRoutesDto kafkaHubRoutesDto);
 }
 

@@ -12,6 +12,9 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import takeoff.logisticsservice.msa.delivery.delivery.infrastructure.kafka.dto.KafkaDeliveryIdAndCompanyIdListener;
 import takeoff.logisticsservice.msa.delivery.delivery.infrastructure.kafka.serializer.DtoDeserializer;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.client.dto.response.PostHubRouteResponseDto;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.dto.KafkaHubRouteResponseDto;
+import takeoff.logisticsservice.msa.delivery.deliveryRoute.infrastructure.kafka.dto.KafkaDeliveryToDeliveryRoute;
 
 
 /**
@@ -20,7 +23,7 @@ import takeoff.logisticsservice.msa.delivery.delivery.infrastructure.kafka.seria
  */
 @EnableKafka
 @Configuration
-public class KafkaDeliverySequenceConsumerConfig {
+public class KafkaDeliveryRouteConsumerConfig {
 
     @Bean
     public <T> ConsumerFactory<String, T> consumerOrderFactory(Class<T> targetType) {
@@ -36,14 +39,26 @@ public class KafkaDeliverySequenceConsumerConfig {
         );
     }
     @Bean
-    public ConsumerFactory<String, KafkaDeliveryIdAndCompanyIdListener> deliveryIdAndCompanyIdConsumerFactory() {
-        return consumerOrderFactory(KafkaDeliveryIdAndCompanyIdListener.class);
+    public ConsumerFactory<String, KafkaDeliveryToDeliveryRoute> kafkaDeliveryToDeliveryRouteConsumerFactory() {
+        return consumerOrderFactory(KafkaDeliveryToDeliveryRoute.class);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, KafkaDeliveryIdAndCompanyIdListener> deliveryIdAndCompanyIdContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, KafkaDeliveryIdAndCompanyIdListener> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(deliveryIdAndCompanyIdConsumerFactory());
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaDeliveryToDeliveryRoute> kafkaDeliveryToDeliveryRouteContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, KafkaDeliveryToDeliveryRoute> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(kafkaDeliveryToDeliveryRouteConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, KafkaHubRouteResponseDto> kafkaHubRouteResponseDtoConsumerFactory() {
+        return consumerOrderFactory(KafkaHubRouteResponseDto.class);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaHubRouteResponseDto> kafkaHubRouteResponseDtoContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, KafkaHubRouteResponseDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(kafkaHubRouteResponseDtoConsumerFactory());
         return factory;
     }
 }
