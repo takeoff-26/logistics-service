@@ -27,6 +27,10 @@ import takeoff.logistics_service.msa.order.application.dto.request.SearchOrderRe
 import takeoff.logistics_service.msa.order.application.dto.response.SearchOrderResponseDto;
 import takeoff.logistics_service.msa.order.application.exception.OrderBusinessException;
 import takeoff.logistics_service.msa.order.application.exception.OrderErrorCode;
+import takeoff.logistics_service.msa.order.application.service.kafka.OrderEventProducer;
+import takeoff.logistics_service.msa.order.application.service.kafka.dto.KafkaCompanyDto;
+import takeoff.logistics_service.msa.order.application.service.kafka.dto.KafkaToDeliveryDto;
+import takeoff.logistics_service.msa.order.application.service.kafka.dto.KafkaUpdateOrderDeliveryIdDto;
 import takeoff.logistics_service.msa.order.domain.entity.ModifyQuantityCommand;
 import takeoff.logistics_service.msa.order.domain.entity.Order;
 import takeoff.logistics_service.msa.order.domain.entity.OrderId;
@@ -47,6 +51,7 @@ public class OrderService {
   private final StockClient stockClient;
   private final CompanyClient companyClient;
   private final UserClient userClient;
+  private final OrderEventProducer orderEventProducer;
 
 
   @Transactional
@@ -71,6 +76,7 @@ public class OrderService {
         fromHubId,
         toHubId
     ));
+    //-> 딜리버리가 해결
     log.info(String.valueOf(fromHubId));
     log.info(String.valueOf(toHubId));
 
@@ -170,6 +176,76 @@ public class OrderService {
       throw BusinessException.from(CommonErrorCode.FORBIDDEN);
     }
   }
+
+  @Transactional
+  public String saveOrderToKafka(PostOrderRequest dto) {
+    Order order = Order.builder().id(UUID.randomUUID()).supplierId(dto.supplierId())
+        .orderItems(dto.orderItems().stream()
+            .map(orderItemDto -> OrderItem.builder().id(UUID.randomUUID())
+                .productId(orderItemDto.productId())
+                .quantity(orderItemDto.quantity()).build()).toList()).customerId(dto.customerId())
+        .address(dto.deliveryAddress()).requestNotes(dto.requestNotes()).build();
+
+    orderRepository.save(order);
+
+    // 배송 경로 추적
+    // TODO : 호출하는 API 가 출발지를 정하는 것은 아니라서 출발 허브 id 를 바꾸는 로직을 리펙터링해도 됨
+//    UUID fromHubId = stockClient.getStock(dto.orderItems().get(0).productId()).stockId()
+//        .hubId(); // 상품 소재지 허브
+
+
+//    orderEventProducer.sendToCompany(KafkaCompanyDto.from(
+//        order.getId().getOrderId(), dto.companyId(), dto.supplierId()));
+
+    //supplier - 공급 , company - 수령
+    //order에서 허브를 받아오는게 아닌 딜리버리에서 공급과 수령 업체에 대해 받아야 함.
+    // 공급, 수령 업체 아이디를 넘기고 딜리버리에서 company에 요청해야함.
+
+    orderEventProducer.sendToDelivery(KafkaToDeliveryDto.from(order.getId().getOrderId(),
+        dto.companyId(), dto.customerId()));
+
+
+    //딜리버리에서 딜리버리 라우트로 쏘아야 함
+//    deliveryClient.saveDeliveryRoute(
+//        new PostDeliveryRoutesRequestDto(deliveryId, fromHubId, toHubId));
+
+    // 재고 관리
+    List<StockItemRequestDto> stocks = dto.orderItems().stream().map(
+            item -> new StockItemRequestDto(
+                new StockIdRequestDto(item.productId(), parseHubId(item.productId())), item.quantity()))
+        .toList();
+
+    PrePareStockRequestDto prePareStockRequestDto = new PrePareStockRequestDto(stocks);
+    stockClient.prepareStock(prePareStockRequestDto);
+
+    return "주문 생성 중 입니다.";
+
+  }
+
+  //kafka companyListener
+  @Transactional
+  public void updateOrderToHubId(KafkaCompanyDto kafkaCompanyDto) {
+    Order order = orderRepository.findById(OrderId.from(kafkaCompanyDto.orderId()))
+        .orElseThrow(() ->
+            OrderBusinessException.from(OrderErrorCode.ORDER_NOT_FOUND));
+
+    order.registerHub(kafkaCompanyDto.toHubId());
+  }
+
+  //kafka deliveryListener
+  @Transactional
+  public void updateOrder(KafkaUpdateOrderDeliveryIdDto kafkaUpdateOrderDeliveryIdDto) {
+    Order order = orderRepository.findById(OrderId.from(kafkaUpdateOrderDeliveryIdDto.orderId()))
+        .orElseThrow(() ->
+            OrderBusinessException.from(OrderErrorCode.ORDER_NOT_FOUND));
+
+    order.modifyDeliveryId(kafkaUpdateOrderDeliveryIdDto.deliveryId());
+  }
+
+
+
+
+
 
 
   private UUID parseHubId(UUID pid) {

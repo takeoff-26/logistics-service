@@ -1,6 +1,8 @@
 package takeoff.logistics_service.msa.company.application.service;
 
-import static takeoff.logistics_service.msa.company.application.exception.CompanyErrorCode.*;
+import static takeoff.logistics_service.msa.company.application.exception.CompanyErrorCode.COMPANY_NAME_CONFLICT;
+import static takeoff.logistics_service.msa.company.application.exception.CompanyErrorCode.COMPANY_NOT_FOUND;
+import static takeoff.logistics_service.msa.company.application.exception.CompanyErrorCode.HUB_NOT_FOUND;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,11 @@ import takeoff.logistics_service.msa.company.application.dto.response.PaginatedR
 import takeoff.logistics_service.msa.company.application.dto.response.PostCompanyResponseDto;
 import takeoff.logistics_service.msa.company.application.dto.response.PutCompanyResponseDto;
 import takeoff.logistics_service.msa.company.application.exception.CompanyBusinessException;
-import takeoff.logistics_service.msa.company.application.exception.CompanyErrorCode;
+import takeoff.logistics_service.msa.company.application.kafka.CompanyEventProducer;
+import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaCompanyToDeliveryDto;
+import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaCompanyToOrderDto;
+import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaDeliveryToCompanyDto;
+import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaOrderToCompanyDto;
 import takeoff.logistics_service.msa.company.domain.entity.Company;
 import takeoff.logistics_service.msa.company.domain.repository.CompanyRepository;
 
@@ -28,6 +34,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 	private final CompanyRepository companyRepository;
 	private final HubInternalClient hubInternalClient;
+	private final CompanyEventProducer companyEventProducer;
 
 	@Override
 	public PostCompanyResponseDto saveCompany(PostCompanyRequestDto requestDto) {
@@ -69,10 +76,40 @@ public class CompanyServiceImpl implements CompanyService {
 			.orElseThrow(() -> CompanyBusinessException.from(COMPANY_NOT_FOUND));
 	}
 
+	//KafkaListener
+	@Override
+	public void getCompanyHubIdKafka(KafkaOrderToCompanyDto kafkaOrderToCompanyDto) {
+		Company company = companyRepository.findByIdAndDeletedAtIsNull(kafkaOrderToCompanyDto.companyId())
+			.orElseThrow(() -> CompanyBusinessException.from(COMPANY_NOT_FOUND));
+
+		Company supplier = companyRepository.findByIdAndDeletedAtIsNull(
+				kafkaOrderToCompanyDto.supplierId())
+			.orElseThrow(() -> CompanyBusinessException.from(COMPANY_NOT_FOUND));
+
+		companyEventProducer.sendToOrder(
+			KafkaCompanyToOrderDto.builder()
+				.orderId(kafkaOrderToCompanyDto.orderId())
+				.toHubId(company.getHubId())
+				.fromHubId(supplier.getHubId())
+				.build());
+	}
+
+	@Override
+	public void companyHubIdsKafka(KafkaDeliveryToCompanyDto kafkaDeliveryToCompanyDto) {
+		Company company = getCompany(kafkaDeliveryToCompanyDto.companyId());
+		Company supplier = getCompany(kafkaDeliveryToCompanyDto.supplierId());
+
+		companyEventProducer.sendToDelivery(KafkaCompanyToDeliveryDto.from(
+			kafkaDeliveryToCompanyDto.deliveryId(),
+			company.getHubId(),
+			supplier.getHubId()
+		));
+	}
+
 	@Override
 	@Transactional(readOnly = true)
-	public GetCompanyResponseDto findCompany(UUID productId, UserInfoDto userInfoDto) {
-		return GetCompanyResponseDto.from(getCompany(productId));
+	public GetCompanyResponseDto findCompany(UUID companyId, UserInfoDto userInfoDto) {
+		return GetCompanyResponseDto.from(getCompany(companyId));
 	}
 
 	@Override

@@ -104,6 +104,16 @@ public class HubServiceImpl implements HubService {
 
         hubEventProducer.sendToHubRoute(KafkaFromToHubDto.toKafka(resultList));
     }
+    @Override
+    public void findByToHubIdAndFromHubIdToDeliveryKafka(HubIdsDto hubIdsDto) {
+        List<GetRouteResponseDto> resultList = hubRepository.findByIdInAndDeletedAtIsNull(
+                List.of(hubIdsDto.toHubId(), hubIdsDto.fromHubId()))
+            .stream()
+            .map(GetRouteResponseDto::from)
+            .toList();
+
+        hubEventProducer.sendToHubRoute(KafkaFromToHubDto.toKafka(resultList));
+    }
 
     @Override
     @Caching(evict = {
