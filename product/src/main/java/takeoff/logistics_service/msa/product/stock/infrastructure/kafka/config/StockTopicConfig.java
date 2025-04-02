@@ -1,4 +1,4 @@
-package takeoff.logistics_service.msa.product.stock.infrastructure.kafka;
+package takeoff.logistics_service.msa.product.stock.infrastructure.kafka.config;
 
 import java.util.Map;
 import org.apache.kafka.clients.admin.NewTopic;
