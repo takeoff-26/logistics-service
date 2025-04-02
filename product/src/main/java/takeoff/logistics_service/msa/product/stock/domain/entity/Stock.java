@@ -36,7 +36,7 @@ public class Stock extends BaseEntity {
 	private Stock(StockId id, Integer quantity, Long userId) {
 		this.id = id;
 		this.quantity = quantity;
-
+		this.createdBy = userId;
 	}
 
 	public Stock increaseStock(Integer quantity) {

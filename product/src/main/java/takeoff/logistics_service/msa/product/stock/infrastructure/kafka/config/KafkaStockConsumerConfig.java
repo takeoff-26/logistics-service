@@ -54,9 +54,6 @@ public class KafkaStockConsumerConfig {
 		ConcurrentKafkaListenerContainerFactory<String, ProductCreatedEvent> factory =
 			new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(productCreatedEventConsumerFactory());
-		factory.setRecordFilterStrategy(record -> {
-			return !eventType.equals("CREATED");
-		});
 		return factory;
 	}
 }

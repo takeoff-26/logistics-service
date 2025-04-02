@@ -21,6 +21,23 @@ X-User-Role: MASTER_ADMIN
   client.global.set("hubId", response.body.hubId)
 %}
 
+### 로그인 (JWT 발급)
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "master",
+  "password": "Password1!"
+}
+> {%
+  let authHeader = response.headers.valueOf("Authorization");
+  if (authHeader) {
+    client.global.set("access_token", authHeader);
+  } else {
+    throw new Error("Authorization 헤더가 응답에 존재하지 않음");
+  }
+%}
+
 ### 2. 업체 조회 또는 생성
 # 업체 정보가 필요할 경우, 업체를 조회하거나 생성합니다
 POST localhost:19000/api/v1/companies
@@ -28,7 +45,7 @@ Content-Type: {{contentType}}
 Authorization: {{access_token}}
 
 {
-  "companyName": "푸른 농장5",
+  "companyName": "푸른 농장6",
   "companyType": "SUPPLIER",
   "hubId": "{{hubId}}",
   "address": "서울특별시 강남구 테헤란로 123"
@@ -42,8 +59,8 @@ POST {{host}}/api/v1/users/signup
 Content-Type: {{contentType}}
 
 {
-  "username": "compae",
-  "slackEmail": "coman@example.com",
+  "username": "compaen",
+  "slackEmail": "coman@examplea.com",
   "password": "Password1!",
   "role": "COMPANY_MANAGER",
   "companyFeignResponse": {
@@ -62,7 +79,7 @@ POST localhost:19000/api/v1/app/users/validate
 Content-Type: {{contentType}}
 
 {
-  "username": "compae",
+  "username": "compaen",
   "password": "Password1!"
 }
 > {%
@@ -79,7 +96,7 @@ POST {{host}}/api/v1/auth/login
 Content-Type: {{contentType}}
 
 {
-  "username": "compae",
+  "username": "compaen",
   "password": "Password1!"
 }
 > {%

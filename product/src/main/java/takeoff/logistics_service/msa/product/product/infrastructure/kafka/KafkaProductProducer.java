@@ -14,11 +14,11 @@ import takeoff.logistics_service.msa.product.product.application.event.ProductEv
 public class KafkaProductProducer implements ProductEventPublisher {
 
 	private final KafkaTemplate<String, ProductEvent> productKafkaTemplate;
-	private final String productTopicName;
+	private final String createdProductTopicName;
 
 	@Override
 	public void publish(ProductCreatedEvent productEvent) {
-		productKafkaTemplate.send(productTopicName, productEvent);
+		productKafkaTemplate.send(createdProductTopicName, productEvent);
 		log.info("Published product event {}", productEvent.eventType());
 	}
 }

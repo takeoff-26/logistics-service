@@ -11,11 +11,11 @@ import org.springframework.kafka.config.TopicBuilder;
 @ComponentScan("takeoff.logistics_service.msa.product.product")
 public class KafkaProductTopicConfig {
 
-	private static final String PRODUCT_TOPIC_NAME = "product-events";
+	private static final String CREATE_PRODUCT_TOPIC_NAME = "product-created-events";
 
 	@Bean
-	public NewTopic productTopic() {
-		return TopicBuilder.name(PRODUCT_TOPIC_NAME)
+	public NewTopic createdProductTopic() {
+		return TopicBuilder.name(CREATE_PRODUCT_TOPIC_NAME)
 			.partitions(3)
 			.replicas(1)
 			.configs(Map.of(
@@ -26,7 +26,7 @@ public class KafkaProductTopicConfig {
 			.build();
 	}
 	@Bean
-	public String productTopicName() {
-		return PRODUCT_TOPIC_NAME;
+	public String createdProductTopicName() {
+		return CREATE_PRODUCT_TOPIC_NAME;
 	}
 }
