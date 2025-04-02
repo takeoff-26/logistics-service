@@ -18,14 +18,14 @@ public abstract class BaseEntity {
 
 	@CreatedBy
 	@Column(updatable = false)
-	private Long createdBy;
+	protected Long createdBy;
 
 	@CreatedDate
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
 
 	@LastModifiedBy
-	private Long updatedBy;
+	protected Long updatedBy;
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
