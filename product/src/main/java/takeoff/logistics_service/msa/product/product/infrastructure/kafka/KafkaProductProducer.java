@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import takeoff.logistics_service.msa.product.product.application.event.ProductCreatedEvent;
 import takeoff.logistics_service.msa.product.product.application.event.ProductEvent;
 import takeoff.logistics_service.msa.product.product.application.event.ProductEventPublisher;
-import takeoff.logistics_service.msa.product.product.application.event.ProductUpdatedEvent;
 
 @Slf4j
 @Component
