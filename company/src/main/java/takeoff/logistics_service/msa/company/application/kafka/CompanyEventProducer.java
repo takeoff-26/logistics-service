@@ -1,7 +1,6 @@
 package takeoff.logistics_service.msa.company.application.kafka;
 
 import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaCompanyToDeliveryDto;
-import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaDeliveryToCompanyDto;
 
 /**
  * @author : hanjihoon

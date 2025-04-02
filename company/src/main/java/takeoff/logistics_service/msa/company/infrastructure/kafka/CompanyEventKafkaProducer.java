@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import takeoff.logistics_service.msa.company.application.kafka.CompanyEventProducer;
 import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaCompanyToDeliveryDto;
 import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaCompanyToOrderDto;
-import takeoff.logistics_service.msa.company.application.kafka.dto.KafkaDeliveryToCompanyDto;
 
 
 /**

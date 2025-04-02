@@ -4,12 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import takeoff.logisticsservice.msa.delivery.delivery.application.dto.kafka.KafkaCompanyToDeliveryDto;
-import takeoff.logisticsservice.msa.delivery.delivery.application.dto.kafka.KafkaDeliverySequenceDto;
-import takeoff.logisticsservice.msa.delivery.delivery.application.dto.kafka.KafkaDeliveryToCompany;
-import takeoff.logisticsservice.msa.delivery.delivery.application.dto.kafka.KafkaOrderUpdateDto;
-import takeoff.logisticsservice.msa.delivery.delivery.application.kafka.DeliveryEventProducer;
-import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.client.dto.request.PostHubRouteRequestDto;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.DeliveryRouteEventProducer;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.dto.KafkaHubRouteRequestDto;
 

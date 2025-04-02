@@ -1,6 +1,5 @@
 package takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka;
 
-import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.client.dto.request.PostHubRouteRequestDto;
 import takeoff.logisticsservice.msa.delivery.deliveryRoute.application.kafka.dto.KafkaHubRouteRequestDto;
 
 /**

@@ -29,7 +29,6 @@ import takeoff.logisticsservice.msa.delivery.delivery.domain.entity.Delivery;
 import takeoff.logisticsservice.msa.delivery.delivery.domain.entity.DeliveryId;
 import takeoff.logisticsservice.msa.delivery.delivery.domain.entity.DeliveryStatus;
 import takeoff.logisticsservice.msa.delivery.delivery.domain.repository.DeliveryRepository;
-import takeoff.logisticsservice.msa.delivery.delivery.infrastructure.kafka.dto.KafkaOrderToDelivery;
 import takeoff.logisticsservice.msa.delivery.delivery.presentation.dto.request.PatchDeliveryRequestDto;
 import takeoff.logisticsservice.msa.delivery.delivery.presentation.dto.request.PostDeliveryRequestDto;
 

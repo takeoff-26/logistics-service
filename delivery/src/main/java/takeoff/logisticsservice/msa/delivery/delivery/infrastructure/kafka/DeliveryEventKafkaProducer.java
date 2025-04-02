@@ -1,6 +1,5 @@
 package takeoff.logisticsservice.msa.delivery.delivery.infrastructure.kafka;
 
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

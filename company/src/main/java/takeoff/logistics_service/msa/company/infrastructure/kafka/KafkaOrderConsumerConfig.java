@@ -2,7 +2,6 @@ package takeoff.logistics_service.msa.company.infrastructure.kafka;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;

@@ -11,7 +11,6 @@ import takeoff.logistics_service.msa.hub.hubroute.application.dto.request.PutHub
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.GetHubRouteResponseDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.PostHubRouteResponseDto;
 import takeoff.logistics_service.msa.hub.hubroute.application.dto.response.PutHubRouteResponseDto;
-import takeoff.logistics_service.msa.hub.hubroute.infrastructure.kafka.dto.KafkaDeliveryRouteToHub;
 
 /**
  * @author : hanjihoon

@@ -36,7 +36,6 @@ import takeoff.logistics_service.msa.hub.hubroute.application.service.client.Nav
 import takeoff.logistics_service.msa.hub.hubroute.application.service.kafka.HubRouteEventProducer;
 import takeoff.logistics_service.msa.hub.hubroute.domain.entity.HubRoute;
 import takeoff.logistics_service.msa.hub.hubroute.domain.repository.HubRouteRepository;
-import takeoff.logistics_service.msa.hub.hubroute.infrastructure.kafka.dto.KafkaDeliveryRouteToHub;
 
 /**
  * @author : hanjihoon
