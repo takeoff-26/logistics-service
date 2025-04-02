@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import takeoff.logistics_service.msa.common.exception.BusinessException;
 import takeoff.logistics_service.msa.common.exception.code.CommonErrorCode;
 import takeoff.logistics_service.msa.product.product.application.exception.ProductBusinessException;
-import takeoff.logistics_service.msa.product.product.application.service.CompanyClient;
+import takeoff.logistics_service.msa.product.product.application.client.CompanyClient;
 
 @Component
 @RequiredArgsConstructor

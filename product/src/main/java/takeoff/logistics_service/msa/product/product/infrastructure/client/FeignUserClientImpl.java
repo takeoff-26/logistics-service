@@ -13,7 +13,7 @@ import takeoff.logistics_service.msa.common.exception.BusinessException;
 import takeoff.logistics_service.msa.common.exception.code.CommonErrorCode;
 import takeoff.logistics_service.msa.product.product.application.dto.response.GetUserResponseDto;
 import takeoff.logistics_service.msa.product.product.application.exception.ProductBusinessException;
-import takeoff.logistics_service.msa.product.product.application.service.UserClient;
+import takeoff.logistics_service.msa.product.product.application.client.UserClient;
 import takeoff.logistics_service.msa.product.product.infrastructure.client.dto.response.GetUserResponse;
 
 @RequiredArgsConstructor

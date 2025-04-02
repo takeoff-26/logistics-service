@@ -16,7 +16,7 @@ import takeoff.logistics_service.msa.common.exception.code.CommonErrorCode;
 import takeoff.logistics_service.msa.product.product.application.dto.request.PostStockRequestDto;
 import takeoff.logistics_service.msa.product.product.application.dto.response.PostStockResponseDto;
 import takeoff.logistics_service.msa.product.product.application.exception.ProductBusinessException;
-import takeoff.logistics_service.msa.product.product.application.service.StockClient;
+import takeoff.logistics_service.msa.product.product.application.client.StockClient;
 import takeoff.logistics_service.msa.product.product.infrastructure.client.dto.request.PostStockRequest;
 
 @Slf4j
