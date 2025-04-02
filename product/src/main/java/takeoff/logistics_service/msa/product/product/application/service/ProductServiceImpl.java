@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
 		validateAccessToCompany(requestDto.companyId(), userInfo);
 		Product product = getSavedProduct(requestDto);
 		eventPublisher.publish(ProductCreatedEvent
-			.from(PostStockRequestDto.of(product.getId(), requestDto)));
+			.of(PostStockRequestDto.of(product.getId(), requestDto), userInfo));
 	}
 
 	@Override

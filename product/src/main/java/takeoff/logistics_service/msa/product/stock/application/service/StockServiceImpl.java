@@ -41,6 +41,14 @@ public class StockServiceImpl implements StockService {
 	private final StockRepository stockRepository;
 
 	@Override
+	public void create(PostStockRequestDto requestDto, UserInfoDto userInfo) {
+		validateStockNotExists(requestDto);
+		validateAccessToHub(requestDto.stockId().hubId(), userInfo);
+		stockRepository.save(Stock.createWithCreatedBy(requestDto.toCommand(), userInfo.userId()));
+	}
+
+
+	@Override
 	public PostStockResponseDto saveStock(PostStockRequestDto requestDto, UserInfoDto userInfo) {
 		validateStockNotExists(requestDto);
 		validateAccessToHub(requestDto.stockId().hubId(), userInfo);

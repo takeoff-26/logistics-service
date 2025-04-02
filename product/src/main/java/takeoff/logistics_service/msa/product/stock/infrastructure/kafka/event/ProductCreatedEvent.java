@@ -1,9 +1,10 @@
-package takeoff.logistics_service.msa.product.product.application.event;
+package takeoff.logistics_service.msa.product.stock.infrastructure.kafka.event;
 
-import static takeoff.logistics_service.msa.product.product.application.event.EventType.CREATED;
+import static takeoff.logistics_service.msa.product.stock.application.event.EventType.CREATED;
 
 import takeoff.logistics_service.msa.common.domain.UserInfoDto;
-import takeoff.logistics_service.msa.product.product.application.dto.request.PostStockRequestDto;
+import takeoff.logistics_service.msa.product.stock.application.dto.request.PostStockRequestDto;
+import takeoff.logistics_service.msa.product.stock.application.event.EventType;
 
 public record ProductCreatedEvent(
 	EventType eventType, PostStockRequestDto payload, UserInfoDto userInfo) implements ProductEvent {
