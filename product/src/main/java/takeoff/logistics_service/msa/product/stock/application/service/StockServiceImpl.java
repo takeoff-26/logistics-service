@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,12 +34,27 @@ import takeoff.logistics_service.msa.product.stock.domain.entity.Stock;
 import takeoff.logistics_service.msa.product.stock.domain.entity.StockId;
 import takeoff.logistics_service.msa.product.stock.domain.repository.StockRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
 
 	private final UserClient userClient;
 	private final StockRepository stockRepository;
+
+	@Override //카프카일때 ..
+	public void create(PostStockRequestDto requestDto, UserInfoDto userInfo) {
+		try {
+			validateStockNotExists(requestDto);
+			validateAccessToHub(requestDto.stockId().hubId(), userInfo);
+			stockRepository.save(
+				Stock.createWithCreatedBy(requestDto.toCommand(), userInfo.userId()));
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			//보상트랜잭션
+		}
+	}
+
 
 	@Override
 	public PostStockResponseDto saveStock(PostStockRequestDto requestDto, UserInfoDto userInfo) {

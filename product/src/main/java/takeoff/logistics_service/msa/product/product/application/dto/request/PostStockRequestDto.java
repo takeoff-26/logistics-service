@@ -6,7 +6,7 @@ import lombok.Builder;
 @Builder
 public record PostStockRequestDto(UUID productId, UUID hubId, Integer quantity) {
 
-	public static PostStockRequestDto from(UUID productId, PostProductRequestDto requestDto) {
+	public static PostStockRequestDto of(UUID productId, PostProductRequestDto requestDto) {
 		return PostStockRequestDto.builder()
 			.productId(productId)
 			.hubId(requestDto.hubId())

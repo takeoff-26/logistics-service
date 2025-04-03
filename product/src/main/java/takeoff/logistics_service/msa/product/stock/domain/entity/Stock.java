@@ -23,9 +23,20 @@ public class Stock extends BaseEntity {
 		return new Stock(command.stockId(), command.quantity());
 	}
 
+	//이벤트로 생성된 Stock 에 auditor 정보 주입 목적
+	public static Stock createWithCreatedBy(CreateStock command, Long createdBy) {
+		return new Stock(command.stockId(), command.quantity(), createdBy);
+	}
+
 	private Stock(StockId id, Integer quantity) {
 		this.id = id;
 		this.quantity = quantity;
+	}
+
+	private Stock(StockId id, Integer quantity, Long userId) {
+		this.id = id;
+		this.quantity = quantity;
+		this.createdBy = userId;
 	}
 
 	public Stock increaseStock(Integer quantity) {

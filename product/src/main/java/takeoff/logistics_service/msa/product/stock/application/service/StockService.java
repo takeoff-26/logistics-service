@@ -17,6 +17,8 @@ import takeoff.logistics_service.msa.product.stock.application.dto.response.Post
 
 public interface StockService {
 
+	void create(PostStockRequestDto requestDto, UserInfoDto userInfo);
+
 	PostStockResponseDto saveStock(PostStockRequestDto requestDto, UserInfoDto userInfo);
 
 	IncreaseStockResponseDto increaseStock(IncreaseStockRequestDto requestDto, UserInfoDto userInfo);
