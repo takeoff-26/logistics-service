@@ -4,5 +4,7 @@ public enum EventType {
 	CREATED,
 	UPDATED,
 	DELETED,
+	FAILED,
+	ROLLBACK,
 	;
 }

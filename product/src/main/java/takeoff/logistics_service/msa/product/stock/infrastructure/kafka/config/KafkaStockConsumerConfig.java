@@ -14,7 +14,6 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import takeoff.logistics_service.msa.product.stock.infrastructure.kafka.event.ProductCreatedEvent;
-import takeoff.logistics_service.msa.product.stock.infrastructure.kafka.event.ProductEvent;
 
 @EnableKafka
 @Configuration
@@ -33,7 +32,7 @@ public class KafkaStockConsumerConfig {
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, "stock-service");
 
 		JsonDeserializer<T> jsonDeserializer = new JsonDeserializer<>(targetType);
-		jsonDeserializer.setUseTypeHeaders(false);
+		jsonDeserializer.setUseTypeHeaders(false); //타입헤더 x 형태만 확인
 		jsonDeserializer.setRemoveTypeHeaders(true);
 
 		return new DefaultKafkaConsumerFactory<>(
